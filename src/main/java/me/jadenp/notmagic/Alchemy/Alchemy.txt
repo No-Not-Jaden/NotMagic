@@ -1,0 +1,479 @@
+package me.jadenp.notmagic;
+
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Levelled;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+
+public class Alchemy implements Listener {
+    Items items = new Items();
+    BasicStation basicStation = new BasicStation();
+    private final Plugin plugin;
+    private final Map<Location, String> stations;
+    private final Map<String, Integer> interactCooldown;
+    private final Map<Location, ItemStack[]> alcSpell;
+    private final Map<Location, Item[]> display;
+    private final File alcStations;
+    private final String prefix;
+
+    public Alchemy(Plugin plugin) {
+        this.plugin = plugin;
+        this.stations = new HashMap<>();
+        this.interactCooldown = new HashMap<>();
+        this.alcSpell = new HashMap<>();
+        this.display = new HashMap<>();
+        this.prefix = ChatColor.GRAY + "[" + ChatColor.of(new Color(26, 194, 232)) + "Not" + ChatColor.of(new Color(232, 26, 225)) + "Magic" + ChatColor.GRAY + "] " + ChatColor.DARK_GRAY + "» ";
+        alcStations = new File(plugin.getDataFolder() + File.separator + "alchemy-stations.yml");
+        File config = new File(plugin.getDataFolder() + File.separator + "config.yml");
+        YamlConfiguration yy = YamlConfiguration.loadConfiguration(config);
+
+
+        YamlConfiguration c = YamlConfiguration.loadConfiguration(alcStations);
+        int i = 1;
+        while (c.getString(i + ".name") != null) {
+            Location li = c.getLocation(i + ".location");
+            Location l = li;
+            if (Objects.equals(c.getString(i + ".name"), "basic")) {
+                l = li;
+            } else if (Objects.equals(c.getString(i + ".name"), "advanced")) {
+                l = new Location(li.getWorld(), li.getX(), li.getY() + 1, li.getZ());
+
+
+            }
+            stations.put(c.getLocation(i + ".location"), c.getString(i + ".name"));
+            ItemStack[] stacks = new ItemStack[]{null, null, null, null, null, null, null, null};
+            Item[] items1 = new Item[]{null, null, null, null, null, null, null, null};
+            int y = 0;
+            while (c.getItemStack(i + ".items." + y) != null) {
+                stacks[y] = c.getItemStack(i + ".items." + y);
+                Location ll = new Location(l.getWorld(), l.getX() + 0.5, l.getY() + ((double) y / 5) + 1, l.getZ() + 0.5);
+                if (stacks[y] != null) {
+                    if (stacks[y].getType() != Material.AIR) {
+                        Item items2 = Objects.requireNonNull(l.getWorld()).dropItem(ll, stacks[y]);
+                        items2.setVelocity(new Vector(0, 0, 0));
+                        items2.setPickupDelay(Integer.MAX_VALUE);
+                        items2.setTicksLived(1);
+                        items2.setGravity(false);
+                        items1[y] = items2;
+                    }
+                }
+                y++;
+            }
+            display.put(l, items1);
+            alcSpell.put(c.getLocation(i + ".location"), stacks);
+            i++;
+        }
+        // save alchemy data to a file every 30 min
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                YamlConfiguration y = new YamlConfiguration();
+                if (stations.size() > 0) {
+                    Iterator hmIterator = stations.entrySet().iterator();
+                    int i = 1;
+                    while (hmIterator.hasNext()) {
+                        Map.Entry mapElement = (Map.Entry) hmIterator.next();
+                        y.set(i + ".name", mapElement.getValue());
+                        y.set(i + ".location", mapElement.getKey());
+                        if (alcSpell.containsKey(mapElement.getKey())) {
+                            ItemStack[] stacks = alcSpell.get(mapElement.getKey());
+                            for (int z = 0; z < stacks.length; z++) {
+                                if (stacks[z] != null) {
+                                    y.set(i + ".items." + z, stacks[z]);
+
+                                }
+                            }
+                            i++;
+                        }
+                        try {
+                            y.save(alcStations);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(plugin, 300, 36000L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Iterator hmIterator = stations.entrySet().iterator();
+                while (hmIterator.hasNext()) {
+                    Map.Entry mapElement = (Map.Entry) hmIterator.next();
+                    Location l = (Location) mapElement.getKey();
+                    if (l.getChunk().isLoaded())
+                        if (l.getBlock().getType() != Material.CAULDRON) {
+                            stations.remove(mapElement.getKey(), mapElement.getValue());
+                        } else {
+                            if (mapElement.getValue().equals("basic")) {
+                                if (l.getBlock().getRelative(BlockFace.DOWN).getType() != Material.SOUL_CAMPFIRE) {
+                                    stations.remove(mapElement.getKey(), mapElement.getValue());
+                                }
+                            } else if (mapElement.getValue().equals("advanced")) {
+                                boolean ok = false;
+                                if (l.getBlock().getRelative(BlockFace.UP).getType() == Material.CONDUIT)
+                                    if (l.getBlock().getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() != Material.SPRUCE_STAIRS) {
+                                        if (l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR) {
+                                            ok = true;
+                                        }
+                                    } else if (l.getBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() != Material.SPRUCE_STAIRS) {
+                                        if (l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && l.getBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS) {
+                                            ok = true;
+                                        }
+                                    } else if (l.getBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() != Material.SPRUCE_STAIRS) {
+                                        if (l.getBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && l.getBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS) {
+                                            ok = true;
+                                        }
+                                    } else {
+                                        if (l.getBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.LEVER && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && l.getBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && l.getBlock().getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS) {
+                                            ok = true;
+                                        }
+                                    }
+                                if (!ok) {
+                                    stations.remove(mapElement.getKey(), mapElement.getValue());
+                                }
+                            }
+                        }
+
+                }
+                Iterator mIterator = display.entrySet().iterator();
+                while (mIterator.hasNext()) {
+                    Map.Entry mapElement = (Map.Entry) mIterator.next();
+                    Item[] items1 = (Item[]) mapElement.getValue();
+                    for (Item item : items1) {
+                        if (item != null)
+                            if (item.getTicksLived() > 3000) {
+                                item.setTicksLived(1);
+                            }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 100, 3600L);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        interactCooldown.put(event.getPlayer().getUniqueId().toString(), 0);
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player p = (event.getPlayer());
+        if (interactCooldown.get(p.getUniqueId().toString()) == 0) {
+            if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                if (event.getClickedBlock().getType() == Material.CAULDRON) {
+                    if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.WATER_BUCKET) {
+                        return;
+                    }
+                    Location location = event.getClickedBlock().getLocation();
+                    if (p.getInventory().getItemInMainHand().isSimilar(items.data("AlcController"))) {
+                        event.setCancelled(true);
+                        setInteractCooldown(p);
+                        if (!(stations.containsKey(location))) {
+                            if (event.getClickedBlock().getRelative(BlockFace.DOWN).getType() == Material.SOUL_CAMPFIRE) {
+                                p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "You've created a Basic Alchemist Station!");
+                                stations.put(location, "basic");
+                            }
+                            if (event.getClickedBlock().getRelative(BlockFace.UP).getType() == Material.CONDUIT)
+                                if (event.getClickedBlock().getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() != Material.SPRUCE_STAIRS) {
+                                    if (event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR) {
+                                        p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "You've created an Advanced Alchemist Station!");
+                                        stations.put(location, "advanced");
+                                    }
+                                } else if (event.getClickedBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() != Material.SPRUCE_STAIRS) {
+                                    if (event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && event.getClickedBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS) {
+                                        p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "You've created an Advanced Alchemist Station!");
+                                        stations.put(location, "advanced");
+                                    }
+                                } else if (event.getClickedBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getType() != Material.SPRUCE_STAIRS) {
+                                    if (event.getClickedBlock().getRelative(BlockFace.EAST).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && event.getClickedBlock().getRelative(BlockFace.EAST).getType() == Material.SPRUCE_STAIRS) {
+                                        p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "You've created an Advanced Alchemist Station!");
+                                        stations.put(location, "advanced");
+                                    }
+                                } else {
+                                    if (event.getClickedBlock().getRelative(BlockFace.SOUTH).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() == Material.SPRUCE_STAIRS && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.LEVER && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.BREWING_STAND && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getType() == Material.BOOKSHELF && event.getClickedBlock().getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getType() == Material.SPRUCE_TRAPDOOR && event.getClickedBlock().getRelative(BlockFace.SOUTH).getType() == Material.SPRUCE_STAIRS) {
+                                        p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "You've created an Advanced Alchemist Station!");
+                                        stations.put(location, "advanced");
+                                    }
+                                }
+
+
+                        } else {
+                            if ((stations.containsKey(location))) {
+                                event.setCancelled(true);
+                                Levelled cauldronData = (Levelled) event.getClickedBlock().getBlockData();
+                                if (cauldronData.getLevel() == cauldronData.getMaximumLevel()) {
+                                    if (alcSpell.containsKey(location)) {
+                                        ItemStack[] itemStacks = alcSpell.get(location);
+                                        if (itemStacks[0] != null) {
+                                            java.util.List<ItemStack> output = basicStation.brew(itemStacks, event.getClickedBlock().getLocation(), p, display.get(event.getClickedBlock().getLocation()), stations.get(event.getClickedBlock().getLocation()));
+                                            if (output.get(0).getType() != Material.AIR) {
+                                                for (int i = 0; i < itemStacks.length; i++) {
+                                                    for (ItemStack use : output) {
+                                                        if (itemStacks[i] != null)
+                                                            if (itemStacks[i].isSimilar(use)) {
+                                                                itemStacks[i] = new ItemStack(itemStacks[i].getType(), itemStacks[i].getAmount() - use.getAmount());
+                                                                itemStacks[i].setItemMeta(use.getItemMeta());
+                                                                itemStacks[i].setData(use.getData());
+                                                                itemStacks[i].addUnsafeEnchantments(use.getEnchantments());
+                                                            }
+                                                    }
+                                                }
+                                                for (Item item1 : display.get(event.getClickedBlock().getLocation())) {
+                                                    if (item1 != null)
+                                                        item1.setTicksLived(5999);
+                                                }
+                                                Location l = null;
+                                                if (stations.get(event.getClickedBlock().getLocation()).equals("basic")) {
+                                                    l = event.getClickedBlock().getLocation();
+                                                } else if (stations.get(event.getClickedBlock().getLocation()).equals("advanced")) {
+                                                    l = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getX(), event.getClickedBlock().getY() + 1, event.getClickedBlock().getZ());
+
+
+                                                }
+
+                                                Item[] items1 = new Item[]{null, null, null, null, null, null, null, null};
+                                                for (int y = 0; y < itemStacks.length; y++) {
+                                                    Location ll = new Location(l.getWorld(), l.getX() + 0.5, l.getY() + ((double) y / 5) + 1, l.getZ() + 0.5);
+                                                    if (itemStacks[y] != null) {
+                                                        if (itemStacks[y].getType() != Material.AIR) {
+                                                            if (itemStacks[y].getAmount() > 0) {
+                                                                Item items2 = Objects.requireNonNull(l.getWorld()).dropItem(ll, itemStacks[y]);
+                                                                items2.setVelocity(new Vector(0, 0, 0));
+                                                                items2.setPickupDelay(Integer.MAX_VALUE);
+                                                                items2.setTicksLived(1);
+                                                                items2.setGravity(false);
+                                                                items1[y] = items2;
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                                display.replace(l, items1);
+                                                alcSpell.replace(location, itemStacks);
+
+                                            } else {
+                                                for (ItemStack itemStack : itemStacks) {
+                                                    if (itemStack != null) {
+                                                        if (!(itemStack.getType().isAir()))
+                                                            if (itemStack.getAmount() > 0)
+                                                                event.getClickedBlock().getWorld().dropItemNaturally(event.getClickedBlock().getLocation(), itemStack);
+                                                    }
+                                                }
+
+                                                for (Item item1 : display.get(event.getClickedBlock().getLocation())) {
+                                                    if (item1 != null)
+                                                        item1.setTicksLived(5999);
+                                                }
+                                                alcSpell.remove(event.getClickedBlock().getLocation());
+                                            }
+                                        } else {
+                                            p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "There is nothing in the cauldron!");
+                                        }
+                                    } else {
+                                        p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "There is nothing in the cauldron!");
+                                    }
+
+                                } else {
+                                    p.sendMessage(prefix + ChatColor.of(new Color(250, 165, 17)) + "This station does not have enough water!");
+                                }
+                            }
+                        }
+                        return;
+                    }
+
+                    if (stations.containsKey(event.getClickedBlock().getLocation())) {
+                        event.setCancelled(true);
+                        ItemStack Item = p.getInventory().getItemInMainHand(); //new ItemStack(p.getInventory().getItemInMainHand().getType(), 1);
+                        //Item.setItemMeta(p.getInventory().getItemInMainHand().getItemMeta());
+                        if (p.getInventory().getItemInMainHand().getType() != Material.AIR) {
+                            if (alcSpell.containsKey(event.getClickedBlock().getLocation())) {
+                                if (alcSpell.get(event.getClickedBlock().getLocation())[7] == null) {
+                                    p.getInventory().setItemInMainHand(null);
+                                } else {
+                                    setInteractCooldown(p);
+                                    return;
+                                }
+                            } else {
+                                p.getInventory().setItemInMainHand(null);
+                            }
+
+                            if (!(alcSpell.containsKey(event.getClickedBlock().getLocation()))) {
+                                setInteractCooldown(p);
+                                alcSpell.put(event.getClickedBlock().getLocation(), new ItemStack[]{Item, null, null, null, null, null, null, null});
+                                Location li = event.getClickedBlock().getLocation();
+                                if (stations.get(event.getClickedBlock().getLocation()).equals("basic")) {
+                                    li = event.getClickedBlock().getLocation();
+                                } else if (stations.get(event.getClickedBlock().getLocation()).equals("advanced")) {
+                                    li = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getX(), event.getClickedBlock().getY() + 1, event.getClickedBlock().getZ());
+                                }
+                                Location l = new Location(li.getWorld(), li.getX() + 0.5, li.getY() + 1, li.getZ() + 0.5);
+                                Item items2 = Objects.requireNonNull(l.getWorld()).dropItem(l, Item);
+                                items2.setVelocity(new Vector(0, 0, 0));
+                                items2.setPickupDelay(Integer.MAX_VALUE);
+                                items2.setTicksLived(1);
+                                items2.setGravity(false);
+                                Item[] items1 = new Item[]{items2, null, null, null, null, null, null, null};
+                                display.put(event.getClickedBlock().getLocation(), items1);
+                            } else {
+                                for (int i = 0; i < alcSpell.get(event.getClickedBlock().getLocation()).length; i++) {
+                                    if (alcSpell.get(event.getClickedBlock().getLocation())[i] == null) {
+                                        ItemStack[] itemStacks = alcSpell.get(event.getClickedBlock().getLocation());
+                                        itemStacks[i] = Item;
+                                        alcSpell.replace(event.getClickedBlock().getLocation(), itemStacks);
+                                        Item[] items1 = display.get(event.getClickedBlock().getLocation());
+                                        Location l = event.getClickedBlock().getLocation();
+                                        if (stations.get(event.getClickedBlock().getLocation()).equals("basic")) {
+                                            l = event.getClickedBlock().getLocation();
+                                        } else if (stations.get(event.getClickedBlock().getLocation()).equals("advanced")) {
+                                            l = new Location(event.getClickedBlock().getWorld(), event.getClickedBlock().getX(), event.getClickedBlock().getY() + 1, event.getClickedBlock().getZ());
+                                        }
+                                        Location ll = new Location(l.getWorld(), l.getX() + 0.5, l.getY() + ((double) i / 5) + 1, l.getZ() + 0.5);
+                                        if (items1[i] != null) {
+                                            items1[i] = Objects.requireNonNull(ll.getWorld()).dropItem(ll, Item);
+                                            items1[i].setVelocity(new Vector(0, 0, 0));
+                                            items1[i].setPickupDelay(Integer.MAX_VALUE);
+                                            items1[i].setTicksLived(1);
+                                            items1[i].setGravity(false);
+                                        }
+                                        display.replace(event.getClickedBlock().getLocation(), items1);
+                                        setInteractCooldown(p);
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            if (alcSpell.containsKey(event.getClickedBlock().getLocation())) {
+                                for (int i = alcSpell.get(event.getClickedBlock().getLocation()).length - 1; i >= 0; i--) {
+                                    if (alcSpell.get(event.getClickedBlock().getLocation())[i] != null) {
+                                        ItemStack[] itemStacks = alcSpell.get(event.getClickedBlock().getLocation());
+                                        if (itemStacks[i] != null) {
+                                            p.getInventory().addItem(itemStacks[i]);
+                                            itemStacks[i] = null;
+
+
+                                            Item[] items1 = display.get(event.getClickedBlock().getLocation());
+                                            if (items1 != null)
+                                                if (items1[i] != null) {
+                                                    items1[i].setTicksLived(5999);
+                                                    items1[i] = null;
+                                                }
+
+                                            if (itemStacks[0] == null) {
+                                                alcSpell.remove(event.getClickedBlock().getLocation());
+                                                display.remove(event.getClickedBlock().getLocation());
+                                            } else {
+                                                alcSpell.replace(event.getClickedBlock().getLocation(), itemStacks);
+                                                display.replace(event.getClickedBlock().getLocation(), items1);
+                                            }
+                                        }
+                                        setInteractCooldown(p);
+                                        break;
+                                    }
+                                }
+
+                            }
+                            setInteractCooldown(p);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+ItemStack{POTION x 1, POTION_META:{meta-type=POTION, display-name={"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"#E3A812","text":"Haste 1"}],"text":""}, custom-color=Color:[rgb0xE3A812], custom-effects=[FAST_DIGGING:(9600t-x0)]}}
+ItemStack{POTION x 1, POTION_META:{meta-type=POTION, display-name={"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"#E3A812","text":"Haste 1"}],"text":""}, custom-color=Color:[rgb0xE3A812], custom-effects=[FAST_DIGGING:(9600t-x0)]}}
+    public void setInteractCooldown(Player p) {
+        interactCooldown.replace(p.getUniqueId().toString(), 1);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                interactCooldown.replace(p.getUniqueId().toString(), 0);
+            }
+        }.runTaskLater(plugin, 2);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getBlock().getType() == Material.CAULDRON) {
+            if (stations.containsKey(event.getBlock().getLocation())) {
+                Iterator hmIterator = stations.entrySet().iterator();
+                while (hmIterator.hasNext()) {
+                    Map.Entry mapElement = (Map.Entry) hmIterator.next();
+                    if (mapElement.getKey().equals(event.getBlock().getLocation())) {
+                        stations.remove(mapElement.getKey(), mapElement.getValue());
+                        ItemStack[] itemStacks = alcSpell.get(mapElement.getKey());
+                        for (ItemStack itemStack : itemStacks) {
+                            if (itemStack != null) {
+                                ((Location) mapElement.getKey()).getWorld().dropItemNaturally((Location) mapElement.getKey(), itemStack);
+                            }
+                        }
+                        alcSpell.remove(mapElement.getKey());
+                        Item[] items1 = display.get(mapElement.getKey());
+                        for (Item item1 : items1) {
+                            if (item1 != null)
+                                item1.setTicksLived(5999);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDisable(PluginDisableEvent event) {
+        YamlConfiguration y = new YamlConfiguration();
+        if (stations.size() > 0) {
+            Iterator hmIterator = stations.entrySet().iterator();
+
+            int i = 1;
+            while (hmIterator.hasNext()) {
+                Map.Entry mapElement = (Map.Entry) hmIterator.next();
+                y.set(i + ".name", mapElement.getValue());
+                y.set(i + ".location", mapElement.getKey());
+                if (alcSpell.containsKey(mapElement.getKey())) {
+                    ItemStack[] stacks = alcSpell.get(mapElement.getKey());
+                    for (int z = 0; z < stacks.length; z++) {
+                        if (stacks[z] != null) {
+                            y.set(i + ".items." + z, stacks[z]);
+                        }
+                    }
+                    Item[] items1 = display.get(mapElement.getKey());
+                    for (Item item1 : items1) {
+                        if (item1 != null)
+                            item1.setTicksLived(5999);
+                    }
+                    i++;
+                }
+            }
+            try {
+                y.save(alcStations);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

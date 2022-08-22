@@ -1,0 +1,22 @@
+use-built-in-spells: true
+spells:
+  1:
+    name: CustomSpell
+    main-spell: false
+    mp-cost: 10
+    cast-time: 2
+    cooldown: 200
+    required-level: 9001
+    cast-pattern:
+      - Start
+      - Up
+      - Down
+      - Left
+      - Right
+      - LeftUp
+      - RightUp
+      - RightDown
+    actions:
+      - 'particle:END_ROD spawn:5air amount:100'
+      - 'particle:CLOUD spawn:playerEye1front direction:targetEye speed:2 amount:5 delay:20'
+      - 'target:10{radiusEntity:all}{radiusEntity:!player} damage:10 effect:target200LEVITATION delay:20'

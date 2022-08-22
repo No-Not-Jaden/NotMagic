@@ -1,0 +1,169 @@
+mystery-board:
+  location:
+alchemy-recipes:
+  1:
+    # station types:
+    # basic
+    # advanced
+    # ritual
+    station-type: basic
+
+    # format:
+    # [item] (item) (amount)
+
+    # custom items you can use:
+    # MagicDust
+    # MagicBlock
+    # CompressedMagicBlock
+    # All wands with no space in name, ex: BasicWand, EnhancedWand
+    # ZombieEssence
+    # AlchemyDust
+    # [custom] (custom item) (amount)
+
+    # Potions:
+    # MC Potions: [potion] (type)
+    # Custom Potion:
+    # in required-potions or result potions, add:
+    #   1:
+    #     effect: (Minecraft Effect - specific strings)
+    #     amount: (amount | Keep 1 for legal items | DO NOT CHANGE IN required-potions)
+    #     duration: (length of potion in seconds)
+    #     amplifier: (power of potion)
+    #     color:
+    #       r: 227 (color of the potion and the name)
+    #       g: 168
+    #       b: 18
+    #     name: 'name here' (will be the same color as above
+
+    # Advanced Station:
+    # The advanced station has a specific order of which things are entered
+    # this is how I use the slots, but you can use them differently if you wanted
+    # 1 - Above bookshelf: alchemy dust
+    # 2 - on brewing stand: main ingredient
+    # 3/4/5 - in brewing stand bottle places: secondary items
+    # 6/7/8 - on top of conduit: tertiary items
+
+    # Ritual Station:
+    # The ritual station is similar to the advanced station where it requires a specific order of items
+    # it fills in the inner slots first then the outer ones
+    # has a total of 13 slots
+
+    requirements:
+      - '[item] GOLDEN_PICKAXE 1'
+      - '[custom] MagicDust 10'
+      - '[potion] SPEED'
+    required-potions:
+    result:
+    result-potions:
+      1:
+        effect: FAST_DIGGING
+        amount: 1
+        duration: 180
+        amplifier: 1
+        color:
+          r: 227
+          g: 168
+          b: 18
+        name: 'Haste 1'
+  2:
+    station-type: basic
+    requirements:
+      - '[item] ROTTEN_FLESH 1'
+      - '[custom] MagicDust 16'
+    required-potions:
+    result:
+      - '[custom] ZombieEssence 1'
+    result-potions:
+  3:
+    station-type: advanced
+    requirements:
+      - '[custom] AlchemyDust 3'
+      - '[item] WITHER_SKELETON_SKULL 1'
+      - '[item] SUGAR 3'
+      - '[item] DRAGON_BREATH 3'
+      - '[item] RABBIT_FOOT 3'
+      - '[custom] MagicBlock 10'
+      - '[custom] ZombieEssence 10'
+      - '[custom] MagicBlock 10'
+    required-potions:
+    result:
+      - '[custom] BeastPotion'
+    result-potions:
+  4:
+    station-type: advanced
+    requirements:
+      - '[custom] AlchemyDust 16'
+      - '[item] DIAMOND 3'
+      - '[item] COAL 32'
+      - '[item] COAL 32'
+      - '[item] COAL 32'
+      - '[item] EMERALD_BLOCK 16'
+      - '[custom] MagicBlock 32'
+      - '[item] EMERALD_BLOCK 16'
+    required-potions:
+    result:
+      - '[item] NETHERITE_INGOT 1'
+    result-potions:
+  5:
+    station-type: ritual
+    requirements:
+      - '[custom] MagicBlock 16'
+      - '[custom] MagicDust 32'
+      - '[custom] MagicDust 32'
+      - '[custom] MagicDust 32'
+      - '[custom] MagicDust 32'
+      - '[custom] AlchemyDust 32'
+      - '[custom] AlchemyDust 32'
+      - '[custom] AlchemyDust 32'
+      - '[custom] AlchemyDust 32'
+      - '[custom] AlchemyBlock 16'
+      - '[custom] AlchemyBlock 16'
+      - '[custom] AlchemyBlock 16'
+      - '[custom] AlchemyBlock 16'
+    required-potions:
+    result:
+      - '[custom] CompressedMagicBlock 1'
+    result-potions:
+magic-resources:
+  # percent chance magic dust will drop from gold ore
+  # set to 0 to have magic mines the only way
+  drop-chance: 0
+# mobs will naturally drop spell books
+obtain-spells-naturally: true
+custom-monsters:
+  monsters:
+    - 'monster-king'
+  monster-king:
+    # the chance it will spawn near a player every 30 min
+    # higher number is less likely
+    # 0 to disable spawning
+    spawn-rate: 0
+    # Type of mob being spawned
+    mob-type: Ravager
+    # Name above head
+    custom-name:
+      visible: true
+      name: '&2Monster King'
+    # health of mob
+    # -1 to have original health
+    health: 200.0
+    # if the mob will glow
+    glow: false
+    # Potion Effects
+    # STRENGTH
+    # REGEN
+    # SPEED
+    # FIRE_RESISTANCE
+    # JUMP
+    # SLOW_FALL
+    potion-effects:
+      1:
+        effect: STRENGTH
+        level: 3
+    # Example drops:
+    # [command] nm give {player} ShadowRose 1
+    # [message] message to player that killed it
+    # [item] ROTTEN_FLESH 1
+    drops:
+      - '[command] broadcast &a&lMonster King has been defeated!'
+      - '[message] &2You defeated the Monster King'

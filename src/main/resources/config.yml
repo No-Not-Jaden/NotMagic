@@ -1,0 +1,13 @@
+# Classic chat color codes & hex work &#ffffff
+# replacement characters can be used in some of the text
+# {spell} for spell-cooldown, spell-insufficient-mana, cast-spell, main-spell, spell-too-powerful
+# {player}, {level} can be used for all of them except the prefix
+# {levelRequired} for item-too-powerful, spell-too-powerful
+# {time} (in seconds) or {timeFormatted} can be used on spell-cooldown
+prefix: '&7[&#1ac2e8Not&#e81ae1Magic&7] &8» '
+spell-cooldown: '&1{spell}&9 is on cooldown for {timeFormatted}!'
+spell-insufficient-mana: '&9Insufficient Mana Points!'
+cast-spell: '&3You cast the spell &b{spell}&3!'
+main-spell: '&3Your main spell is now &b{spell}&3!'
+item-too-powerful: '&9You are not strong enough to use this magical item! &7(&1{levelRequired}&7)'
+spell-too-powerful: '&9You are not strong enough to cast &1{spell}&9! &7(&1{levelRequired}&7)'

@@ -1,0 +1,26 @@
+name: NotMagic
+version: ${project.version}
+main: me.jadenp.notmagic.NotMagic
+api-version: 1.16
+authors: [ Not_Jaden ]
+description: Magical Minecraft Means Maybe Malicous | jkjk
+commands:
+  nm:
+    usage: /nm
+    description: all of NotMagic commands
+  nmtop:
+    usage: /nmtop
+    description: top magic levels
+permissions:
+  notmagic.*:
+    description: All NotMagic commands
+    children:
+      notmagic.basic: true
+      notmagic.admin: true
+  notmagic.basic:
+    description: All basic Permissions for a regular player
+    default: true
+  notmagic.admin:
+    description: All Admin commands
+  notmagic.dev:
+    description: Debugging commands
