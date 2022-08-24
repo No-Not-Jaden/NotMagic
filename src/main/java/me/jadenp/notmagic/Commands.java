@@ -39,10 +39,6 @@ public class Commands implements CommandExecutor, TabCompleter {
     private Plugin plugin;
     private NotMagic notMagic;
     private String prefix;
-    private File playerdata;
-    private File statistics;
-    private File manaMines;
-    private File backups;
     private HashMap<String, Integer> levels = new HashMap<>();
     public List<String> language = new ArrayList<>();
 
@@ -55,18 +51,10 @@ public class Commands implements CommandExecutor, TabCompleter {
     public Commands(NotMagic plugin){
         this.plugin = plugin;
         this.notMagic = plugin;
-        this.backups = new File(plugin.getDataFolder()+File.separator+"backups");
-        this.playerdata = new File(plugin.getDataFolder()+File.separator+"playerdata");
-        this.statistics = new File(playerdata+File.separator+"statistics.yml");
-        this.manaMines = new File(plugin.getDataFolder() + File.separator + "mana-mines.yml");
 
 
     }
 
-    public void updateConfig(ArrayList<String> language, String prefix){
-        this.language = language;
-        this.prefix = prefix;
-    }
 
     /* public String color(String str){
             str = ChatColor.translateAlternateColorCodes('&', str);
@@ -335,79 +323,23 @@ public class Commands implements CommandExecutor, TabCompleter {
                     } else {
                         sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
                     }
-                } else if (args[0].equalsIgnoreCase("debug")){
-                    if (sender instanceof  Player) {
-                        Player p = (Player) sender;
-                        if (sender.hasPermission("notmagic.dev")) {
-                            YamlConfiguration c = YamlConfiguration.loadConfiguration(statistics);
-                            if (c.getBoolean(p.getUniqueId().toString() + ".dev")) {
-                                c.set(p.getUniqueId().toString() + ".dev", false);
-                                p.sendMessage(prefix + ChatColor.YELLOW + " Debug mode " + ChatColor.RED + "Off" + ChatColor.YELLOW + ".");
-                            } else {
-                                c.set(p.getUniqueId().toString() + ".dev", true);
-                                p.sendMessage(prefix + ChatColor.YELLOW + " Debug mode " + ChatColor.GREEN + "On" + ChatColor.YELLOW + ".");
-                            }
-                            try {
-                                c.save(statistics);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
-                        }
-                    } else {
-                        sender.sendMessage(prefix + "You are not a player!");
-                    }
-                } else if (args[0].equalsIgnoreCase("spellcolor")){
-                    if (sender.hasPermission("notmagic.admin")) {
-                        if (!(args.length < 4)) {
-                            if (Bukkit.getPlayer(args[1]) != null){
-                                Player pl = Bukkit.getPlayer(args[1]);
-                                assert pl != null;
-                                File pdata = new File(playerdata+File.separator+pl.getUniqueId().toString() + ".yml");
-                                YamlConfiguration c = YamlConfiguration.loadConfiguration(pdata);
-                                c.set("spell.color.r", Integer.parseInt(args[2]));
-                                c.set("spell.color.g", Integer.parseInt(args[3]));
-                                c.set("spell.color.b", Integer.parseInt(args[4]));
-                                try {
-                                    c.save(pdata);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                sender.sendMessage(prefix + ChatColor.YELLOW + "You've changed " + args[1] + "'s spell color to " + ChatColor.BOLD + "" + ChatColor.of(new Color(Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]))) + "this" + ChatColor.YELLOW + ".");
-                                pl.sendMessage(prefix + ChatColor.YELLOW + "You're spell color will change to " + ChatColor.BOLD + "" + ChatColor.of(new Color(Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]))) + "this" + ChatColor.YELLOW + " in approximately 5 min.");
-                                try {
-                                    c.save(statistics);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                sender.sendMessage(prefix + ChatColor.RED + "Invalid Player!");
-                            }
-                        } else {
-                            sender.sendMessage(prefix + ChatColor.YELLOW + "Usage:");
-                            sender.sendMessage(ChatColor.GREEN + "/nm spellcolor (player) (R) (G) (B)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Changes a player's spell color");
-                        }
-                    } else {
-                        sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
-                    }
-                } else if (args[0].equalsIgnoreCase("mine")){
+                }else if (args[0].equalsIgnoreCase("mine")){
                     if (sender.hasPermission("notmagic.admin")) {
                         if (args.length == 3){
                             if (args[1].equalsIgnoreCase("add")){
-                                YamlConfiguration c = YamlConfiguration.loadConfiguration(manaMines);
+                                YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
                                 c.set(args[2], ((Player) sender).getTargetBlock(null, 10).getLocation());
                                 try {
-                                    c.save(manaMines);
+                                    c.save(notMagic.manaMines);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                                 sender.sendMessage(prefix + ChatColor.GREEN + "Added mine.");
                             } else if (args[1].equalsIgnoreCase("remove")){
-                                YamlConfiguration c = YamlConfiguration.loadConfiguration(manaMines);
+                                YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
                                 c.set(args[2], null);
                                 try {
-                                    c.save(manaMines);
+                                    c.save(notMagic.manaMines);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -415,7 +347,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                             }
 
                         } else if (args.length == 2 && args[1].equalsIgnoreCase("list")) {
-                            YamlConfiguration c = YamlConfiguration.loadConfiguration(manaMines);
+                            YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
                             int i = 1;
                             while (true){
                                 if (c.getLocation(i + "") != null){

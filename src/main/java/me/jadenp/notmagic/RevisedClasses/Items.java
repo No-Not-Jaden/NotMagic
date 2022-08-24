@@ -30,8 +30,8 @@ public class Items {
     // stick bamboo amethyst blaze rod bone feather
     public ItemStack data(String s){
         if (s.equalsIgnoreCase("BasicWand")){
-            ItemStack Item = new ItemStack(Material.BLAZE_ROD);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.BLAZE_ROD);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.GRAY + "Basic Wand");
             ArrayList<String> Lore = new ArrayList<>();
@@ -40,12 +40,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("MagicDust")){
-            ItemStack Item = new ItemStack(Material.GLOWSTONE_DUST);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.GLOWSTONE_DUST);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Magic Dust");
             ArrayList<String> Lore = new ArrayList<>();
@@ -54,12 +54,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBHeal")) {
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Heal Spell");
             ArrayList<String> Lore = new ArrayList<>();
@@ -69,12 +69,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBBurn")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Burn Spell");
             ArrayList<String> Lore = new ArrayList<>();
@@ -83,12 +83,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBStrength")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Strength Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -98,12 +98,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ProsaicWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(133, 121, 30)) + "Prosaic Wand");
             ArrayList<String> Lore = new ArrayList<>();
@@ -113,12 +113,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBZap")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Zap Spell");
             ArrayList<String> Lore = new ArrayList<>();
@@ -129,12 +129,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBBurst")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -144,12 +144,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("MagicBlock")){
-            ItemStack Item = new ItemStack(Material.GLOWSTONE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.GLOWSTONE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Magic Block");
             ArrayList<String> Lore = new ArrayList<>();
@@ -158,12 +158,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("CompressedMagicBlock")){
-            ItemStack Item = new ItemStack(Material.GOLD_BLOCK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.GOLD_BLOCK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Compressed Magic Block");
             ArrayList<String> Lore = new ArrayList<>();
@@ -172,12 +172,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBKineticElectrocute")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -188,12 +188,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBThunderCloud")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -204,23 +204,23 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("shadowRose")) {
-            ItemStack Item = new ItemStack(Material.WITHER_ROSE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.WITHER_ROSE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(org.bukkit.ChatColor.DARK_GRAY + "" + org.bukkit.ChatColor.BOLD + "Shadow Rose");
             ArrayList<String> Lore = new ArrayList<>();
             Lore.add(org.bukkit.ChatColor.GRAY + "" + org.bukkit.ChatColor.ITALIC + "Dark Intentions");
             Meta.setLore(Lore);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DAMAGE_UNDEAD, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DAMAGE_UNDEAD, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ShadowWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(71, 84, 92)) + "Shadow Wand");
             ArrayList<String> Lore = new ArrayList<>();
@@ -230,12 +230,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBDarkSummoning")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -246,12 +246,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBSnipe2")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -262,12 +262,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBDarkPoisoning")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -278,12 +278,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBLocate")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -293,12 +293,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("EnhancedWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(27, 179, 120)) + "Enhanced Wand");
             ArrayList<String> Lore = new ArrayList<>();
@@ -308,12 +308,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBBurn2")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -323,12 +323,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBTeleport")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -339,12 +339,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBShield")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -354,12 +354,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ParrotFamiliar")){
-            ItemStack Item = new ItemStack(Material.PARROT_SPAWN_EGG, 1);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.PARROT_SPAWN_EGG, 1);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(235, 26, 75)) + "Parrot Familiar");
             ArrayList<String> Lore = new ArrayList<>();
@@ -370,12 +370,12 @@ public class Items {
             Lore.add(ChatColor.of(new Color(242, 80, 145)) +                   "<==============================>");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("CatFamiliar")){
-            ItemStack Item = new ItemStack(Material.CAT_SPAWN_EGG, 1);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.CAT_SPAWN_EGG, 1);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(237, 173, 188)) + "Cat Familiar");
             ArrayList<String> Lore = new ArrayList<>();
@@ -384,12 +384,12 @@ public class Items {
             Lore.add(ChatColor.of(new Color(242, 80, 145)) +                   "<==============================>");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("DogFamiliar")){
-            ItemStack Item = new ItemStack(Material.WOLF_SPAWN_EGG, 1);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.WOLF_SPAWN_EGG, 1);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(161, 217, 240)) + "Dog Familiar");
             ArrayList<String> Lore = new ArrayList<>();
@@ -398,12 +398,12 @@ public class Items {
             Lore.add(ChatColor.of(new Color(242, 80, 145)) +                   "<==============================>");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("FoxFamiliar")){
-            ItemStack Item = new ItemStack(Material.FOX_SPAWN_EGG, 1);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.FOX_SPAWN_EGG, 1);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(227, 158, 48)) + "Fox Familiar");
             ArrayList<String> Lore = new ArrayList<>();
@@ -412,12 +412,12 @@ public class Items {
             Lore.add(ChatColor.of(new Color(242, 80, 145)) +                   "<==============================>");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("BunnyFamiliar")){
-            ItemStack Item = new ItemStack(Material.RABBIT_SPAWN_EGG, 1);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.RABBIT_SPAWN_EGG, 1);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(227, 158, 48)) + "Bunny Familiar");
             ArrayList<String> Lore = new ArrayList<>();
@@ -427,12 +427,12 @@ public class Items {
             Lore.add(ChatColor.of(new Color(242, 80, 145)) +                   "<==============================>");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBDefence")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -442,27 +442,27 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("iItem")){
-            ItemStack Item = new ItemStack(Material.ITEM_FRAME);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ITEM_FRAME);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
-            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Invisible Item Frame");
+            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Invisible item Frame");
             ArrayList<String> Lore = new ArrayList<>();
             Lore.add("");
-            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Turns into an Invisible Item Frame");
+            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Turns into an Invisible item Frame");
             Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "after being used on a lodestone");
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("RegenDust")){
-            ItemStack Item = new ItemStack(Material.REDSTONE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.REDSTONE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(242, 15, 64)) + "Regen Dust");
             ArrayList<String> Lore = new ArrayList<>();
@@ -472,12 +472,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("AlcController")){
-            ItemStack Item = new ItemStack(Material.IRON_NUGGET);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.IRON_NUGGET);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(121, 163, 219)) + "Alchemy Controller");
             ArrayList<String> Lore = new ArrayList<>();
@@ -486,12 +486,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ZombieEssence")){
-            ItemStack Item = new ItemStack(Material.ROTTEN_FLESH);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ROTTEN_FLESH);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(212, 108, 17)) + "Zombie Essence");
             ArrayList<String> Lore = new ArrayList<>();
@@ -500,12 +500,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("AlchemyDust")){
-            ItemStack Item = new ItemStack(Material.BLAZE_POWDER);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.BLAZE_POWDER);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(252, 161, 3)) + "Alchemy Dust");
             ArrayList<String> Lore = new ArrayList<>();
@@ -514,12 +514,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("AlchemyBlock")){
-            ItemStack Item = new ItemStack(Material.MAGMA_BLOCK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.MAGMA_BLOCK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(252, 161, 3)) + "Alchemy Block");
             ArrayList<String> Lore = new ArrayList<>();
@@ -528,12 +528,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("BeastPotion")){
-            ItemStack Item = new ItemStack(Material.POTION);
-            PotionMeta Meta = (PotionMeta) Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.POTION);
+            PotionMeta Meta = (PotionMeta) item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(0, 0, 0)) + "" + ChatColor.BOLD + "Beast Potion");
             ArrayList<String> Lore = new ArrayList<>();
@@ -551,11 +551,11 @@ public class Items {
             Meta.addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1800, 4), true);
             Meta.addCustomEffect(new PotionEffect(PotionEffectType.CONFUSION, 1800, 4), true);
             Meta.setColor(org.bukkit.Color.BLACK);
-            Item.setItemMeta(Meta);
-            return Item;
+            item.setItemMeta(Meta);
+            return item;
         } else if (s.equalsIgnoreCase("HotCocoa")){
-            ItemStack Item = new ItemStack(Material.POTION);
-            PotionMeta Meta = (PotionMeta) Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.POTION);
+            PotionMeta Meta = (PotionMeta) item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.of(new Color(105, 62, 10)) + "" + ChatColor.BOLD + "Hot Cocoa");
             ArrayList<String> Lore = new ArrayList<>();
@@ -567,11 +567,11 @@ public class Items {
             Meta.addCustomEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 3600, 0), true);
             Meta.addCustomEffect(new PotionEffect(PotionEffectType.ABSORPTION, 3600, 0), true);
             Meta.setColor(org.bukkit.Color.fromRGB(105, 62, 10));
-            Item.setItemMeta(Meta);
-            return Item;
+            item.setItemMeta(Meta);
+            return item;
         } else if (s.equalsIgnoreCase("SBDarkCurse")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -582,12 +582,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBShadowWandering")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -599,12 +599,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ZyniumHelmet")){
-            ItemStack Item = new ItemStack(Material.NETHERITE_HELMET);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.NETHERITE_HELMET);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Zynium Helmet");
             ArrayList<String> Lore = new ArrayList<>();
@@ -618,16 +618,16 @@ public class Items {
             AttributeModifier modifier2 = new AttributeModifier(UUID.randomUUID(), "generic.movement_speed", 0.006, AttributeModifier.Operation.ADD_NUMBER);
             Meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier2);
             Meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
-            Item.addUnsafeEnchantment(Enchantment.MENDING, 1);
-            Item.addUnsafeEnchantment(Enchantment.WATER_WORKER, 7);
-            Item.addUnsafeEnchantment(Enchantment.OXYGEN, 7);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
+            item.addUnsafeEnchantment(Enchantment.MENDING, 1);
+            item.addUnsafeEnchantment(Enchantment.WATER_WORKER, 7);
+            item.addUnsafeEnchantment(Enchantment.OXYGEN, 7);
+            return item;
         } else if (s.equalsIgnoreCase("ZyniumChestplate")){
-            ItemStack Item = new ItemStack(Material.NETHERITE_CHESTPLATE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.NETHERITE_CHESTPLATE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Zynium Chestplate");
             ArrayList<String> Lore = new ArrayList<>();
@@ -641,14 +641,14 @@ public class Items {
             AttributeModifier modifier2 = new AttributeModifier(UUID.randomUUID(), "generic.movement_speed", 0.006, AttributeModifier.Operation.ADD_NUMBER);
             Meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier2);
             Meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
-            Item.addUnsafeEnchantment(Enchantment.MENDING, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
+            item.addUnsafeEnchantment(Enchantment.MENDING, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ZyniumLeggings")){
-            ItemStack Item = new ItemStack(Material.NETHERITE_LEGGINGS);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.NETHERITE_LEGGINGS);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Zynium Leggings");
             ArrayList<String> Lore = new ArrayList<>();
@@ -662,14 +662,14 @@ public class Items {
             AttributeModifier modifier2 = new AttributeModifier(UUID.randomUUID(), "generic.movement_speed", 0.006, AttributeModifier.Operation.ADD_NUMBER);
             Meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier2);
             Meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
-            Item.addUnsafeEnchantment(Enchantment.MENDING, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
+            item.addUnsafeEnchantment(Enchantment.MENDING, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ZyniumBoots")){
-            ItemStack Item = new ItemStack(Material.NETHERITE_BOOTS);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.NETHERITE_BOOTS);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Zynium Boots");
             ArrayList<String> Lore = new ArrayList<>();
@@ -683,16 +683,16 @@ public class Items {
             AttributeModifier modifier2 = new AttributeModifier(UUID.randomUUID(), "generic.movement_speed", 0.006, AttributeModifier.Operation.ADD_NUMBER);
             Meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier2);
             Meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
-            Item.addUnsafeEnchantment(Enchantment.MENDING, 1);
-            Item.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 7);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 7);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 15);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 15);
+            item.addUnsafeEnchantment(Enchantment.MENDING, 1);
+            item.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 7);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_FALL, 7);
+            return item;
         } else if (s.equalsIgnoreCase("ZyniumFragment")){
-            ItemStack Item = new ItemStack(Material.NETHERITE_INGOT);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.NETHERITE_INGOT);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Zynium Fragment");
             ArrayList<String> Lore = new ArrayList<>();
@@ -703,12 +703,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBAbsorb")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -719,12 +719,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBFreeze")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -734,12 +734,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("WardenWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "" + ChatColor.BOLD + "W" + ChatColor.MAGIC + "a" + ChatColor.RED + ChatColor.BOLD + "rd" + ChatColor.MAGIC + "e" + ChatColor.RED + "" + ChatColor.BOLD + "n W" + ChatColor.MAGIC + "a" + ChatColor.RED + "" + ChatColor.BOLD + "nd");
             ArrayList<String> Lore = new ArrayList<>();
@@ -748,12 +748,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBIronWallAttack")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -765,12 +765,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBLifeSteal")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -782,12 +782,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("DestructionWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.DARK_RED + "D" + ChatColor.RED + "e" + ChatColor.DARK_RED + "s" + ChatColor.RED + "t" + ChatColor.DARK_RED + "r" + ChatColor.RED + "u" + ChatColor.DARK_RED + "c" + ChatColor.RED + "t" + ChatColor.DARK_RED + "i" + ChatColor.RED + "o" + ChatColor.DARK_RED + "n " + ChatColor.RED + "W" + ChatColor.DARK_RED + "a" + ChatColor.RED + "n" + ChatColor.DARK_RED + "d");
             ArrayList<String> Lore = new ArrayList<>();
@@ -797,12 +797,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBSmite")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -813,12 +813,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBFireball")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -828,12 +828,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBTimeBomb")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -844,12 +844,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBWither")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -859,12 +859,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("AquaWand")){
-            ItemStack Item = new ItemStack(Material.STICK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.STICK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.AQUA + "A" + ChatColor.BLUE + "q" + ChatColor.AQUA + "u" + ChatColor.BLUE + "a " + ChatColor.AQUA + "W" + ChatColor.BLUE + "a" + ChatColor.AQUA + "n" + ChatColor.BLUE + "d");
             ArrayList<String> Lore = new ArrayList<>();
@@ -873,12 +873,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBDrown")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -889,12 +889,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("SBIceShards")){
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Spell Book");
             ArrayList<String> Lore = new ArrayList<>();
@@ -904,23 +904,23 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("wardenRemnants")) {
-            ItemStack Item = new ItemStack(Material.IRON_BLOCK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.IRON_BLOCK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(org.bukkit.ChatColor.WHITE + "" + org.bukkit.ChatColor.BOLD + "Warden Remnants");
             ArrayList<String> Lore = new ArrayList<>();
             Lore.add(org.bukkit.ChatColor.WHITE + "" + org.bukkit.ChatColor.ITALIC + "Obtained by the Warden");
             Meta.setLore(Lore);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("MonsterNotifier")) {
-            ItemStack Item = new ItemStack(Material.CLOCK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.CLOCK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.DARK_GREEN + "Monster King Notifier");
             ArrayList<String> Lore = new ArrayList<>();
@@ -931,26 +931,26 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("fill")) {
-            ItemStack Item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.BLACK + "");
-            Item.setItemMeta(Meta);
-            return Item;
+            item.setItemMeta(Meta);
+            return item;
         } else if (s.equalsIgnoreCase("fillLime")) {
-            ItemStack Item = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.BLACK + "");
-            Item.setItemMeta(Meta);
-            return Item;
+            item.setItemMeta(Meta);
+            return item;
         } else if (s.equalsIgnoreCase("arrowBanner")) {
-            ItemStack Item = new ItemStack(Material.GRAY_BANNER);
-            BannerMeta meta = (BannerMeta) Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.GRAY_BANNER);
+            BannerMeta meta = (BannerMeta) item.getItemMeta();
             assert meta != null;
             meta.setDisplayName(ChatColor.BLACK + "");
             java.util.List<Pattern> patterns = new ArrayList<>();
@@ -963,11 +963,11 @@ public class Items {
             patterns.add(new Pattern(DyeColor.GRAY, PatternType.BORDER));
             meta.setPatterns(patterns);
             meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-            Item.setItemMeta(meta);
-            return Item;
+            item.setItemMeta(meta);
+            return item;
         } else if (s.equalsIgnoreCase("potentialPane")) {
-            ItemStack Item = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.AQUA + "Potential");
             ArrayList<String> Lore = new ArrayList<>();
@@ -977,12 +977,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("aePane")) {
-            ItemStack Item = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.GREEN + "Area Effect");
             ArrayList<String> Lore = new ArrayList<>();
@@ -992,12 +992,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("intensityPane")) {
-            ItemStack Item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Intensity");
             ArrayList<String> Lore = new ArrayList<>();
@@ -1006,12 +1006,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("accuracyPane")) {
-            ItemStack Item = new ItemStack(Material.MAGENTA_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.MAGENTA_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Accuracy");
             ArrayList<String> Lore = new ArrayList<>();
@@ -1023,12 +1023,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("controlPane")) {
-            ItemStack Item = new ItemStack(Material.BLUE_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.BLUE_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.BLUE + "Control");
             ArrayList<String> Lore = new ArrayList<>();
@@ -1038,12 +1038,12 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("magicDustPane")) {
-            ItemStack Item = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.YELLOW_STAINED_GLASS_PANE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Magic Dust ");
             ArrayList<String> Lore = new ArrayList<>();
@@ -1054,93 +1054,93 @@ public class Items {
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("fireEssence")) {
-            ItemStack Item = new ItemStack(Material.BLAZE_POWDER);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.BLAZE_POWDER);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.RED + "Fire Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("earthEssence")) {
-            ItemStack Item = new ItemStack(Material.RAW_IRON);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.RAW_IRON);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.GRAY + "Earth Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("waterEssence")) {
-            ItemStack Item = new ItemStack(Material.PRISMARINE_CRYSTALS);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.PRISMARINE_CRYSTALS);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.BLUE + "Water Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("windEssence")) {
-            ItemStack Item = new ItemStack(Material.FEATHER);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.FEATHER);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.WHITE + "Wind Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("electricityEssence")) {
-            ItemStack Item = new ItemStack(Material.COPPER_INGOT);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.COPPER_INGOT);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.GOLD + "Electricity Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("iceEssence")) {
-            ItemStack Item = new ItemStack(Material.GHAST_TEAR);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.GHAST_TEAR);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.AQUA + "Ice Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("poisonEssence")) {
-            ItemStack Item = new ItemStack(Material.FERMENTED_SPIDER_EYE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.FERMENTED_SPIDER_EYE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.DARK_GRAY + "Poison Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("livingEssence")) {
-            ItemStack Item = new ItemStack(Material.SCUTE);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.SCUTE);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.GREEN + "Living Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("spectralEssence")) {
-            ItemStack Item = new ItemStack(Material.AMETHYST_SHARD);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Spectral Essence");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("mysteriousSpell")) {
-            ItemStack Item = new ItemStack(Material.ENCHANTED_BOOK);
-            ItemMeta Meta = Item.getItemMeta();
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.YELLOW + "Mysterious Spell");
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -1150,9 +1150,9 @@ public class Items {
             Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "" + ChatColor.MAGIC + "Shit hit the fan");
             Lore.add("");
             Meta.setLore(Lore);
-            Item.setItemMeta(Meta);
-            Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-            return Item;
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         }
         return null;
     }

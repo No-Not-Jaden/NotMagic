@@ -43,13 +43,14 @@ public class CraftingInterface implements Listener {
      *  essence:        Potential                  Area Effect: Immune                                 Intensity                           Control
      *    - Fire        - 8 many arks              - 6 patches: nether mobs                            - High: ignites surfaces           - closest fire/lava source or < 30 blocks from crosshair
      *    - Earth       - 5 bumpy                  - 8 cracks on ground : flying                       - Med: toss blocks                 - < 10 blocks away
-     *    - Water       - 7 wavey                  - 5 slower activation: water mobs & turtle helmet   - Low: big push  & water spawn   - closest water source or < 30 blocks from crosshair
+     *    - Water       - 7 wavey                  - 5 slower activation: water mobs & turtle helmet   - Low: big push  & water spawn     - closest water source or < 30 blocks from crosshair
      *    - Wind        - 9 many short bursts      - 7 air only: ground mobs                           - Med: med push                    - from sky < 15 blocks from crosshair
      *    - Electricity - 10 fast                  - 3 direct entity attack: lighting rod closer       - High: Lighting strikes           - from Sky - will attract to copper
      *    - Ice         - 4 spread out             - 10 fast-ish: wearing leather armor                - Low: Freeze                      - from floor < 15 blocks from crosshair
      *    - Poison      - 3 even more spread out   - 9 very slow activation: none                      - Med: slow damage tick            - random position < 20 blocks from crosshair
      *    - Living      - 1 only go a few meters   - 3 semi-fast: undead mobs                          - Low: heal                        - From player
-     *    - Spectral    - 1 only go a few meters   - 4 semi-fast: unarmed & no armor                   - High: sparkles                   - Same y axis as player & same distance from crosshair, but random location
+     *    - Spectral    - 2 multiple short paths   - 4 semi-fast: unarmed & no armor                   - High: sparkles                   - Same y axis as player & same distance from crosshair, but random location
+     *    - Barrier     - 0 doesnt move            - 4 Square box                                      - Low: Creates anti-magic barrier  - From ground below player
      *
      *  Accuracy: use ores for the accuracy
      *  - Empty: < 20 degrees from crosshair
@@ -323,10 +324,21 @@ public class CraftingInterface implements Listener {
                                 Essence.fromItemStack(areaEffect), areaEffect != null ? areaEffect.getAmount() : 0,
                                 Essence.fromItemStack(intensity), intensity != null ? intensity.getAmount() : 0,
                                 Essence.fromItemStack(control), control != null ? control.getAmount() : 0,
+                                accuracyNum, notMagic);
+                        // check if there is already a spell like this
+                        WorkshopSpell similarSpell = notMagic.eventClass.getWorkshopSpell(
+                                Essence.fromItemStack(potential), potential != null ? potential.getAmount() : 0,
+                                Essence.fromItemStack(areaEffect), areaEffect != null ? areaEffect.getAmount() : 0,
+                                Essence.fromItemStack(intensity), intensity != null ? intensity.getAmount() : 0,
+                                Essence.fromItemStack(control), control != null ? control.getAmount() : 0,
                                 accuracyNum);
+                        if (similarSpell != null){
+                            workshopSpell = similarSpell;
+                        }
                         // do animation
+                        WorkshopSpell finalWorkshopSpell = workshopSpell;
                         new BukkitRunnable(){
-                            final boolean success = workshopSpell.getMagicValue() < magicValue;
+                            final boolean success = finalWorkshopSpell.getMagicValue() < magicValue;
                             final Block enchantingTable = guiBlock.get((Player) event.getWhoClicked());
                             final double rotationAngle = 0.5;
                             final Location center = new Location(enchantingTable.getWorld(), enchantingTable.getX() + 0.5, enchantingTable.getY() + 1.5, enchantingTable.getZ() + 0.5);
@@ -351,11 +363,11 @@ public class CraftingInterface implements Listener {
                                      center.getWorld().spawnParticle(Particle.FLASH, center, 1);
                                      center.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, center, 25);
                                      if (success){
-                                         Bukkit.broadcastMessage("success");
+                                         center.getWorld().dropItem(center, finalWorkshopSpell.getSpellBook());
                                          center.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, center, 10, 0.2, 0.2, 0.2);
                                          center.getWorld().playSound(center, Sound.ITEM_TRIDENT_THUNDER,1,1);
                                      } else {
-                                         Bukkit.broadcastMessage("fail");
+                                         center.getWorld().dropItem(center, new ItemStack(Material.DEAD_BUSH));
                                          center.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 0, 0, 0.1, 0);
                                          center.getWorld().playSound(center, Sound.ENTITY_TURTLE_EGG_CRACK,1,1);
                                      }

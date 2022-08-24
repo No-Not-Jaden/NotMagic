@@ -15,9 +15,7 @@ import java.util.*;
 
 public enum Essence {
     /**
-     * Equation signs:
-     * x y z = location on original vector towards target (after accuracy calculation)
-     * a b c = starting point of spell (x y z) -> (a b c)
+     * don't forget to add more names to SpellNames.java !
      */
     EMPTY(0,0,0),
     FIRE(8, 6, 3);

@@ -69,14 +69,6 @@ public class SpellIndex {
         return names;
     }
 
-    public void updateConfig(List<CustomSpell> customSpells, boolean useBuiltInSpells){
-        if (useBuiltInSpells){
-            addSpells();
-        }
-
-        this.customSpells = customSpells;
-
-    }
 
     public PlayerData findPlayer(UUID uuid){
         for (PlayerData data : magic.eventClass.getPlayerData()){

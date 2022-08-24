@@ -32,6 +32,14 @@ import java.util.regex.Pattern;
 import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 /**
+ * <TODO>
+ *     Mana Potions
+ *     Admin custom spells
+ *     Transfer old spells
+ *     Add all the Essences + extra itemstack
+ *     Workshop spell books work
+ *     Can cast workshop spells
+ * </TODO>
  * To-Do:
  * PlayerData
  *  - save when leave -
@@ -58,6 +66,12 @@ public final class NotMagic extends JavaPlugin {
     // files - need to make the other files reloadable
     public File customSpells = new File(this.getDataFolder() + File.separator + "customSpells.yml"); // custom spells file
     public CraftingInterface craftingInterface;
+    public File manaMines = new File(this.getDataFolder() + File.separator + "mana-mines.yml");
+    public File alcStations = new File(this.getDataFolder() + File.separator + "alchemy-stations.yml");
+    public File playerRecords = new File(plugin.getDataFolder()+File.separator+"player-records");
+    public File backups = new File(plugin.getDataFolder()+File.separator+"backups");
+    public File recordKey = new File(playerRecords + File.separator + "record-key.yml");
+    public File craftedSpells = new File(playerRecords + File.separator + "craftedSpells.yml");
 
     @Override
     public void onEnable() {
@@ -98,7 +112,7 @@ public final class NotMagic extends JavaPlugin {
             this.saveDefaultConfig();
         }
 
-        File manaMines = new File(this.getDataFolder() + File.separator + "mana-mines.yml");
+
         if (!manaMines.exists()) {
             try {
                 manaMines.createNewFile();
@@ -106,7 +120,7 @@ public final class NotMagic extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-        File alcStations = new File(this.getDataFolder() + File.separator + "alchemy-stations.yml");
+
         if (!alcStations.exists()) {
             try {
                 alcStations.createNewFile();
@@ -171,9 +185,7 @@ public final class NotMagic extends JavaPlugin {
                 e.printStackTrace();
             }*/
         }
-        File playerRecords = new File(plugin.getDataFolder()+File.separator+"player-records");
-        File backups = new File(plugin.getDataFolder()+File.separator+"backups");
-        File recordKey = new File(playerRecords + File.separator + "record-key.yml");
+
         if (!playerRecords.exists()) {
             playerRecords.mkdir();
         }
@@ -183,6 +195,13 @@ public final class NotMagic extends JavaPlugin {
         if (!recordKey.exists()){
             try {
                 recordKey.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!craftedSpells.exists()){
+            try {
+                craftedSpells.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -321,8 +340,6 @@ public final class NotMagic extends JavaPlugin {
         }
         boolean useCustomSpells = configuration.getBoolean("use-built-in-spells");
 
-        commandClass.updateConfig(language,prefix);
-        eventClass.updateConfig(language,prefix, spells, useCustomSpells);
     }
     public String color(String str){
         str = ChatColor.translateAlternateColorCodes('&', str);
@@ -353,5 +370,6 @@ public final class NotMagic extends JavaPlugin {
                 player.closeInventory();
             }
         }
+        eventClass.saveData();
     }
 }

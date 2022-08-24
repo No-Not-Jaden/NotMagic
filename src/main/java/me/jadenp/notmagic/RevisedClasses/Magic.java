@@ -287,10 +287,6 @@ public class Magic implements Listener {
         }.runTaskTimerAsynchronously(plugin,200,10);
     }
 
-    public void updateConfig(List<CustomSpell> spells, boolean useBuiltInSpells){
-        spellIndex.updateConfig(spells,useBuiltInSpells);
-    }
-
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
         if (event.getItem() == null)
