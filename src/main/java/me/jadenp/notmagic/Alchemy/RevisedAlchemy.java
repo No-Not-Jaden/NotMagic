@@ -2,7 +2,6 @@ package me.jadenp.notmagic.Alchemy;
 
 import me.jadenp.notmagic.RevisedClasses.Items;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -615,22 +614,24 @@ public class RevisedAlchemy implements Listener {
         int o = 1;
         while (yy.getString("alchemy-recipes." + o + ".station-type") != null) {
             if (yy.getString("alchemy-recipes." + o + ".station-type").equals("basic")) {
-                List<String> requirements = (List<String>) yy.getList("alchemy-recipes." + o + ".requirements");
+                List<String> requirements = (List<String>) yy.getStringList("alchemy-recipes." + o + ".requirements");
                 List<ItemStack> itemStackList = new ArrayList<>();
-                List<String> result = (List<String>) yy.getList("alchemy-recipes." + o + ".result");
+                List<String> result = (List<String>) yy.getStringList("alchemy-recipes." + o + ".result");
                 List<ItemStack> resultList = new ArrayList<>();
                 if (requirements != null) {
                     for (String r : requirements) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             itemStackList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());
@@ -660,16 +661,16 @@ public class RevisedAlchemy implements Listener {
                 }
                 if (result != null) {
                     for (String r : result) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             resultList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());
@@ -714,16 +715,16 @@ public class RevisedAlchemy implements Listener {
                 List<ItemStack> resultList = new ArrayList<>();
                 if (requirements != null) {
                     for (String r : requirements) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             itemStackList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());
@@ -753,16 +754,16 @@ public class RevisedAlchemy implements Listener {
                 }
                 if (result != null) {
                     for (String r : result) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             resultList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());
@@ -807,16 +808,16 @@ public class RevisedAlchemy implements Listener {
                 List<ItemStack> resultList = new ArrayList<>();
                 if (requirements != null) {
                     for (String r : requirements) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             itemStackList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());
@@ -846,16 +847,16 @@ public class RevisedAlchemy implements Listener {
                 }
                 if (result != null) {
                     for (String r : result) {
-                        String str = StringUtils.substringBetween(r, "[", "]");
+                        String str = r.substring(r.indexOf("[") + 1, r.indexOf("]"));
                         String strs = r.substring(r.lastIndexOf("] ") + 1);
                         strs = strs.substring(1);
                         if (str.equalsIgnoreCase("item")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             resultList.add(new ItemStack(Objects.requireNonNull(Material.getMaterial(ss)), Integer.parseInt(ss2)));
                         } else if (str.equalsIgnoreCase("custom")) {
-                            String ss = StringUtils.substringBefore(strs, " ");
-                            String ss2 = StringUtils.substringAfter(strs, " ");
+                            String ss = str.substring(0, str.indexOf(" "));
+                            String ss2 = str.substring(str.indexOf(" ") + 1);
                             ItemStack hm = new ItemStack(items.data(ss).getType(), Integer.parseInt(ss2));
                             hm.setItemMeta(items.data(ss).getItemMeta());
                             hm.setData(items.data(ss).getData());

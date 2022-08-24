@@ -10,7 +10,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -583,7 +582,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                             list.add(p.getName());
                         }
                         list.add("basicWand");
-                        list.addAll(eventClass.getMagicClass().getSpellIndex().getSpellBookNames());
+                        //list.addAll(eventClass.getMagicClass().getSpellIndex().getSpellBookNames());
 
                     }
                 } else if (args[0].equalsIgnoreCase("mines")){

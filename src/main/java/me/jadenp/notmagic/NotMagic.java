@@ -50,7 +50,6 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public final class NotMagic extends JavaPlugin {
     Items items = new Items();
-
     public Plugin plugin;
     public RevisedEvents eventClass;
     public Commands commandClass;
@@ -58,6 +57,7 @@ public final class NotMagic extends JavaPlugin {
     private String prefix;
     // files - need to make the other files reloadable
     public File customSpells = new File(this.getDataFolder() + File.separator + "customSpells.yml"); // custom spells file
+    public CraftingInterface craftingInterface;
 
     @Override
     public void onEnable() {
@@ -91,7 +91,7 @@ public final class NotMagic extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RevisedAlchemy(plugin), this);
         commandClass.setEventClass(eventClass);
         getServer().getPluginManager().registerEvents(eventClass.getMagicClass(), this);
-        new CraftingInterface(this);
+        craftingInterface = new CraftingInterface(this);
         // creating files if they don't exist
         File config = new File(this.getDataFolder() + File.separator + "config.yml");
         if (!config.exists()) {
@@ -348,5 +348,10 @@ public final class NotMagic extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        for (Player player : Bukkit.getOnlinePlayers()){
+            if (player.getOpenInventory().getTitle().equals(craftingInterface.getWorkshopName())){
+                player.closeInventory();
+            }
+        }
     }
 }

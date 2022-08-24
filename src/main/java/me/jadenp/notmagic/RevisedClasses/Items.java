@@ -1016,9 +1016,10 @@ public class Items {
             Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Accuracy");
             ArrayList<String> Lore = new ArrayList<>();
             Lore.add("");
-            Lore.add(ChatColor.DARK_PURPLE + "The amount of influence a player");
-            Lore.add(ChatColor.DARK_PURPLE + "has determining the location of");
-            Lore.add(ChatColor.DARK_PURPLE + "the activation point");
+            Lore.add(ChatColor.DARK_PURPLE + "The amount of influence a player has determining");
+            Lore.add(ChatColor.DARK_PURPLE + "the location of the activation point");
+            Lore.add(ChatColor.DARK_PURPLE + "Accepts: Iron Ingots, Gold Ingots, Diamonds,");
+            Lore.add(ChatColor.DARK_PURPLE + "Netherite Ingots, Netherite Blocks");
             Lore.add("");
             Meta.setLore(Lore);
             Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -1102,7 +1103,7 @@ public class Items {
             Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return Item;
         } else if (s.equalsIgnoreCase("iceEssence")) {
-            ItemStack Item = new ItemStack(Material.SNOWBALL);
+            ItemStack Item = new ItemStack(Material.GHAST_TEAR);
             ItemMeta Meta = Item.getItemMeta();
             assert Meta != null;
             Meta.setDisplayName(ChatColor.AQUA + "Ice Essence");
@@ -1119,7 +1120,7 @@ public class Items {
             Item.setItemMeta(Meta);
             Item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return Item;
-        } else if (s.equalsIgnoreCase("lifeEssence")) {
+        } else if (s.equalsIgnoreCase("livingEssence")) {
             ItemStack Item = new ItemStack(Material.SCUTE);
             ItemMeta Meta = Item.getItemMeta();
             assert Meta != null;
@@ -1158,6 +1159,10 @@ public class Items {
 
     public boolean isWand(ItemStack itemStack){
         return (itemStack.isSimilar(data("BasicWand")) || itemStack.isSimilar(data("ProsaicWand")) || itemStack.isSimilar(data("ShadowWand")) || itemStack.isSimilar(data("EnhancedWand")) || itemStack.isSimilar(data("WardenWand")) || itemStack.isSimilar(data("DestructionWand")) || itemStack.isSimilar(data("AquaWand")));
+    }
+
+    public boolean isEssence(ItemStack itemStack){
+        return itemStack.isSimilar(data("fireEssence")) || itemStack.isSimilar(data("earthEssence")) || itemStack.isSimilar(data("waterEssence")) || itemStack.isSimilar(data("windEssence")) || itemStack.isSimilar(data("electricityEssence")) || itemStack.isSimilar(data("iceEssence")) || itemStack.isSimilar(data("poisonEssence")) || itemStack.isSimilar(data("livingEssence")) || itemStack.isSimilar(data("spectralEssence"));
     }
 
 }

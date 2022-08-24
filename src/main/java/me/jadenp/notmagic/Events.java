@@ -6,7 +6,6 @@ import me.jadenp.notmagic.RevisedClasses.Items;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -461,6 +460,7 @@ public class Events implements Listener {
                         }
                     }
                 }
+                /*
             if (customMobs.containsKey(event.getEntity().getUniqueId().toString())) {
                 YamlConfiguration c = YamlConfiguration.loadConfiguration(config);
                 List<String> drops = (List<String>) c.getList("custom-monsters." + customMobs.get(event.getEntity().getUniqueId().toString()) + ".drops");
@@ -487,7 +487,7 @@ public class Events implements Listener {
                     }
                 }
                 customMobs.remove(event.getEntity().getUniqueId().toString());
-            }
+            }*/
         }
     }
     @EventHandler

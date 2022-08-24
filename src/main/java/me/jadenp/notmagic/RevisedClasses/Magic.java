@@ -22,7 +22,7 @@ public class Magic implements Listener {
     boolean debug = true;
 
     private final Plugin plugin;
-    private NotMagic notMagic;
+    //private NotMagic notMagic;
      RevisedEvents eventClass;
     private final SpellIndex spellIndex;
     private final List<Particle.DustOptions> colors = new ArrayList<>();
@@ -30,20 +30,20 @@ public class Magic implements Listener {
     Map<Player, Sound> soundQueue = new HashMap<>();
     public Magic(NotMagic plugin, RevisedEvents eventClass){
         this.plugin = plugin;
-        notMagic = plugin;
+        //notMagic = plugin;
         this.eventClass = eventClass;
         spellIndex = new SpellIndex(plugin, this);
         // colors of the 9 cast points
         float size = 0.75F;
-        colors.add(new Particle.DustOptions(Color.fromRGB(66, 242, 245), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(48, 191, 242), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(48, 116, 242), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(58, 48, 242), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(113, 48, 242), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(181, 48, 242), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 229), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 135), size));
-        colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 51), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(196, 78, 212), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(114, 71, 214), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(67, 70, 224), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(71, 195, 230), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(64, 230, 122), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(200, 240, 43), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(240, 178, 43), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(224, 119, 49), size));
+        colors.add(new Particle.DustOptions(Color.fromRGB(224, 49, 49), size));
 
         new BukkitRunnable(){
             final List<SpellTrail> toDo = spellTrails;
@@ -52,7 +52,11 @@ public class Magic implements Listener {
             public void run() {
                 for (SpellTrail trail : toDo){
                     if (trail.getPlayer().isOnline()){
-                        trail.spawnParticle();
+                        if (Objects.equals(trail.getLocation().getWorld(), trail.getPlayer().getWorld())){
+                            if (trail.getLocation().distance(trail.getPlayer().getLocation()) < 10){
+                                trail.spawnParticle();
+                            }
+                        }
                     }
                 }
                 spellTrails.removeIf(toDo::contains);
@@ -71,10 +75,11 @@ public class Magic implements Listener {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()){
                     PlayerData data = findPlayer(p.getUniqueId());
-                    if (data.getCastVertexes() != null) {
-                        if (data.getCastVertexes().size() > 0) {
-                                final List<Location> castVertexes = data.getCastVertexes();
-                                    for (int i = 0; i < data.getCastVertexes().size(); i++) {
+                    final List<Location> castVertexes = data.getCastVertexes();
+                    if (castVertexes != null) {
+                        if (castVertexes.size() > 0) {
+
+                                    for (int i = 0; i < castVertexes.size(); i++) {
                                         if (i == 0) {
                                             //p.spawnParticle(Particle.REDSTONE, castVertexes.get(i), 1, colors.get(i));
                                             spellTrails.add(new SpellTrail(p, castVertexes.get(i), colors.get(i)));
@@ -348,8 +353,6 @@ public class Magic implements Listener {
                     final Player p = player;
                     @Override
                     public void run() {
-
-
                         // reach distance
                         Location pointY = p.getEyeLocation().add(p.getEyeLocation().getDirection().normalize().multiply(1.5));
                         // same xz of reference but cast point y value
@@ -357,8 +360,10 @@ public class Magic implements Listener {
                         // add how far away the point is
                         double pointDistance = 1.0;
                         Location point = loweredY.add(pointY.toVector().subtract(loweredY.toVector()).normalize().multiply(pointDistance));
+                        // main cast direction changes
+                        List<Location> castVertexes = data.getCastVertexes();
                         // secondary spell cast here
-                        if (data.getCastVertexes().isEmpty()) {
+                        if (castVertexes.isEmpty()) {
                             // first point to be cast:
                             data.addCastPoint(point);
                             p.spawnParticle(Particle.REDSTONE, point, 1, colors.get(0));
@@ -367,162 +372,178 @@ public class Magic implements Listener {
                             data.addCastVertex(point, previousPoints);
                             data.setCastReference(p.getEyeLocation());
                             data.setTimeSinceLastCast(System.currentTimeMillis());
-                        } else if (data.getCastVertexes().size() < 9) {
+                        } else if (castVertexes.size() < 9) {
                             // other points
-                            // make sure they don't wait too long
-                            if (System.currentTimeMillis() - data.getTimeSinceLastCast() <= 1000) {
-                                Location lastVertex = data.getCastVertexes().get(data.getCastVertexes().size() - 1);
-                                // checking if the point is far enough away for another point
-                                // calculated in minecraft meters, so 0.25 meters away from last vertex point
-                                // distance x and z is calculated using yaw degrees which makes it a little easier
-                                // to find the degrees to get 0.25 away its just (distance btwn reference & point) * atan(0.25)
-                                double pDistanceY = 0.25;
-                                double diagonalMultiplier = 0.5;
-                                // because pDistanceXZ is for 2 axes, we can use the getReferenceAngle() method I created to
-                                // check if the new point is to the left or to the right of the last point
-                                double pDistanceXZ = pointDistance * Math.atan(pDistanceY);
-                                Vector vertexVector = lastVertex.toVector().subtract(pointY.toVector());
-                                Vector vertexPoint = point.toVector().subtract(pointY.toVector());
-                                ArrayList<String> previousPoints = data.getSpellCasting();
+                            // check if the cast is close enough to other points
+                            Location lastVertex = castVertexes.get(castVertexes.size() - 1);
+                            if (Objects.equals(point.getWorld(), lastVertex.getWorld())) {
+                                // 10 blocks or fewer away
+                                if (point.distance(lastVertex) < 10) {
+                                    // make sure they don't wait too long
+                                    if (System.currentTimeMillis() - data.getTimeSinceLastCast() <= 1000) {
+                                        ArrayList<String> previousPoints = data.getSpellCasting();
 
-                                // first have to check if it is a diagonal point (so multiple by 0.75 to get a diamond shape hitbox for next vertex)
-                                // point is below the last vertex
-                                if (lastVertex.getY() - point.getY() >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
-                                    // new point is down and diagonal
-                                    if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
-                                        // left down diagonal
+                                        // checking if the point is far enough away for another point
+                                        // calculated in minecraft meters, so 0.25 meters away from last vertex point
+                                        // distance x and z is calculated using yaw degrees which makes it a little easier
+                                        // to find the degrees to get 0.25 away its just (distance between reference & point) * atan(0.25)
+                                        double pDistanceY = 0.25;
+                                        double diagonalMultiplier = 0.5;
+                                        // because pDistanceXZ is for 2 axes, we can use the getReferenceAngle() method I created to
+                                        // check if the new point is to the left or to the right of the last point
+                                        double pDistanceXZ = pointDistance * Math.atan(pDistanceY);
+                                        Vector vertexVector = lastVertex.toVector().subtract(pointY.toVector());
+                                        Vector vertexPoint = point.toVector().subtract(pointY.toVector());
 
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("RightDown")) {
-                                            previousPoints.add("RightDown");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("RightDown");
-                                        }
-                                    } else {
-                                        // right down diagonal
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("LeftDown")) {
-                                            previousPoints.add("LeftDown");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("LeftDown");
-                                        }
-                                    }
-                                    // point is higher than the last vertex
-                                } else if (point.getY() - lastVertex.getY() >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
-                                    // new point is up and diagonal
-                                    if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
-                                        // left up diagonal
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("RightUp")) {
-                                            previousPoints.add("RightUp");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("RightUp");
-                                        }
-                                    } else {
-                                        // right up diagonal
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("LeftUp")) {
-                                            previousPoints.add("LeftUp");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("LeftUp");
-                                        }
-                                    }
-                                    // point is below last vertex
-                                } else if (lastVertex.getY() - point.getY() >= pDistanceY) {
-                                    // down
-                                    if (!previousPoints.get(previousPoints.size() - 1).equals("Down")) {
-                                        previousPoints.add("Down");
-                                        data.addCastVertex(point, previousPoints);
-                                        //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                        soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                    } else {
-                                        data.replaceLastVertex(point);
-                                    }
-                                    if (debug) {
-                                        p.sendMessage("Down");
-                                    }
-                                    // point is above last vertex
-                                } else if (point.getY() - lastVertex.getY() >= pDistanceY) {
-                                    // up
-                                    if (!previousPoints.get(previousPoints.size() - 1).equals("Up")) {
-                                        previousPoints.add("Up");
-                                        data.addCastVertex(point, previousPoints);
-                                        //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                        soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                    } else {
-                                        data.replaceLastVertex(point);
-                                    }
-                                    if (debug) {
-                                        p.sendMessage("Up");
-                                    }
-                                    // point is left or right
-                                } else if (getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ) {
 
-                                    if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
-                                        // left
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("Right")) {
-                                            previousPoints.add("Right");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("Right");
-                                        }
-                                    } else {
-                                        // right
-                                        if (!previousPoints.get(previousPoints.size() - 1).equals("Left")) {
-                                            previousPoints.add("Left");
-                                            data.addCastVertex(point, previousPoints);
-                                            //p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
-                                            soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
-                                        } else {
-                                            data.replaceLastVertex(point);
-                                        }
-                                        if (debug) {
-                                            p.sendMessage("Left");
-                                        }
-                                    }
-                                }
+                                        // first have to check if it is a diagonal point (so multiply by 0.75 to get a diamond shape hit box for next vertex)
+                                        // point is below the last vertex
+                                        if (lastVertex.getY() - point.getY() >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
+                                            // new point is down and diagonal
+                                            if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
+                                                // left down diagonal
 
-                                if (data.getCastVertexes().size() <= 9) {
-                                    spellTrails.add(new SpellTrail(p, point, colors.get(data.getCastVertexes().size() - 1)));
-                                    //p.spawnParticle(Particle.REDSTONE, point, 1, colors.get(data.getCastVertexes().size()-1));
-                                    data.addCastPoint(point);
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("RightDown")) {
+                                                    previousPoints.add("RightDown");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("RightDown");
+                                                }
+                                            } else {
+                                                // right down diagonal
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("LeftDown")) {
+                                                    previousPoints.add("LeftDown");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("LeftDown");
+                                                }
+                                            }
+                                            // point is higher than the last vertex
+                                        } else if (point.getY() - lastVertex.getY() >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
+                                            // new point is up and diagonal
+                                            if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
+                                                // left up diagonal
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("RightUp")) {
+                                                    previousPoints.add("RightUp");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("RightUp");
+                                                }
+                                            } else {
+                                                // right up diagonal
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("LeftUp")) {
+                                                    previousPoints.add("LeftUp");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("LeftUp");
+                                                }
+                                            }
+                                            // point is below last vertex
+                                        } else if (lastVertex.getY() - point.getY() >= pDistanceY) {
+                                            // down
+                                            if (!previousPoints.get(previousPoints.size() - 1).equals("Down")) {
+                                                previousPoints.add("Down");
+                                                data.addCastVertex(point, previousPoints);
+                                                p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                            } else {
+                                                data.replaceLastVertex(point);
+                                            }
+                                            if (debug) {
+                                                p.sendMessage("Down");
+                                            }
+                                            // point is above last vertex
+                                        } else if (point.getY() - lastVertex.getY() >= pDistanceY) {
+                                            // up
+                                            if (!previousPoints.get(previousPoints.size() - 1).equals("Up")) {
+                                                previousPoints.add("Up");
+                                                data.addCastVertex(point, previousPoints);
+                                                p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                            } else {
+                                                data.replaceLastVertex(point);
+                                            }
+                                            if (debug) {
+                                                p.sendMessage("Up");
+                                            }
+                                            // point is left or right
+                                        } else if (getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ) {
+
+                                            if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
+                                                // left
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("Right")) {
+                                                    previousPoints.add("Right");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("Right");
+                                                }
+                                            } else {
+                                                // right
+                                                if (!previousPoints.get(previousPoints.size() - 1).equals("Left")) {
+                                                    previousPoints.add("Left");
+                                                    data.addCastVertex(point, previousPoints);
+                                                    p.playSound(p, Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
+                                                    //soundQueue.put(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                                                } else {
+                                                    data.replaceLastVertex(point);
+                                                }
+                                                if (debug) {
+                                                    p.sendMessage("Left");
+                                                }
+                                            }
+                                        }
+
+                                        if (castVertexes.size() <= 9) {
+                                            //spellTrails.add(new SpellTrail(p, point, colors.get(castVertexes.size() - 1)));
+                                            p.spawnParticle(Particle.REDSTONE, point, 1, colors.get(castVertexes.size() - 1));
+                                            data.addCastPoint(point);
+                                        } else {
+                                            soundQueue.put(p, Sound.ENTITY_PARROT_IMITATE_CREEPER);
+                                        }
+
+                                    }
+                                    data.setTimeSinceLastCast(System.currentTimeMillis());
                                 } else {
-                                    soundQueue.put(p, Sound.ENTITY_PARROT_IMITATE_CREEPER);
+                                    // break spell- too far away
+                                    breakSpell(p, data.getCastPoints());
+                                    data.resetCast();
                                 }
-
+                            } else {
+                                // break spell - in another world - no breakSpell() cuz they wouldn't be there to see it
+                                data.resetCast();
                             }
-                            data.setTimeSinceLastCast(System.currentTimeMillis());
                         } else {
                             // no more points - sound effect??
                             //p.playSound(point, Sound.ENTITY_PARROT_IMITATE_CREEPER, 1, 1);
                             soundQueue.put(p, Sound.ENTITY_PARROT_IMITATE_CREEPER);
                         }
                         data.setCalculating(false);
+
                     }
                 }.runTaskAsynchronously(plugin);
             }
@@ -565,8 +586,8 @@ public class Magic implements Listener {
     }
 
     public void breakSpell(Player p, List<Location> castPoints){
-        //p.playSound(castPoints.get(0), Sound.BLOCK_GLASS_BREAK,1,1);
-        soundQueue.put(p, Sound.BLOCK_GLASS_BREAK);
+        p.playSound(castPoints.get(0), Sound.BLOCK_GLASS_BREAK,1,1);
+        //soundQueue.put(p, Sound.BLOCK_GLASS_BREAK);
         for (Location location : castPoints){
             ItemStack itemBreakData = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS);
             BlockData data = itemBreakData.getType().createBlockData();
