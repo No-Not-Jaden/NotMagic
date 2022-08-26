@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -18,7 +19,8 @@ public enum Essence {
      * don't forget to add more names to SpellNames.java !
      */
     EMPTY(0,0,0),
-    FIRE(8, 6, 3);
+    FIRE(8, 6, 3),
+    EARTH(5, 8, 2);
 
     private final int potentialPower; // speed
     private final int areaEffectPower;
@@ -32,6 +34,14 @@ public enum Essence {
     public Location potentialResults(Location point, Location start) {
         if (this.toString().equalsIgnoreCase("Fire")) {
             return new Location(point.getWorld(), point.getX() + Math.sin(point.getX() - start.getX()), point.getY() + Math.sin(point.getY() - start.getY()), point.getZ() + Math.sin(point.getZ() - start.getZ()));
+        } else if (this.toString().equalsIgnoreCase("Earth")){
+            if ((int) (Math.random() * 3) == 0){
+                Vector direction = point.toVector().subtract(start.toVector()).normalize();
+                Vector randomPoint = direction.clone().rotateAroundY(Math.PI / 2);
+                randomPoint.rotateAroundAxis(randomPoint, Math.random() * 2 * Math.PI).normalize().multiply(Math.random() * potentialPower);
+                return new Location(point.getWorld(), point.getX() + randomPoint.getX(), point.getY() + randomPoint.getY(), point.getZ() + randomPoint.getZ());
+            }
+            return point;
         }
         return point;
     }
@@ -59,6 +69,17 @@ public enum Essence {
                             cluster.getZ() + Math.random() * 2 - 1));
                     amount -= 1;
                 }
+            } else if (this.toString().equalsIgnoreCase("Earth")){
+                Location crack = new Location(center.getWorld(), center.getX() + Math.random() * 2 * areaEffectPower - areaEffectPower, center.getY(), center.getZ() + Math.random() * 2 * areaEffectPower - areaEffectPower);
+                    // how many blocks below it looks for a point
+                    Block block = crack.getBlock();
+                    for (int i = 0; i < 20; i++){
+                        if (block.getRelative(BlockFace.DOWN).getType().isSolid()){
+                            locations.add(crack);
+                            break;
+                        }
+                        block = block.getRelative(BlockFace.DOWN);
+                    }
             }
         }
         return locations;
@@ -95,6 +116,34 @@ public enum Essence {
                     }
                 }
             }
+        } else if (this.toString().equalsIgnoreCase("Earth")){
+            if (point.getWorld() != null && point.getChunk().isLoaded()) {
+                BlockData dustData;
+                Block block = point.getBlock();
+                if (block.getType().isSolid()) {
+                    dustData = block.getBlockData();
+                } else if (block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                    block = block.getRelative(BlockFace.DOWN);
+                    dustData = block.getBlockData();
+                } else {
+                    dustData = Material.STONE.createBlockData();
+                }
+                point.getWorld().spawnParticle(Particle.BLOCK_DUST, point, 10, dustData);
+                if (block.getType().isSolid()){
+                    FallingBlock fallingBlock = point.getWorld().spawnFallingBlock(block.getLocation(), block.getBlockData());
+                    fallingBlock.setVelocity(new Vector(Math.random() * 4 - 2, Math.random() * 20 - 10, Math.random() * 4 - 2));
+                    block.setType(Material.AIR);
+                }
+            }
+            for (Entity entity : point.getWorld().getNearbyEntities(point,1,0.5,1)){
+                if (entity instanceof LivingEntity){
+                    if (!entity.isOnGround()){
+                        ((LivingEntity) entity).damage(intensityPower * damageMultiplier / 2, player);
+                    } else {
+                        ((LivingEntity) entity).damage(intensityPower * damageMultiplier, player);
+                    }
+                }
+            }
         }
     }
 
@@ -120,6 +169,18 @@ public enum Essence {
                         (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)),
                         (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 5))),
                         (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)))
+                        .getLocation();
+
+                if (!location.getBlock().getType().isSolid()){
+                    return location;
+                }
+            }
+        } else if (this.toString().equalsIgnoreCase("Earth")){
+            for (int i = 0; i < 15; i++){
+                Location location = playerLoc.getBlock().getRelative(
+                                (int) (Math.random() * 20 - 10),
+                                (int) (Math.random() * 20 - 10),
+                                (int) (Math.random() * 20 - 10))
                         .getLocation();
 
                 if (!location.getBlock().getType().isSolid()){

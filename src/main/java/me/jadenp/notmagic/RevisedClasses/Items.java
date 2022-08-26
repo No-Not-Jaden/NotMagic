@@ -1129,6 +1129,15 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return item;
+        } else if (s.equalsIgnoreCase("barrierEssence")) {
+            ItemStack item = new ItemStack(Material.BRICK);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.DARK_RED + "Barrier Essence");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("spectralEssence")) {
             ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
             ItemMeta Meta = item.getItemMeta();

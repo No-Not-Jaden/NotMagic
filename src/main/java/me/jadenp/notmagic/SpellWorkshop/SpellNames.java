@@ -5,9 +5,12 @@ import java.util.List;
 public class SpellNames {
     public static String combineEssence(List<Essence> essenceList){
         int fire = 0;
+        int earth = 0;
         for (Essence essence : essenceList){
             if (essence.equals(Essence.FIRE)){
                 fire++;
+            } else if (essence.equals(Essence.EARTH)){
+                earth++;
             }
         }
 
@@ -20,6 +23,15 @@ public class SpellNames {
             name.append(" Blaze");
         } else if (fire == 4){
             name.append(" Inferno");
+        }
+        if (earth == 1){
+            name.append(" Earth");
+        } else if (earth == 2){
+            name.append(" Rock");
+        } else if (earth == 3){
+            name.append(" Boulder");
+        } else if (earth == 4){
+            name.append(" Avalanche");
         }
         if (name.substring(0, 1).equals(" ")){
             return name.substring(1);

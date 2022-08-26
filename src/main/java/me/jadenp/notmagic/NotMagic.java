@@ -37,6 +37,7 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
  *     Admin custom spells
  *     Transfer old spells
  *     Add all the Essences + extra itemstack
+ *     change essence new locations to location.getrelative
  *     Workshop spell books work
  *     Can cast workshop spells
  * </TODO>
