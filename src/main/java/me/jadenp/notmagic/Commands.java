@@ -380,7 +380,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (args.length == 2){
                     if (sender instanceof Player){
 
-                    Spell spell = eventClass.getMagicClass().getSpellIndex().querySpell(args[1]);
+                    Spell spell = eventClass.magicClass.spellIndex.querySpell(args[1]);
                     if (spell != null) {
                         PlayerData data = findPlayer(((Player) sender).getUniqueId());
                         if (!data.isDisplayingSpell()) {

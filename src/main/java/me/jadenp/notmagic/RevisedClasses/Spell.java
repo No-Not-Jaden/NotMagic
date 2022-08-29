@@ -35,7 +35,7 @@ public class Spell {
 
     private boolean custom;
 
-    public Spell(String name, int mpCost, int castTime, int cooldown, int requiredLevel, List<String> spellPattern, ItemStack spellBook, Plugin plugin, SpellIndex spellIndex, boolean custom){
+    public Spell(String name, int mpCost, int castTime, int cooldown, int requiredLevel, List<String> spellPattern, ItemStack spellBook, Plugin plugin, boolean custom){
         this.name = name;
         this.mpCost = mpCost;
         this.castTime = castTime;
@@ -44,7 +44,6 @@ public class Spell {
         this.spellBook = spellBook;
         this.requiredLevel = requiredLevel;
         this.plugin = plugin;
-        this.spellIndex = spellIndex;
         this.custom = custom;
         float size = 0.5F;
         colors.add(new Particle.DustOptions(Color.fromRGB(66, 242, 245), size));
@@ -56,6 +55,34 @@ public class Spell {
         colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 229), size));
         colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 135), size));
         colors.add(new Particle.DustOptions(Color.fromRGB(242, 48, 51), size));
+    }
+
+    protected void setName(String name){
+        this.name = name;
+    }
+
+    protected void setCastTime(int castTime) {
+        this.castTime = castTime;
+    }
+
+    protected void setCooldown(int cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    protected void setMpCost(int mpCost) {
+        this.mpCost = mpCost;
+    }
+
+    protected void setSpellBook(ItemStack spellBook) {
+        this.spellBook = spellBook;
+    }
+
+    protected void setSpellPattern(List<String> spellPattern) {
+        this.spellPattern = spellPattern;
+    }
+
+    protected void setRequiredLevel(int requiredLevel) {
+        this.requiredLevel = requiredLevel;
     }
 
     public boolean isCustom() {

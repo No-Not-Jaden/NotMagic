@@ -1,6 +1,7 @@
 package me.jadenp.notmagic.SpellWorkshop;
 
 import me.jadenp.notmagic.NotMagic;
+import me.jadenp.notmagic.RevisedClasses.Spell;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -9,9 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class WorkshopSpell {
+public class WorkshopSpell extends Spell {
 
     private final Essence potential;
     private final int potentialAmount;
@@ -22,15 +24,28 @@ public class WorkshopSpell {
     private final Essence control;
     private final int controlAmount;
     private final int accuracy;
-    private final String name;
-    private final int manaCost;
     private final boolean mainSpell;
     private final int magicValue;
     private final int castTime; // in ticks
     private final UUID uuid;
 
     public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, NotMagic notMagic){
-        int manaCost1;
+        // constants will have to be changed eventually - spell size should be dependant on the magic value
+        super(null, 0, 0, 0, 0, null, null, notMagic, false);
+        super.setName(notMagic.eventClass.getUniqueSpellName(this));
+        int manaCost;
+        manaCost = potential.getPotentialMana(potentialAmount) + areaEffect.getAreaEffectMana(areaEffectAmount) + intensity.getIntensityMana(intensityAmount) + control.getControlMana(controlAmount) + (accuracy * 2);
+        if (potential.equals(areaEffect) && potential.equals(control) && potential.equals(intensity)){
+            manaCost -= 15;
+        }
+        super.setMpCost(manaCost);
+        // change
+        super.setCastTime(3);
+        super.setCooldown(3);
+        super.setRequiredLevel(1);
+        super.setSpellPattern(notMagic.eventClass.magicClass.spellIndex.getUniqueSpellPattern(5));
+        //
+        super.setSpellBook(getSpellBook());
         this.potential = potential;
         this.potentialAmount = potentialAmount;
         this.areaEffect = areaEffect;
@@ -40,20 +55,18 @@ public class WorkshopSpell {
         this.control = control;
         this.controlAmount = controlAmount;
         this.accuracy = accuracy;
-        this.name = notMagic.eventClass.getUniqueSpellName(this);
-        manaCost1 = potential.getPotentialMana(potentialAmount) + areaEffect.getAreaEffectMana(areaEffectAmount) + intensity.getIntensityMana(intensityAmount) + control.getControlMana(controlAmount) + (accuracy * 2);
-        if (potential.equals(areaEffect) && potential.equals(control) && potential.equals(intensity)){
-            manaCost1 -= 15;
-        }
-        this.manaCost = manaCost1;
-        this.mainSpell = manaCost < 25;
+
 
         this.magicValue = potentialAmount * potential.getPotentialPower() + areaEffectAmount * areaEffect.getAreaEffectPower() + intensityAmount * intensity.getIntensityPower() + controlAmount * control.getControlPower() + accuracy * 2;
         this.castTime = 3; // to be changed later
         uuid = UUID.randomUUID();
+
+        this.mainSpell = manaCost < 25;
     }
 
-    public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, String name, int manaCost, boolean mainSpell, int magicValue, int castTime, UUID uuid){
+    public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, String name, int manaCost, boolean mainSpell, int magicValue, int castTime, UUID uuid, int cooldown, int requiredLevel, List<String> spellPattern, NotMagic notMagic){
+        super(name, manaCost, castTime, cooldown, requiredLevel, spellPattern, null, notMagic, false);
+        super.setSpellBook(getSpellBook());
         this.potential = potential;
         this.potentialAmount = potentialAmount;
         this.areaEffect = areaEffect;
@@ -63,8 +76,6 @@ public class WorkshopSpell {
         this.control = control;
         this.controlAmount = controlAmount;
         this.accuracy = accuracy;
-        this.name = name;
-        this.manaCost = manaCost;
         this.mainSpell = mainSpell;
         this.magicValue = magicValue;
         this.castTime = castTime;
@@ -75,7 +86,7 @@ public class WorkshopSpell {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
-        meta.setDisplayName(ChatColor.YELLOW + name + " Spell");
+        meta.setDisplayName(ChatColor.YELLOW + super.getName() + " Spell");
         ArrayList<String> lore = new ArrayList<>();
         lore.add("");
         if (mainSpell){
@@ -129,9 +140,6 @@ public class WorkshopSpell {
         return accuracy;
     }
 
-    public String getName() {
-        return name;
-    }
 
     public int getAreaEffectAmount() {
         return areaEffectAmount;
@@ -145,9 +153,6 @@ public class WorkshopSpell {
         return intensityAmount;
     }
 
-    public int getManaCost() {
-        return manaCost;
-    }
 
     public int getPotentialAmount() {
         return potentialAmount;

@@ -45,17 +45,17 @@ public class SpellIndex {
         // first in the array should always be "Start"
         // next point can be "Up", "Down", "Left", "Right", "LeftUp", "LeftDown", "RightUp", "RightDown" - there cannot be the same direction twice in a row
         // castTime, cooldown - all in ticks
-        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), items.data("SBBurn"), plugin, this, false));
+        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), items.data("SBBurn"), plugin, false));
 
-        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), items.data("SBZap"), plugin, this, false));
+        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), items.data("SBZap"), plugin, false));
 
-        spells.add(new Spell("Heal", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), items.data("SBHeal"), plugin, this, false));
+        spells.add(new Spell("Heal", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), items.data("SBHeal"), plugin, false));
 
-        spells.add(new Spell("Strength", 20, 2,300, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), items.data("SBStrength"), plugin, this, false));
+        spells.add(new Spell("Strength", 20, 2,300, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), items.data("SBStrength"), plugin, false));
 
-        spells.add(new Spell("Burst", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), items.data("SBBurst"), plugin, this, false));
+        spells.add(new Spell("Burst", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), items.data("SBBurst"), plugin, false));
 
-        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, this, false));
+        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, false));
 
     }
 
@@ -67,6 +67,50 @@ public class SpellIndex {
             names.add(ChatColor.stripColor(spell.getSpellBook().getItemMeta().getDisplayName()));
         }
         return names;
+    }
+
+    public List<String> getUniqueSpellPattern(int size){
+        ArrayList<String> pattern = new ArrayList<>();
+        while (true) {
+            for (int i = 0; i < 50; i++) {
+                pattern.clear();
+                for (int j = 0; j < size; j++) {
+                    int r = (int) (Math.random() * 8);
+                    switch (r) {
+                        case 0:
+                            pattern.add("Up");
+                            break;
+                        case 1:
+                            pattern.add("RightUp");
+                            break;
+                        case 2:
+                            pattern.add("Right");
+                            break;
+                        case 3:
+                            pattern.add("RightDown");
+                            break;
+                        case 4:
+                            pattern.add("Down");
+                            break;
+                        case 5:
+                            pattern.add("LeftDown");
+                            break;
+                        case 6:
+                            pattern.add("Left");
+                            break;
+                        case 7:
+                            pattern.add("LeftUp");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (querySpell(pattern).equalsIgnoreCase("unknown")) {
+                    return pattern;
+                }
+            }
+            size++;
+        }
     }
 
 

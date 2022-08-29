@@ -27,7 +27,7 @@ public class RevisedEvents implements Listener {
 
     private Plugin plugin;
     private NotMagic notMagic;
-    private Magic magicClass;
+    public Magic magicClass;
 
     private List<PlayerData> playerData = new ArrayList<>();
     private List<WorkshopSpell> workshopSpells = new ArrayList<>();
@@ -83,7 +83,11 @@ public class RevisedEvents implements Listener {
                     configuration1.getBoolean(i + ".main-spell"),
                     configuration1.getInt(i + ".magic-value"),
                     configuration1.getInt(i + ".cast-time"),
-                    UUID.fromString(configuration1.getString(i + ".uuid"))));
+                    UUID.fromString(configuration1.getString(i + ".uuid")),
+                    configuration1.getInt("cooldown"),
+                    configuration1.getInt("required-level"),
+                    configuration1.getStringList("cast-pattern"),
+                    notMagic));
             i++;
         }
 
@@ -125,11 +129,14 @@ public class RevisedEvents implements Listener {
             c.set(i + ".control-amount", workshopSpell.getControlAmount());
             c.set(i + ".accuracy", workshopSpell.getAccuracy());
             c.set(i + ".name", workshopSpell.getName());
-            c.set(i + ".mana-cost", workshopSpell.getManaCost());
+            c.set(i + ".mana-cost", workshopSpell.getMpCost());
             c.set(i + ".main-spell", workshopSpell.isMainSpell());
             c.set(i + ".magic-value", workshopSpell.getMagicValue());
             c.set(i + ".cast-time", workshopSpell.getCastTime());
             c.set(i + ".uuid", workshopSpell.getUuid().toString());
+            c.set(i + ".cooldown", workshopSpell.getCooldown());
+            c.set(i + ".required-level", workshopSpell.getRequiredLevel());
+            c.set(i + ".cast-pattern", workshopSpell.getSpellPattern());
             i++;
         }
         try {
@@ -187,9 +194,6 @@ public class RevisedEvents implements Listener {
         return playerData;
     }
 
-    public Magic getMagicClass() {
-        return magicClass;
-    }
 
     public List<WorkshopSpell> getWorkshopSpells() {
         return workshopSpells;

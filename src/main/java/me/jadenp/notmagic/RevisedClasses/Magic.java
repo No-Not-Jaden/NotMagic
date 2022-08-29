@@ -24,7 +24,7 @@ public class Magic implements Listener {
     private final Plugin plugin;
     //private NotMagic notMagic;
      RevisedEvents eventClass;
-    private final SpellIndex spellIndex;
+    public final SpellIndex spellIndex;
     private final List<Particle.DustOptions> colors = new ArrayList<>();
     List<SpellTrail> spellTrails = new ArrayList<>();
     Map<Player, Sound> soundQueue = new HashMap<>();
@@ -659,7 +659,4 @@ public class Magic implements Listener {
         return Math.acos((x*x2 + z*z2) / (Math.sqrt(Math.pow(x, 2)+Math.pow(z, 2)) * Math.sqrt(Math.pow(x2, 2)+Math.pow(z2, 2))));
     }
 
-    public SpellIndex getSpellIndex() {
-        return spellIndex;
-    }
 }

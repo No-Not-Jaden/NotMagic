@@ -72,7 +72,7 @@ public class CustomSpell {
     }
 
     public Spell toSpellObject(){
-        return new Spell(name, mpCost, castTime, cooldown, requiredLevel, castPattern, getSpellBook(), plugin, index, true);
+        return new Spell(name, mpCost, castTime, cooldown, requiredLevel, castPattern, getSpellBook(), plugin, true);
     }
 
     public ItemStack getSpellBook(){

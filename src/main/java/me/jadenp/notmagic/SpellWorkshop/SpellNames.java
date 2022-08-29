@@ -6,11 +6,14 @@ public class SpellNames {
     public static String combineEssence(List<Essence> essenceList){
         int fire = 0;
         int earth = 0;
+        int water = 0;
         for (Essence essence : essenceList){
             if (essence.equals(Essence.FIRE)){
                 fire++;
             } else if (essence.equals(Essence.EARTH)){
                 earth++;
+            } else if (essence.equals(Essence.WATER)){
+                water++;
             }
         }
 
@@ -32,6 +35,15 @@ public class SpellNames {
             name.append(" Boulder");
         } else if (earth == 4){
             name.append(" Avalanche");
+        }
+        if (water == 1){
+            name.append(" Water");
+        } else if (water == 2){
+            name.append(" Splash");
+        } else if (water == 3){
+            name.append(" Wave");
+        } else if (water == 4){
+            name.append(" Tsunami");
         }
         if (name.substring(0, 1).equals(" ")){
             return name.substring(1);

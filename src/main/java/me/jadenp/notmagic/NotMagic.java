@@ -40,6 +40,7 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
  *     change essence new locations to location.getrelative
  *     Workshop spell books work
  *     Can cast workshop spells
+ *     change constant variables and pattern size in workshopspell
  * </TODO>
  * To-Do:
  * PlayerData
@@ -105,7 +106,7 @@ public final class NotMagic extends JavaPlugin {
         getServer().getPluginManager().registerEvents(eventClass, this);
         getServer().getPluginManager().registerEvents(new RevisedAlchemy(plugin), this);
         commandClass.setEventClass(eventClass);
-        getServer().getPluginManager().registerEvents(eventClass.getMagicClass(), this);
+        getServer().getPluginManager().registerEvents(eventClass.magicClass, this);
         craftingInterface = new CraftingInterface(this);
         // creating files if they don't exist
         File config = new File(this.getDataFolder() + File.separator + "config.yml");
@@ -335,7 +336,7 @@ public final class NotMagic extends JavaPlugin {
         List<CustomSpell> spells = new ArrayList<>();
         int i = 1;
         while (configuration.getString("spells." + i + ".name") != null){
-            CustomSpell spell = new CustomSpell(configuration.getString("spells." + i + ".name"), configuration.getBoolean("spells." + i + ".main-spell"), configuration.getInt("spells." + i + ".mp-cost"), configuration.getInt("spells." + i + ".cast-time"), configuration.getInt("spells." + i + ".cooldown"), configuration.getInt("spells." + i + ".required-level"), configuration.getStringList("spells." + i + ".castPattern"), configuration.getStringList("spells." + i + ".actions"), configuration.getStringList("spells." + i + ".lore"), this, eventClass.getMagicClass().getSpellIndex());
+            CustomSpell spell = new CustomSpell(configuration.getString("spells." + i + ".name"), configuration.getBoolean("spells." + i + ".main-spell"), configuration.getInt("spells." + i + ".mp-cost"), configuration.getInt("spells." + i + ".cast-time"), configuration.getInt("spells." + i + ".cooldown"), configuration.getInt("spells." + i + ".required-level"), configuration.getStringList("spells." + i + ".castPattern"), configuration.getStringList("spells." + i + ".actions"), configuration.getStringList("spells." + i + ".lore"), this, eventClass.magicClass.spellIndex);
             spells.add(spell);
             i++;
         }

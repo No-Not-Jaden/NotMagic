@@ -50,7 +50,7 @@ public class CraftingInterface implements Listener {
      *    - Poison      - 3 even more spread out   - 9 very slow activation: none                      - Med: slow damage tick            - random position < 20 blocks from crosshair
      *    - Living      - 1 only go a few meters   - 3 semi-fast: undead mobs                          - Low: heal                        - From player
      *    - Spectral    - 2 multiple short paths   - 4 semi-fast: unarmed & no armor                   - High: sparkles                   - Same y axis as player & same distance from crosshair, but random location
-     *    - Barrier     - 0 doesnt move            - 4 Square box                                      - Low: Creates anti-magic barrier  - From ground below player
+     *    - Barrier     - 0 1 block forward        - 4 Square box                                      - Low: Creates anti-magic barrier  - From ground below player
      *
      *  Accuracy: use ores for the accuracy
      *  - Empty: < 20 degrees from crosshair
@@ -366,6 +366,7 @@ public class CraftingInterface implements Listener {
                                          center.getWorld().dropItem(center, finalWorkshopSpell.getSpellBook());
                                          center.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, center, 10, 0.2, 0.2, 0.2);
                                          center.getWorld().playSound(center, Sound.ITEM_TRIDENT_THUNDER,1,1);
+
                                      } else {
                                          center.getWorld().dropItem(center, new ItemStack(Material.DEAD_BUSH));
                                          center.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 0, 0, 0.1, 0);
