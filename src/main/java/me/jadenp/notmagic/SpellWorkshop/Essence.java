@@ -60,11 +60,12 @@ public enum Essence {
             Location front = point.clone().add(direction);
             front.add(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
             locations.add(front);
-            if (point.getWorld() != null && point.getChunk().isLoaded())
-            for (int i = 0; i < 5; i++) {
-                Location changedFront = front.clone().add(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-                Vector splashDirection = changedFront.toVector().subtract(point.toVector()).normalize();
-                point.getWorld().spawnParticle(Particle.WATER_SPLASH, point, 0, splashDirection.getX(), splashDirection.getY(), splashDirection.getZ());
+            if (point.getWorld() != null && point.getChunk().isLoaded()) {
+                for (int i = 0; i < 5; i++) {
+                    Location changedFront = front.clone().add(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+                    Vector splashDirection = changedFront.toVector().subtract(point.toVector()).normalize();
+                    point.getWorld().spawnParticle(Particle.WATER_SPLASH, point, 0, splashDirection.getX(), splashDirection.getY(), splashDirection.getZ());
+                }
             }
         } else {
             locations.add(point);

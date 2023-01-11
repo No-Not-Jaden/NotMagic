@@ -1,5 +1,6 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -57,6 +58,10 @@ public class SpellIndex {
 
         spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, false));
 
+    }
+
+    public void addWorkshopSpell(WorkshopSpell spell){
+        spells.add(spell);
     }
 
     public List<String> getSpellBookNames(){
@@ -212,32 +217,101 @@ public class SpellIndex {
         return null;
     }
 
+    public static Vector rotateVectorCC(Vector vec, Vector axis, double theta){
+        double x, y, z;
+        double u, v, w;
+        x=vec.getX();y=vec.getY();z=vec.getZ();
+        u=axis.getX();v=axis.getY();w=axis.getZ();
+        double v1 = u * x + v * y + w * z;
+        double xPrime = u* v1 *(1d - Math.cos(theta))
+                + x*Math.cos(theta)
+                + (-w*y + v*z)*Math.sin(theta);
+        double yPrime = v* v1 *(1d - Math.cos(theta))
+                + y*Math.cos(theta)
+                + (w*x - u*z)*Math.sin(theta);
+        double zPrime = w* v1 *(1d - Math.cos(theta))
+                + z*Math.cos(theta)
+                + (-v*x + u*y)*Math.sin(theta);
+        return new Vector(xPrime, yPrime, zPrime);
+    }
+
     public void performSpell(String spell, Player p){
         // match spells here instead of doing it in magic
         Spell obj = querySpell(spell);
-        if (obj != null){
-            // preset spell
-            switch (obj.getName()) {
-                case "Zap":
-                    zap(p);
-                    break;
-                case "Burn":
-                    burn(p);
-                    break;
-                case "Snipe":
-                    snipe(p);
-                    break;
-            }
-        } else {
-            // custom spell
-            CustomSpell customSpell = queryCustomSpell(spell);
-            if (customSpell != null){
-                List<String> actions = customSpell.getActions();
-                
+        if (obj != null) {
+            if (obj instanceof WorkshopSpell) {
+                WorkshopSpell ws = (WorkshopSpell) obj;
+                // where the player's crosshair landed
+                Location target = p.getTargetBlock(null, ws.getPotential().getPotentialPower() * ws.getPotentialAmount()).getLocation();
+                // where the spell will spawn from
+                Location spawnLocation = ws.getControl().controlResults(target, p.getLocation());
+                // vector from spawn location to target
+                Vector spawnToTarget = target.toVector().subtract(spawnLocation.toVector());
+                // random ass vector
+                Vector randomVector = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+                // rotating the target vector in a random direction to account for accuracy
+                // note: accuracy is coming in max degrees, which we have to use to get a random accuracy and then convert it to radians
+                spawnToTarget = rotateVectorCC(spawnToTarget, randomVector, Math.random() * ws.getAccuracy() / 0.0174533);
+
+                // creating the direct path
+                List<Location> directPath = new ArrayList<>();
+                // length of path
+                final double length = spawnToTarget.length();
+                // point length will be 2 blocks - larger length = fewer points = less lag
+                Vector point = spawnToTarget.normalize().multiply(2);
+                final Vector spacing = point.clone();
+                // adding spacing and a point to direct path until we get to the target
+                while (point.length() < length){
+                    directPath.add(p.getLocation().add(point));
+                    point.add(spacing);
+                }
+                // spawn particles with potential
+                new BukkitRunnable(){
+
+                    int progress = 0; // how far the particle is in its path
+                    // making these chumps final
+                    final Location start = spawnLocation;
+                    final List<Location> path = directPath;
+                    final Location end = spawnLocation.add(point);
+                    @Override
+                    public void run() {
+                        if (progress < path.size()) {
+                            List<Location> particleSpawns = ws.getPotential().potentialResults(path.get(progress), start); // spawn particles in path
+                            // I don't remember why we need these locations
+                            progress++;
+                        } else {
+                            this.cancel();
+                            // do area effect & intensity
+                            List<Location> areaEffect = ws.getAreaEffect().areaEffectResults(end, 1);
+                        }
+                    }
+                }.runTaskTimer(plugin, 0, 11 - ws.getPotential().getPotentialPower());
+
             } else {
-                // not a spell
+                // preset spell
+                switch (obj.getName()) {
+                    case "Zap":
+                        zap(p);
+                        break;
+                    case "Burn":
+                        burn(p);
+                        break;
+                    case "Snipe":
+                        snipe(p);
+                        break;
+                }
             }
-        }
+            } else{
+                // custom spell
+                CustomSpell customSpell = queryCustomSpell(spell);
+                if (customSpell != null) {
+                    List<String> actions = customSpell.getActions();
+
+                } else {
+                    // not a spell
+                }
+            }
+
     }
 
     public void burn(Player p) {
