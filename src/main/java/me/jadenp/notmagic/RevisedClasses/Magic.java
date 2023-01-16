@@ -309,28 +309,18 @@ public class Magic implements Listener {
                                 player.sendMessage(ChatColor.BLUE + str);
                             }
                         }
-                        String spell = spellIndex.querySpell(data.getSpellCasting());
-                        if (debug) {
-                            player.sendMessage(spell);
-                        }
-                        if (!spell.equals("unknown")) {
-                            // <!> add new Main spells here <!>
+                        Spell spell = spellIndex.querySpell(data.getSpellCasting());
 
+                        if (spell != null) {
+                            // <!> add new Main spells here <!>
+                            if (debug) {
+                                player.sendMessage(spell.getName());
+                            }
                             // main spell switch
-                            switch (spell) {
-                                case "Burn":
-                                    data.setMainSpell("Burn");
-                                    break;
-                                case "Snipe":
-                                    data.setMainSpell("Snipe");
-                                    break;
-                                case "Burst":
-                                    data.setMainSpell("Burst");
-                                    break;
-                                default:
-                                    // secondary spell
-                                    spellIndex.performSpell(spell, player);
-                                    break;
+                            if (spell.isMainSpell()){
+                                data.setMainSpell(spell.getName());
+                            } else {
+                                spellIndex.performSpell(spell.getName(), player);
                             }
                         } else {
                             breakSpell(player, data.getCastPoints());

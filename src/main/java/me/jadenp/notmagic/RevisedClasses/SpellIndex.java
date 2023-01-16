@@ -3,6 +3,7 @@ package me.jadenp.notmagic.RevisedClasses;
 import me.jadenp.notmagic.SpellWorkshop.NotCallback;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -21,6 +22,7 @@ public class SpellIndex {
     /**
      * How to add a new spell: (I think)
      * Add a spell object to the spells list in the main SpellIndex class (this)
+     * Add to the bookmarked switch statement in this class
      * Add a method in this class for the spell that accepts a Player parameter
      * go to Magic.java and add an if statement to check for the spell name if it is a main spell
      */
@@ -47,19 +49,32 @@ public class SpellIndex {
         // first in the array should always be "Start"
         // next point can be "Up", "Down", "Left", "Right", "LeftUp", "LeftDown", "RightUp", "RightDown" - there cannot be the same direction twice in a row
         // castTime, cooldown - all in ticks
-        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), items.data("SBBurn"), plugin, false));
+        // save LeftDown to start the custom spells
+        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), items.data("SBBurn"), plugin, true));
 
-        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), items.data("SBZap"), plugin, false));
+        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), items.data("SBZap"), plugin, true));
 
         spells.add(new Spell("Heal", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), items.data("SBHeal"), plugin, false));
 
         spells.add(new Spell("Strength", 20, 2,300, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), items.data("SBStrength"), plugin, false));
 
-        spells.add(new Spell("Burst", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), items.data("SBBurst"), plugin, false));
+        spells.add(new Spell("Burst", 15, 4,150, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), items.data("SBBurst"), plugin, true));
 
-        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, false));
+        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, true));
 
-        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), items.data("SBLocate"), plugin, false));
+        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), items.data("SBLocate"), plugin, true));
+
+        spells.add(new Spell("Teleport", 25, 5, 25, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Up", "Down", "Up", "Down")), items.data("SBTeleport"), plugin, true));
+
+        spells.add(new Spell("Iron Wall Attack", 50, 5, 30, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Right", "Down", "Left")), items.data("SBIronWallAttack"), plugin, true));
+
+        spells.add(new Spell("Life Steal", 75, 120, 600, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftDown", "Right", "LeftUp")), items.data("SBLifeSteal"), plugin, true));
+
+        spells.add(new Spell("Smite", 35, 5, 200, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown", "LeftDown")), items.data("SBSmite"), plugin, true));
+
+        spells.add(new Spell("Fireball", 30, 3, 100, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), items.data("SBFireball"), plugin, true));
+
+        spells.add(new Spell("Ice Shards", 45, 2, 20, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), items.data("SBIceShards"), plugin, true));
     }
 
     public void addWorkshopSpell(WorkshopSpell spell){
@@ -112,7 +127,7 @@ public class SpellIndex {
                             break;
                     }
                 }
-                if (querySpell(pattern).equalsIgnoreCase("unknown")) {
+                if (querySpell(pattern) == null) {
                     return pattern;
                 }
             }
@@ -130,12 +145,12 @@ public class SpellIndex {
         return null;
     }
 
-    public String querySpell(ArrayList<String> pattern){
+    public Spell querySpell(ArrayList<String> pattern){
         if (pattern == null) {
             if (debug){
                 Bukkit.getLogger().info("Null spell pattern");
             }
-            return "unknown";
+            return null;
         }
         for (Spell spell : spells){
             if (debug)
@@ -153,7 +168,7 @@ public class SpellIndex {
                 if (match){
                     if (debug)
                         Bukkit.getLogger().info("Match: " + spell.getName());
-                    return spell.getName();
+                    return spell;
                 }
             } else {
                 if (debug) {
@@ -171,6 +186,7 @@ public class SpellIndex {
                 }
             }
         }
+        /*
         for (CustomSpell spell : customSpells){
             if (debug)
                 Bukkit.getLogger().info("Spell: " + spell.getName());
@@ -187,11 +203,11 @@ public class SpellIndex {
                 if (match){
                     if (debug)
                         Bukkit.getLogger().info("Match: " + spell.getName());
-                    return spell.getName();
+                    return spell;
                 }
             }
-        }
-        return "unknown";
+        }*/
+        return null;
     }
 
     public Spell querySpell(String name){
@@ -241,6 +257,8 @@ public class SpellIndex {
         // match spells here instead of doing it in magic
         Spell obj = querySpell(spell);
         if (obj != null) {
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, obj.getCastTime(), Integer.MAX_VALUE));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, obj.getCastTime(), Integer.MAX_VALUE));
             if (obj instanceof WorkshopSpell) {
                 WorkshopSpell ws = (WorkshopSpell) obj;
                 // where the player's crosshair landed
@@ -323,9 +341,27 @@ public class SpellIndex {
                     case "Burst":
                         burst(p);
                         break;
+                    case "Teleport":
+                        teleport(p);
+                        break;
+                    case "Iron Wall Attack":
+                        ironWallAttack(p);
+                        break;
+                    case "Life Steal":
+                        lifeSteal(p);
+                        break;
+                    case "Smite":
+                        smite(p);
+                        break;
+                    case "Fireball":
+                        fireball(p);
+                        break;
+                    case "Ice Shards":
+                        iceShards(p);
+                        break;
                 }
             }
-            } else{
+            }/* else{
                 // custom spell
                 CustomSpell customSpell = queryCustomSpell(spell);
                 if (customSpell != null) {
@@ -334,7 +370,7 @@ public class SpellIndex {
                 } else {
                     // not a spell
                 }
-            }
+            }*/
 
     }
 
@@ -582,7 +618,6 @@ public class SpellIndex {
         int particlesPerRun = 3; // total particles = particlesPerRun * 6
 
         // spawn particles
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, Integer.MAX_VALUE));
         new BukkitRunnable(){
             int runs = 0;
             @Override
@@ -708,5 +743,183 @@ public class SpellIndex {
         } else {
             p.sendMessage(magic.eventClass.prefix + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There are no players in your world!");
         }
+    }
+    public void teleport(Player p){
+        Block target = p.getTargetBlock(null, 10);
+        Location l = new Location(p.getTargetBlock(null, 10).getLocation().getWorld(), target.getLocation().getX(), target.getLocation().getY(), target.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch());
+        p.getWorld().spawnParticle(Particle.WARPED_SPORE, p.getLocation(), 10);
+        Objects.requireNonNull(l.getWorld()).spawnParticle(Particle.WARPED_SPORE, l, 10);
+        if (!target.getType().isAir()){
+            l.subtract(p.getLocation().getDirection().normalize());
+        }
+        p.teleport(l);
+    }
+    public void ironWallAttack(Player p){
+        IronGolem golem = p.getWorld().spawn(p.getEyeLocation().add(p.getEyeLocation().getDirection()), IronGolem.class);
+        golem.setAware(false);
+        golem.setVelocity(p.getLocation().getDirection().multiply(1.5));
+        new BukkitRunnable(){
+            int timer = 0;
+            @Override
+            public void run() {
+                double radius = 4D;
+                List<Entity> near = Objects.requireNonNull(golem.getWorld()).getEntities();
+                for (Entity b : near) {
+                    if (b.getLocation().distance(golem.getLocation().add(0,1,0)) <= radius) {
+                        if (b instanceof LivingEntity) {
+                            if (b != p && b != golem){
+
+                                ((LivingEntity) b).damage(15, p);
+
+                                golem.getWorld().spawnParticle(Particle.FLASH, golem.getLocation(), 3);
+                                golem.getWorld().playSound(golem.getLocation(), Sound.ENTITY_IRON_GOLEM_REPAIR,1,1);
+                                this.cancel();
+                                golem.remove();
+                            }
+                        }
+                    }
+                }
+                if (golem.getVelocity().equals(new Vector(0,0,0))){
+                    this.cancel();
+                    golem.getWorld().spawnParticle(Particle.FLASH, golem.getLocation(), 3);
+                    golem.remove();
+                }
+                timer++;
+                if (timer > 25){
+                    this.cancel();
+                    golem.getWorld().spawnParticle(Particle.FLASH, golem.getLocation(), 3);
+                    golem.remove();
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 3);
+    }
+    public void lifeSteal(Player p) {
+        LivingEntity target = null;
+        for (Entity e : p.getWorld().getNearbyEntities(p.getLocation(), 20, 20, 20)) {
+            if (e instanceof LivingEntity)
+                if (getLookingAt(p, (LivingEntity) e)) {
+                    target = (LivingEntity) e;
+                    break;
+                }
+        }
+        if (target == null)
+            return;
+
+
+        LivingEntity finalTarget = target;
+        new BukkitRunnable() {
+            int timer = 0;
+
+            @Override
+            public void run() {
+                if (!(getLookingAt(p, finalTarget))) {
+                    if (timer < 8) {
+                        this.cancel();
+                        p.getWorld().spawnParticle(Particle.SMOKE_NORMAL, p.getEyeLocation(), 10);
+                        finalTarget.getWorld().spawnParticle(Particle.SMOKE_NORMAL, finalTarget.getLocation(), 10);
+                        p.playSound(p.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1, 1);
+                        return;
+                    }
+                }
+
+                Particle.DustOptions dustOptions = null;
+                if (timer < 2) {
+                    dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(32, 240, 10), 1);
+                } else if (timer < 4) {
+                    dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(217, 240, 10), 1);
+                } else if (timer < 6) {
+                    dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(240, 148, 10), 1);
+                } else if (timer < 8) {
+                    dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(237, 74, 52), 1);
+                } else {
+                    dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(219, 15, 124), 1);
+                }
+                Vector between = new Vector(0, 0, 0).subtract(p.getEyeLocation().toVector().subtract(finalTarget.getEyeLocation().toVector()));
+                p.getWorld().spawnParticle(Particle.REDSTONE, p.getEyeLocation().add(between.multiply(0.2)), 1, dustOptions);
+                p.getWorld().spawnParticle(Particle.REDSTONE, p.getEyeLocation().add(between.multiply(0.4)), 1, dustOptions);
+                p.getWorld().spawnParticle(Particle.REDSTONE, p.getEyeLocation().add(between.multiply(0.6)), 1, dustOptions);
+                p.getWorld().spawnParticle(Particle.REDSTONE, p.getEyeLocation().add(between.multiply(0.8)), 1, dustOptions);
+
+                if (timer > 7 && timer < 12) {
+                    if (!(finalTarget.isDead())) {
+                        finalTarget.damage(2, p);
+                        if (p.getHealth() + 2 <= p.getMaxHealth()) {
+                            p.setHealth(p.getHealth() + 2);
+                        }
+                        p.setVelocity(p.getVelocity().add(new Vector(0, 0, 0).subtract(p.getEyeLocation().toVector().subtract(finalTarget.getEyeLocation().toVector())).normalize()));
+                    }
+                }
+                if (timer == 12) {
+                    this.cancel();
+
+                }
+                timer++;
+
+            }
+        }.runTaskTimer(plugin, 0, 10);
+
+    }
+    private boolean getLookingAt(Player player, LivingEntity player1)
+    {
+        Location eye = player.getEyeLocation();
+        Vector toEntity = player1.getEyeLocation().toVector().subtract(eye.toVector());
+        double dot = toEntity.normalize().dot(eye.getDirection());
+
+        return dot > 0.99D;
+    }
+    public void smite(Player p){
+        Location target = p.getTargetBlock(null, 50).getLocation();
+        LightningStrike lightningStrike = p.getWorld().strikeLightning(target);
+        lightningStrike.setMetadata("magic", new FixedMetadataValue(plugin, true));
+        lightningStrike.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin, true));
+    }
+    public void fireball(Player p){
+        Fireball fireball = p.launchProjectile(Fireball.class);
+        fireball.setMetadata("magic", new FixedMetadataValue(plugin, true));
+        fireball.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin,true));
+        fireball.setShooter(p);
+    }
+    public void iceShards(Player p) {
+        Particle.DustOptions dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(10, 50, 200), 1);
+        Location front = p.getEyeLocation().add(p.getLocation().getDirection().multiply(1.3));
+        p.getWorld().spawnParticle(Particle.REDSTONE, front, 1, dustOptions);
+        Vector d = p.getLocation().getDirection();
+        new BukkitRunnable() {
+            int timer = 0;
+
+            @Override
+            public void run() {
+                Location loc = front.add(d.multiply(1 + (timer / 10)));
+                p.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, dustOptions);
+                timer++;
+                if (loc.getBlock().getType() != Material.AIR) {
+                    this.cancel();
+                    return;
+                }
+                loc = front.add(d.multiply(1 + (timer / 10)));
+                p.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, dustOptions);
+                timer++;
+                double radius = 2D;
+                List<Entity> near = Objects.requireNonNull(loc.getWorld()).getEntities();
+                for (Entity e : near) {
+                    if (e.getLocation().distance(loc) <= radius) {
+                        if (e instanceof LivingEntity) {
+                            if (e != p) {
+
+                                ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,60,1));
+                                ((LivingEntity) e).damage(20, p);
+
+                            }
+                        }
+                    }
+                }
+                if (loc.getBlock().getType() != Material.AIR) {
+                    this.cancel();
+                }
+                if (timer == 16) {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 1L);
     }
 }

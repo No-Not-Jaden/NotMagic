@@ -10,7 +10,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.lang.invoke.VolatileCallSite;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,9 +32,9 @@ public class Spell {
     private Plugin plugin;
     private SpellIndex spellIndex;
 
-    private boolean custom;
+    private boolean mainSpell;
 
-    public Spell(String name, int mpCost, int castTime, int cooldown, int requiredLevel, List<String> spellPattern, ItemStack spellBook, Plugin plugin, boolean custom){
+    public Spell(String name, int mpCost, int castTime, int cooldown, int requiredLevel, List<String> spellPattern, ItemStack spellBook, Plugin plugin, boolean mainSpell){
         this.name = name;
         this.mpCost = mpCost;
         this.castTime = castTime;
@@ -44,7 +43,7 @@ public class Spell {
         this.spellBook = spellBook;
         this.requiredLevel = requiredLevel;
         this.plugin = plugin;
-        this.custom = custom;
+        this.mainSpell = mainSpell;
         float size = 0.5F;
         colors.add(new Particle.DustOptions(Color.fromRGB(66, 242, 245), size));
         colors.add(new Particle.DustOptions(Color.fromRGB(48, 191, 242), size));
@@ -85,8 +84,8 @@ public class Spell {
         this.requiredLevel = requiredLevel;
     }
 
-    public boolean isCustom() {
-        return custom;
+    public boolean isMainSpell() {
+        return mainSpell;
     }
 
     public ItemStack getSpellBook() {

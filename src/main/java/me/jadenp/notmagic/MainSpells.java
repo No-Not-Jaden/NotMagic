@@ -393,7 +393,7 @@ public class MainSpells {
             }
         }.runTaskTimer(plugin, 0L, 3);
     }
-    public void lifeSteal(Player p) throws ReflectiveOperationException {
+    public void lifeSteal(Player p) {
         LivingEntity target = null;
         for (Entity e : p.getWorld().getNearbyEntities(p.getLocation(), 20, 20, 20)) {
             if (e instanceof LivingEntity)
