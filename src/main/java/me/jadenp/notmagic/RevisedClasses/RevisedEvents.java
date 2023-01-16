@@ -39,7 +39,7 @@ public class RevisedEvents implements Listener {
         this.plugin = notMagic;
         this.notMagic = notMagic;
         magicClass = new Magic(notMagic,this);
-
+        prefix = notMagic.getPrefix();
 
         // load key from recordKey file to get uuids of every player, then grab their corresponding file and place it in a list
         Bukkit.getLogger().info("Loading Player Data...");
@@ -209,7 +209,11 @@ public class RevisedEvents implements Listener {
         // 1 word for intensity, potential, area effect
         // 1 word for accuracy & control
         int multiplier = spell.getPotentialAmount() + spell.getAreaEffectAmount() + spell.getIntensityAmount() + spell.getControlAmount();
-        return SpellNames.getMultiplierName(multiplier) + " " + SpellNames.combinePassiveEssence(spell.getControl(), spell.getAccuracy()) + " " + SpellNames.combineEssence(Arrays.asList(spell.getPotential(), spell.getAreaEffect(), spell.getIntensity()));
+        String name = SpellNames.getMultiplierName(multiplier) + " " + SpellNames.combinePassiveEssence(spell.getControl(), spell.getAccuracy()) + " " + SpellNames.combineEssence(Arrays.asList(spell.getPotential(), spell.getAreaEffect(), spell.getIntensity(), spell.getControl()));
+        if (name.charAt(0) == ' '){
+            name = name.substring(1);
+        }
+        return name;
     }
 
     public WorkshopSpell getWorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy){

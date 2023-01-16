@@ -1,5 +1,7 @@
 package me.jadenp.notmagic.SpellWorkshop;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.util.List;
 
 public class SpellNames {
@@ -7,6 +9,7 @@ public class SpellNames {
         int fire = 0;
         int earth = 0;
         int water = 0;
+        int wind = 0;
         for (Essence essence : essenceList){
             if (essence.equals(Essence.FIRE)){
                 fire++;
@@ -14,6 +17,8 @@ public class SpellNames {
                 earth++;
             } else if (essence.equals(Essence.WATER)){
                 water++;
+            } else if (essence.equals(Essence.WIND)){
+                wind++;
             }
         }
 
@@ -45,9 +50,19 @@ public class SpellNames {
         } else if (water == 4){
             name.append(" Tsunami");
         }
-        if (name.substring(0, 1).equals(" ")){
-            return name.substring(1);
+        if (wind == 1){
+            name.append(" Wind");
+        } else if (wind == 2){
+            name.append(" Gust");
+        } else if (wind == 3){
+            name.append(" Breeze");
+        } else if (wind == 4){
+            name.append(" Hurricane");
         }
+        if (name.length() > 0)
+            if (name.toString().charAt(0) == ' '){
+                return name.substring(1);
+            }
         return name.toString();
     }
 

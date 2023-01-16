@@ -51,7 +51,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     public Commands(NotMagic plugin){
         this.plugin = plugin;
         this.notMagic = plugin;
-
+        prefix = plugin.getPrefix();
 
     }
 

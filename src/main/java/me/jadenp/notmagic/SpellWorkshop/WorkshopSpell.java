@@ -8,6 +8,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class WorkshopSpell extends Spell {
     public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, NotMagic notMagic){
         // constants will have to be changed eventually - spell size should be dependant on the magic value
         super(null, 0, 0, 0, 0, null, null, notMagic, false);
-        super.setName(notMagic.eventClass.getUniqueSpellName(this));
+
         int manaCost;
         manaCost = potential.getPotentialMana(potentialAmount) + areaEffect.getAreaEffectMana(areaEffectAmount) + intensity.getIntensityMana(intensityAmount) + control.getControlMana(controlAmount) + (accuracy * 2);
         if (potential.equals(areaEffect) && potential.equals(control) && potential.equals(intensity)){
@@ -45,7 +46,6 @@ public class WorkshopSpell extends Spell {
         super.setRequiredLevel(1);
         super.setSpellPattern(notMagic.eventClass.magicClass.spellIndex.getUniqueSpellPattern(5));
         //
-        super.setSpellBook(getSpellBook());
         this.potential = potential;
         this.potentialAmount = potentialAmount;
         this.areaEffect = areaEffect;
@@ -62,11 +62,12 @@ public class WorkshopSpell extends Spell {
         uuid = UUID.randomUUID();
 
         this.mainSpell = manaCost < 25;
+        super.setName(notMagic.eventClass.getUniqueSpellName(this));
+        super.setSpellBook(getSpellBook());
     }
 
     public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, String name, int manaCost, boolean mainSpell, int magicValue, int castTime, UUID uuid, int cooldown, int requiredLevel, List<String> spellPattern, NotMagic notMagic){
         super(name, manaCost, castTime, cooldown, requiredLevel, spellPattern, null, notMagic, false);
-        super.setSpellBook(getSpellBook());
         this.potential = potential;
         this.potentialAmount = potentialAmount;
         this.areaEffect = areaEffect;
@@ -80,6 +81,7 @@ public class WorkshopSpell extends Spell {
         this.magicValue = magicValue;
         this.castTime = castTime;
         this.uuid = uuid;
+        super.setSpellBook(getSpellBook());
     }
 
     public ItemStack getSpellBook(){

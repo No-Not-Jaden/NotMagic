@@ -317,13 +317,20 @@ public class Magic implements Listener {
                             // <!> add new Main spells here <!>
 
                             // main spell switch
-                            if (spell.equals("Burn")) {
-                                data.setMainSpell("Burn");
-                            } else if (spell.equals("Snipe")) {
-                                data.setMainSpell("Snipe");
-                            } else {
-                                // secondary spell
-                                spellIndex.performSpell(spell, player);
+                            switch (spell) {
+                                case "Burn":
+                                    data.setMainSpell("Burn");
+                                    break;
+                                case "Snipe":
+                                    data.setMainSpell("Snipe");
+                                    break;
+                                case "Burst":
+                                    data.setMainSpell("Burst");
+                                    break;
+                                default:
+                                    // secondary spell
+                                    spellIndex.performSpell(spell, player);
+                                    break;
                             }
                         } else {
                             breakSpell(player, data.getCastPoints());
@@ -383,18 +390,27 @@ public class Magic implements Listener {
                                         // calculated in minecraft meters, so 0.25 meters away from last vertex point
                                         // distance x and z is calculated using yaw degrees which makes it a little easier
                                         // to find the degrees to get 0.25 away its just (distance between reference & point) * atan(0.25)
-                                        double pDistanceY = 0.25;
+                                        double pDistanceY = 15 * (Math.PI / 180);
                                         double diagonalMultiplier = 0.5;
                                         // because pDistanceXZ is for 2 axes, we can use the getReferenceAngle() method I created to
                                         // check if the new point is to the left or to the right of the last point
-                                        double pDistanceXZ = pointDistance * Math.atan(pDistanceY);
-                                        Vector vertexVector = lastVertex.toVector().subtract(pointY.toVector());
-                                        Vector vertexPoint = point.toVector().subtract(pointY.toVector());
+                                        double pDistanceXZ = pDistanceY; // pointDistance * Math.atan(pDistanceY);
+                                        Vector vertexVector = lastVertex.toVector().subtract(pointY.toVector()); // player to last vertex
+                                        Vector vertexPoint = point.toVector().subtract(pointY.toVector()); // player to current point
+
+                                        double yDifference = lastVertex.getY() - point.getY();
+                                        double yAngle = Math.asin(yDifference / 2 / pointDistance) * 2;
+                                        //p.sendMessage("Y " + yAngle);
+                                        Vector hPoint = new Vector(vertexPoint.getX(), 0 , vertexPoint.getZ()).normalize();
+                                        Vector hVertex = new Vector(vertexVector.getX(), 0, vertexVector.getZ()).normalize();
+                                        double hAngle = Math.acos(hPoint.dot(hVertex) / (hPoint.length() * hVertex.length())); //getYawAngle(vertexVector, vertexPoint);
+                                        //p.sendMessage("H " + hAngle);
+
 
 
                                         // first have to check if it is a diagonal point (so multiply by 0.75 to get a diamond shape hit box for next vertex)
                                         // point is below the last vertex
-                                        if (lastVertex.getY() - point.getY() >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
+                                        if (yAngle >= pDistanceY * diagonalMultiplier && getYawAngle(vertexVector, vertexPoint) >= pDistanceXZ * diagonalMultiplier) {
                                             // new point is down and diagonal
                                             if (getRelativeVector(vertexVector, vertexPoint).equals("l")) {
                                                 // left down diagonal
@@ -455,7 +471,7 @@ public class Magic implements Listener {
                                                 }
                                             }
                                             // point is below last vertex
-                                        } else if (lastVertex.getY() - point.getY() >= pDistanceY) {
+                                        } else if (yAngle >= pDistanceY) {
                                             // down
                                             if (!previousPoints.get(previousPoints.size() - 1).equals("Down")) {
                                                 previousPoints.add("Down");
@@ -658,5 +674,6 @@ public class Magic implements Listener {
         double z2 = v2.getZ();
         return Math.acos((x*x2 + z*z2) / (Math.sqrt(Math.pow(x, 2)+Math.pow(z, 2)) * Math.sqrt(Math.pow(x2, 2)+Math.pow(z2, 2))));
     }
+
 
 }

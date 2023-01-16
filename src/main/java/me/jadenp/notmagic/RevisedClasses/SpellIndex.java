@@ -1,11 +1,14 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import me.jadenp.notmagic.SpellWorkshop.NotCallback;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -19,9 +22,7 @@ public class SpellIndex {
      * How to add a new spell: (I think)
      * Add a spell object to the spells list in the main SpellIndex class (this)
      * Add a method in this class for the spell that accepts a Player parameter
-     * go to Magic.java and add an if statement to check for the spell name
-     * either call the spell if it is a secondary spell or set main spell
-     * don't forget to call the main spell further below
+     * go to Magic.java and add an if statement to check for the spell name if it is a main spell
      */
 
     private Plugin plugin;
@@ -58,6 +59,7 @@ public class SpellIndex {
 
         spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, false));
 
+        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), items.data("SBLocate"), plugin, false));
     }
 
     public void addWorkshopSpell(WorkshopSpell spell){
@@ -273,16 +275,29 @@ public class SpellIndex {
                     final Location start = spawnLocation;
                     final List<Location> path = directPath;
                     final Location end = spawnLocation.add(point);
+                    final Player player = p;
                     @Override
                     public void run() {
                         if (progress < path.size()) {
-                            List<Location> particleSpawns = ws.getPotential().potentialResults(path.get(progress), start); // spawn particles in path
-                            // I don't remember why we need these locations
+                            // spawn particles in path
+                            ws.getPotential().potentialResults(path.get(progress), start, locations -> {
+                                if (locations != null){
+                                    // I don't remember why we need these locations, but if we do, we would have to get the callback
+                                    return;
+                                }
+                            });
+
                             progress++;
                         } else {
                             this.cancel();
                             // do area effect & intensity
-                            List<Location> areaEffect = ws.getAreaEffect().areaEffectResults(end, 1);
+                            ws.getAreaEffect().areaEffectResults(end, 1, locations -> {
+                                for (Location location : locations){
+                                    ws.getIntensity().intensityResults(location, 1, player, end);
+                                }
+                            });
+
+
                         }
                     }
                 }.runTaskTimer(plugin, 0, 11 - ws.getPotential().getPotentialPower());
@@ -298,6 +313,15 @@ public class SpellIndex {
                         break;
                     case "Snipe":
                         snipe(p);
+                        break;
+                    case "Heal":
+                        heal(p);
+                        break;
+                    case "Strength":
+                        strength(p);
+                        break;
+                    case "Burst":
+                        burst(p);
                         break;
                 }
             }
@@ -558,11 +582,13 @@ public class SpellIndex {
         int particlesPerRun = 3; // total particles = particlesPerRun * 6
 
         // spawn particles
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, Integer.MAX_VALUE));
         new BukkitRunnable(){
             int runs = 0;
             @Override
             public void run() {
-                if (runs < 6){
+                if (runs < 60){
+                    // some kewl particles
                     for (int i = 0; i < particlesPerRun; i++) {
                         Vector randomOf8 = particlePlaces.get((int) (Math.random() * 8));
                         //                                                                  adding the vector to the launch location to get the starting point of the vector - PDFL so I can adjust how far away it starts                               getting the reverse vector so it can shoot in the opposite direction back into launchLocation, particleSpeed so I can adjust how fast it comes back & so it doesnt overshoot
@@ -570,26 +596,117 @@ public class SpellIndex {
                     }
                 } else {
                     this.cancel();
+                    // launch the arrow
+                    Arrow arrow = launchLocation.getWorld().spawnArrow(launchLocation, launchDirection, 2f, 6);
+                    arrow.setShooter(p);
+                    arrow.setDamage(10 + findPlayer(p.getUniqueId()).getLevel());
                 }
                 runs++;
             }
-        }.runTaskTimer(plugin,0L,10L);
+        }.runTaskTimer(plugin,0L,1L);
 
-        // actually launch the arrow
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                //Arrow arrow = p.launchProjectile(Arrow.class);
-                Arrow arrow = launchLocation.getWorld().spawnArrow(launchLocation, launchDirection, 0.8f, 6);
-                arrow.setShooter(p);
-                arrow.setDamage(10 + findPlayer(p.getUniqueId()).getLevel());
-            }
-        }.runTaskLater(plugin,60L);
 
         //arrow.setMetadata("magic", new FixedMetadataValue(plugin, true));
     }
 
+    public void heal(Player p){
+        for (Entity entity : p.getWorld().getNearbyEntities(p.getLocation(), 5,5,5)){
+            if (entity instanceof LivingEntity){
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,0));
+                entity.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, ((LivingEntity) entity).getEyeLocation().add(0,1,0), 5, .25,.5,.25);
+            }
+        }
+    }
+    public void strength(Player p){
+        for (Entity entity : p.getWorld().getNearbyEntities(p.getLocation(), 5,5,5)){
+            if (entity instanceof LivingEntity){
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600,0));
+                entity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, ((LivingEntity) entity).getEyeLocation().add(0,1,0), 5, .25,.5,.25);
+            }
+        }
+    }
+
     public List<Spell> getSpells() {
         return spells;
+    }
+    public void burst(Player p) {
+        Vector v = new Vector(0 - p.getLocation().getDirection().getX(), 0.7, 0 - p.getLocation().getDirection().getZ());
+        Vector v2 = new Vector(p.getLocation().getDirection().getX(), -0.4, p.getLocation().getDirection().getZ());
+        Location start = p.getLocation().add(v.multiply(12));
+        new BukkitRunnable(){
+            int i = 0;
+            @Override
+            public void run() {
+                if (i < 6)
+                    for (int y = 0; y < 20; y++) {
+                        Location loc = new Location(start.getWorld(), start.getX() + (rand.nextInt(7) - 3), start.getY() + (rand.nextInt(3) - 1), start.getZ() + (rand.nextInt(7) - 3));
+                        Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.CLOUD, loc, 0, v2.getX(), v2.getY(), v2.getZ());
+                    }
+                double radius = 4D;
+                List<Entity> near = Objects.requireNonNull(start.getWorld()).getEntities();
+                for (Entity b : near) {
+                    if (b.getLocation().distance(start) <= radius) {
+                        if (b instanceof LivingEntity) {
+                            if (b != p) {
+
+                                b.setVelocity(new Vector(b.getVelocity().getX(), 1, b.getVelocity().getZ()));
+                                for (int y = 0; y < 10; y++) {
+                                    Location loc = new Location(start.getWorld(), start.getX() + (rand.nextInt(3) - 1), start.getY() + (rand.nextInt(3) - 1), start.getZ() + (rand.nextInt(3) - 1));
+                                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.CLOUD, loc, 0, b.getVelocity().getX(), b.getVelocity().getY(), b.getVelocity().getZ());
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+                start.add(v2);
+                if (i == 20){
+                    this.cancel();
+                }
+                i++;
+            }
+        }.runTaskTimer(plugin, 0, 1L);
+
+    }
+    public void locate(Player p){
+        Player closest = null;
+        List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+        for (Entity b : near) {
+            if (b instanceof Player) {
+                if (b != p) {
+                    if (closest != null) {
+                        if (b.getLocation().distance(p.getLocation()) < closest.getLocation().distance(p.getLocation())) {
+                            closest = (Player) b;
+                        }
+                    } else {
+                        closest = (Player) b;
+                    }
+                }
+            }
+        }
+        if (closest != null) {
+            Player finalClosest = closest;
+            new BukkitRunnable(){
+                int timer = 0;
+                @Override
+                public void run() {
+                    for (int i = 0; i < 5; i++){
+                        final Vector v = p.getLocation().toVector().subtract(finalClosest.getLocation().toVector()).normalize();
+                        final Vector v1 = new Vector(0 - v.getX(), 0 - v.getY(), 0 - v.getZ()).normalize();
+                        final Particle.DustOptions dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(3, 252, 194), 1);
+                        final Location location = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY() + 1, p.getLocation().getZ());
+                        Location loc = location.add(v1.multiply(i+1));
+                        Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.REDSTONE, loc, 1, dustOptions);
+                    }
+                    if (timer == 8){
+                        this.cancel();
+                    }
+                    timer++;
+                }
+            }.runTaskTimer(plugin, 0, 3L);
+        } else {
+            p.sendMessage(magic.eventClass.prefix + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There are no players in your world!");
+        }
     }
 }

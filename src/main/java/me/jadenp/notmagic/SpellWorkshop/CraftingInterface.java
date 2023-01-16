@@ -3,6 +3,7 @@ package me.jadenp.notmagic.SpellWorkshop;
 
 import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.RevisedClasses.Items;
+import me.jadenp.notmagic.RevisedClasses.SpellIndex;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -334,6 +335,8 @@ public class CraftingInterface implements Listener {
                                 accuracyNum);
                         if (similarSpell != null){
                             workshopSpell = similarSpell;
+                        } else {
+                            notMagic.eventClass.magicClass.spellIndex.addWorkshopSpell(workshopSpell);
                         }
                         // do animation
                         WorkshopSpell finalWorkshopSpell = workshopSpell;
@@ -374,7 +377,7 @@ public class CraftingInterface implements Listener {
                                      }
                                  }
                             }
-                        }.runTaskTimerAsynchronously(plugin, 0L, 2L);
+                        }.runTaskTimer(plugin, 0L, 2L);
                         contents[11] = null;
                         contents[9] = null;
                         contents[27] = null;

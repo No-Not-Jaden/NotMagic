@@ -60,7 +60,6 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public final class NotMagic extends JavaPlugin {
     Items items = new Items();
-    public Plugin plugin;
     public RevisedEvents eventClass;
     public Commands commandClass;
     public ArrayList<String> language = new ArrayList<>();
@@ -70,14 +69,17 @@ public final class NotMagic extends JavaPlugin {
     public CraftingInterface craftingInterface;
     public File manaMines = new File(this.getDataFolder() + File.separator + "mana-mines.yml");
     public File alcStations = new File(this.getDataFolder() + File.separator + "alchemy-stations.yml");
-    public File playerRecords = new File(plugin.getDataFolder()+File.separator+"player-records");
-    public File backups = new File(plugin.getDataFolder()+File.separator+"backups");
+    public File playerRecords = new File(this.getDataFolder()+File.separator+"player-records");
+    public File backups = new File(this.getDataFolder()+File.separator+"backups");
     public File recordKey = new File(playerRecords + File.separator + "record-key.yml");
     public File craftedSpells = new File(playerRecords + File.separator + "craftedSpells.yml");
+
+    private static NotMagic instance;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        instance = this;
 
         // cool NotMagic display on startup
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "_________________________________________________________");
@@ -91,30 +93,6 @@ public final class NotMagic extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("      " + ChatColor.DARK_GREEN + "Made by: Not_Jaden           " + ChatColor.LIGHT_PURPLE + " |___/          ");
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "_________________________________________________________");
         //                        Made by: Not_Jaden
-
-        // starting event listening and command listening
-        plugin = this;
-        commandClass = new Commands(this);
-        Objects.requireNonNull(this.getCommand("nm")).setExecutor(commandClass);
-        Objects.requireNonNull(this.getCommand("nmtop")).setExecutor(commandClass);
-        Objects.requireNonNull(this.getCommand("nm")).setTabCompleter(commandClass);
-        try {
-            eventClass = new RevisedEvents(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        getServer().getPluginManager().registerEvents(eventClass, this);
-        getServer().getPluginManager().registerEvents(new RevisedAlchemy(plugin), this);
-        commandClass.setEventClass(eventClass);
-        getServer().getPluginManager().registerEvents(eventClass.magicClass, this);
-        craftingInterface = new CraftingInterface(this);
-        // creating files if they don't exist
-        File config = new File(this.getDataFolder() + File.separator + "config.yml");
-        if (!config.exists()) {
-            this.saveDefaultConfig();
-        }
-
-
         if (!manaMines.exists()) {
             try {
                 manaMines.createNewFile();
@@ -133,6 +111,52 @@ public final class NotMagic extends JavaPlugin {
 
         if (!customSpells.exists()) {
             saveResource("customSpells.yml", false);
+        }
+        if (!playerRecords.exists()) {
+            playerRecords.mkdir();
+        }
+        if (!backups.exists()) {
+            backups.mkdir();
+        }
+        if (!recordKey.exists()){
+            try {
+                recordKey.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!craftedSpells.exists()){
+            try {
+                craftedSpells.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // loading configurations
+        loadConfig();
+        // starting event listening and command listening
+        commandClass = new Commands(this);
+        Objects.requireNonNull(this.getCommand("nm")).setExecutor(commandClass);
+        Objects.requireNonNull(this.getCommand("nmtop")).setExecutor(commandClass);
+        Objects.requireNonNull(this.getCommand("nm")).setTabCompleter(commandClass);
+        try {
+            eventClass = new RevisedEvents(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        getServer().getPluginManager().registerEvents(eventClass, this);
+        getServer().getPluginManager().registerEvents(new RevisedAlchemy(this), this);
+        commandClass.setEventClass(eventClass);
+        getServer().getPluginManager().registerEvents(eventClass.magicClass, this);
+        craftingInterface = new CraftingInterface(this);
+        // creating files if they don't exist
+        File config = new File(this.getDataFolder() + File.separator + "config.yml");
+        if (!config.exists()) {
+            this.saveDefaultConfig();
+        }
+
+
+
 
             /*YamlConfiguration configuration = new YamlConfiguration();
             // basic spell info
@@ -186,38 +210,17 @@ public final class NotMagic extends JavaPlugin {
             } catch (IOException e) {
                 e.printStackTrace();
             }*/
-        }
 
-        if (!playerRecords.exists()) {
-            playerRecords.mkdir();
-        }
-        if (!backups.exists()) {
-            backups.mkdir();
-        }
-        if (!recordKey.exists()){
-            try {
-                recordKey.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (!craftedSpells.exists()){
-            try {
-                craftedSpells.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        // loading configurations
-        loadConfig();
+
+
 
 
         // initializing scheduled tasks to run while server is online
-        new OnlineTasks(plugin);
+        new OnlineTasks(this);
 
         // custom recipes
         RecipeChoice magicDust = new RecipeChoice.ExactChoice(items.data("MagicDust"));
-        NamespacedKey key = new NamespacedKey(plugin, "basicwand");
+        NamespacedKey key = new NamespacedKey(this, "basicwand");
         ShapedRecipe basicWand = new ShapedRecipe(key, items.data("BasicWand"));
         basicWand.shape("*%%", "%&%", "%%*");
         basicWand.setIngredient('*', Material.AIR);
@@ -225,7 +228,7 @@ public final class NotMagic extends JavaPlugin {
         basicWand.setIngredient('&', Material.STICK);
         getServer().addRecipe(basicWand);
 
-        NamespacedKey key2 = new NamespacedKey(plugin, "magicblock");
+        NamespacedKey key2 = new NamespacedKey(this, "magicblock");
         ShapedRecipe magicBlock = new ShapedRecipe(key2, items.data("MagicBlock"));
         magicBlock.shape("***", "***", "***");
         magicBlock.setIngredient('*', magicDust);
@@ -233,7 +236,7 @@ public final class NotMagic extends JavaPlugin {
 
         RecipeChoice mBlock = new RecipeChoice.ExactChoice(items.data("MagicBlock"));
         RecipeChoice bWand = new RecipeChoice.ExactChoice(items.data("BasicWand"));
-        NamespacedKey key3 = new NamespacedKey(plugin, "prosaicwand");
+        NamespacedKey key3 = new NamespacedKey(this, "prosaicwand");
         ShapedRecipe prosaicWand = new ShapedRecipe(key3, items.data("ProsaicWand"));
         prosaicWand.shape("*%%", "%&%", "%%*");
         prosaicWand.setIngredient('*', Material.AIR);
@@ -243,7 +246,7 @@ public final class NotMagic extends JavaPlugin {
 
         RecipeChoice shadowRose = new RecipeChoice.ExactChoice(items.data("shadowRose"));
         RecipeChoice pWand = new RecipeChoice.ExactChoice(items.data("ProsaicWand"));
-        NamespacedKey key4 = new NamespacedKey(plugin, "shadowwand");
+        NamespacedKey key4 = new NamespacedKey(this, "shadowwand");
         ShapedRecipe shadowWand = new ShapedRecipe(key4, items.data("ShadowWand"));
         shadowWand.shape("*#*", "%&%", "%%%");
         shadowWand.setIngredient('*', Material.AIR);
@@ -253,7 +256,7 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(shadowWand);
 
         RecipeChoice sWand = new RecipeChoice.ExactChoice(items.data("ShadowWand"));
-        NamespacedKey key5 = new NamespacedKey(plugin, "enhancedwand");
+        NamespacedKey key5 = new NamespacedKey(this, "enhancedwand");
         ShapedRecipe enhancedWand = new ShapedRecipe(key5, items.data("EnhancedWand"));
         enhancedWand.shape("*%*", "%&%", "*%*");
         enhancedWand.setIngredient('*', Material.EMERALD_ORE);
@@ -261,7 +264,7 @@ public final class NotMagic extends JavaPlugin {
         enhancedWand.setIngredient('&', sWand);
         getServer().addRecipe(enhancedWand);
 
-        NamespacedKey key6 = new NamespacedKey(plugin, "invizitemframe");
+        NamespacedKey key6 = new NamespacedKey(this, "invizitemframe");
         ShapedRecipe invizItemFrame = new ShapedRecipe(key6, items.data("iItem"));
         invizItemFrame.shape("*%*", "%&%", "*%*");
         invizItemFrame.setIngredient('*', Material.AIR);
@@ -269,7 +272,7 @@ public final class NotMagic extends JavaPlugin {
         invizItemFrame.setIngredient('&', Material.ITEM_FRAME);
         getServer().addRecipe(invizItemFrame);
 
-        NamespacedKey key7 = new NamespacedKey(plugin, "alccontroller");
+        NamespacedKey key7 = new NamespacedKey(this, "alccontroller");
         ShapedRecipe alcController = new ShapedRecipe(key7, items.data("AlcController"));
         alcController.shape("*%*", "%&%", "*%*");
         alcController.setIngredient('*', Material.AIR);
@@ -277,7 +280,7 @@ public final class NotMagic extends JavaPlugin {
         alcController.setIngredient('&', Material.IRON_NUGGET);
         getServer().addRecipe(alcController);
 
-        NamespacedKey key8 = new NamespacedKey(plugin, "alcdust");
+        NamespacedKey key8 = new NamespacedKey(this, "alcdust");
         ShapedRecipe alcDust = new ShapedRecipe(key8, items.data("AlchemyDust"));
         alcDust.shape("*%*", "%&%", "*%*");
         alcDust.setIngredient('*', Material.AIR);
@@ -286,14 +289,14 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(alcDust);
 
         RecipeChoice alchemyDust = new RecipeChoice.ExactChoice(items.data("AlchemyDust"));
-        NamespacedKey key9 = new NamespacedKey(plugin, "alcblock");
+        NamespacedKey key9 = new NamespacedKey(this, "alcblock");
         ShapedRecipe alcBlock = new ShapedRecipe(key9, items.data("AlchemyBlock"));
         alcBlock.shape("***", "***", "***");
         alcBlock.setIngredient('*', alchemyDust);
         getServer().addRecipe(alcBlock);
 
         RecipeChoice compressedMagicBlock = new RecipeChoice.ExactChoice(items.data("CompressedMagicBlock"));
-        NamespacedKey key10 = new NamespacedKey(plugin, "zyniumfragment");
+        NamespacedKey key10 = new NamespacedKey(this, "zyniumfragment");
         ShapedRecipe zyniumFragment = new ShapedRecipe(key10, items.data("AlchemyBlock"));
         zyniumFragment.shape("*^*", "^$^", "*^*");
         zyniumFragment.setIngredient('*', mBlock);
@@ -303,7 +306,7 @@ public final class NotMagic extends JavaPlugin {
 
         RecipeChoice wardenRemanents = new RecipeChoice.ExactChoice(items.data("wardenRemnants"));
         RecipeChoice eWand = new RecipeChoice.ExactChoice(items.data("EnhancedWand"));
-        NamespacedKey key11 = new NamespacedKey(plugin, "wardenwand");
+        NamespacedKey key11 = new NamespacedKey(this, "wardenwand");
         ShapedRecipe wardenWand = new ShapedRecipe(key11, items.data("WardenWand"));
         wardenWand.shape("^*%", "*$*", "^*^");
         wardenWand.setIngredient('*', mBlock);
@@ -314,23 +317,30 @@ public final class NotMagic extends JavaPlugin {
 
     }
 
+    public static NotMagic getInstance() {
+        return instance;
+    }
 
+    public String getPrefix() {
+        return prefix;
+    }
 
     public void loadConfig(){
         language.clear();
-        prefix = color(plugin.getConfig().getString("prefix"));
+        this.reloadConfig();
+        prefix = color(this.getConfig().getString("prefix"));
         // 0 - spell-cooldown
-        language.add(color(plugin.getConfig().getString("spell-cooldown")));
+        language.add(color(this.getConfig().getString("spell-cooldown")));
         // 1 - spell-insufficient-mana
-        language.add(color(plugin.getConfig().getString("spell-insufficient-mana")));
+        language.add(color(this.getConfig().getString("spell-insufficient-mana")));
         // 2 - cast-spell
-        language.add(color(plugin.getConfig().getString("cast-spell")));
+        language.add(color(this.getConfig().getString("cast-spell")));
         // 3 - main-spell
-        language.add(color(plugin.getConfig().getString("main-spell")));
+        language.add(color(this.getConfig().getString("main-spell")));
         // 4 - item-too-powerful
-        language.add(color(plugin.getConfig().getString("item-too-powerful")));
+        language.add(color(this.getConfig().getString("item-too-powerful")));
         // 5 - spell-too-powerful
-        language.add(color(plugin.getConfig().getString("spell-too-powerful")));
+        language.add(color(this.getConfig().getString("spell-too-powerful")));
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(customSpells);
         List<CustomSpell> spells = new ArrayList<>();
