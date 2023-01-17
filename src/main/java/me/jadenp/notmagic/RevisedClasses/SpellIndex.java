@@ -1,5 +1,6 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.SpellWorkshop.NotCallback;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import org.bukkit.*;
@@ -30,7 +31,7 @@ public class SpellIndex {
     private Plugin plugin;
     private Magic magic;
     Random rand = new Random();
-    Items items = new Items();
+    private final String noLevelMsg = ChatColor.BLUE + "You are not a high enough level to cast this spell! ";
     boolean debug = true;
     //File customSpells = new File(plugin.getDataFolder() + File.separator + "customSpells.yml");
 
@@ -50,31 +51,31 @@ public class SpellIndex {
         // next point can be "Up", "Down", "Left", "Right", "LeftUp", "LeftDown", "RightUp", "RightDown" - there cannot be the same direction twice in a row
         // castTime, cooldown - all in ticks
         // save LeftDown to start the custom spells
-        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), items.data("SBBurn"), plugin, true));
+        spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), Items.data("SBBurn"), plugin, true));
 
-        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), items.data("SBZap"), plugin, true));
+        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), Items.data("SBZap"), plugin, false));
 
-        spells.add(new Spell("Heal", 15, 2,200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), items.data("SBHeal"), plugin, false));
+        spells.add(new Spell("Heal", 15, 2,1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), Items.data("SBHeal"), plugin, false));
 
-        spells.add(new Spell("Strength", 20, 2,300, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), items.data("SBStrength"), plugin, false));
+        spells.add(new Spell("Strength", 20, 2,1200, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), Items.data("SBStrength"), plugin, false));
 
-        spells.add(new Spell("Burst", 15, 4,150, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), items.data("SBBurst"), plugin, true));
+        spells.add(new Spell("Burst", 15, 4,150, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), Items.data("SBBurst"), plugin, true));
 
-        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), items.data("SBSnipe"), plugin, true));
+        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), Items.data("SBSnipe"), plugin, true));
 
-        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), items.data("SBLocate"), plugin, true));
+        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), Items.data("SBLocate"), plugin, true));
 
-        spells.add(new Spell("Teleport", 25, 5, 25, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Up", "Down", "Up", "Down")), items.data("SBTeleport"), plugin, true));
+        spells.add(new Spell("Teleport", 25, 5, 25, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Up", "Down", "Up", "Down")), Items.data("SBTeleport"), plugin, true));
 
-        spells.add(new Spell("Iron Wall Attack", 50, 5, 30, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Right", "Down", "Left")), items.data("SBIronWallAttack"), plugin, true));
+        spells.add(new Spell("Iron Wall Attack", 50, 5, 30, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Right", "Down", "Left")), Items.data("SBIronWallAttack"), plugin, true));
 
-        spells.add(new Spell("Life Steal", 75, 120, 600, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftDown", "Right", "LeftUp")), items.data("SBLifeSteal"), plugin, true));
+        spells.add(new Spell("Life Steal", 75, 120, 600, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftDown", "Right", "LeftUp")), Items.data("SBLifeSteal"), plugin, true));
 
-        spells.add(new Spell("Smite", 35, 5, 200, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown", "LeftDown")), items.data("SBSmite"), plugin, true));
+        spells.add(new Spell("Smite", 35, 5, 200, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown", "LeftDown")), Items.data("SBSmite"), plugin, true));
 
-        spells.add(new Spell("Fireball", 30, 3, 100, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), items.data("SBFireball"), plugin, true));
+        spells.add(new Spell("Fireball", 30, 3, 100, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), Items.data("SBFireball"), plugin, true));
 
-        spells.add(new Spell("Ice Shards", 45, 2, 20, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), items.data("SBIceShards"), plugin, true));
+        spells.add(new Spell("Ice Shards", 45, 2, 20, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), Items.data("SBIceShards"), plugin, true));
     }
 
     public void addWorkshopSpell(WorkshopSpell spell){
@@ -257,8 +258,43 @@ public class SpellIndex {
         // match spells here instead of doing it in magic
         Spell obj = querySpell(spell);
         if (obj != null) {
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, obj.getCastTime(), Integer.MAX_VALUE));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, obj.getCastTime(), Integer.MAX_VALUE));
+            if (obj.getCastTime() > 20) {
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, obj.getCastTime(), 5));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, obj.getCastTime(), 128));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, obj.getCastTime(), 128));
+                new BukkitRunnable(){
+                    int clock = 0;
+
+                    @Override
+                    public void run() {
+                        if (clock < obj.getCastTime()){
+                            if (p.isOnline()) {
+                                float progress = (float) clock / obj.getCastTime();
+                                int coloredBlocks = (int) (progress * 10);
+                                StringBuilder builder = new StringBuilder();
+                                builder.append(ChatColor.GRAY);
+                                for (int i = 0; i < 10 - coloredBlocks; i++) {
+                                    builder.append("❙");
+                                }
+                                builder.append(ChatColor.BLUE);
+                                for (int i = 0; i < coloredBlocks * 2; i++) {
+                                    builder.append("❙");
+                                }
+                                builder.append(ChatColor.GRAY);
+                                for (int i = 0; i < 10 - coloredBlocks; i++) {
+                                    builder.append("❙");
+                                }
+                                p.sendTitle("", builder.toString(), 0, 10, 0);
+                            }
+                            clock+= 10;
+                        } else {
+                            this.cancel();
+                        }
+                    }
+                }.runTaskTimer(NotMagic.getInstance(), 0, 10);
+            }
+
+
             if (obj instanceof WorkshopSpell) {
                 WorkshopSpell ws = (WorkshopSpell) obj;
                 // where the player's crosshair landed
@@ -359,6 +395,9 @@ public class SpellIndex {
                     case "Ice Shards":
                         iceShards(p);
                         break;
+                    case "Locate":
+                        locate(p);
+                        break;
                 }
             }
             }/* else{
@@ -379,23 +418,22 @@ public class SpellIndex {
         PlayerData data = findPlayer(p.getUniqueId());
         if (data.onCooldown(spell.getName())){
             // on cooldown
-            p.sendMessage("on cooldown");
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
             return;
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage("no level");
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
             return;
         }
         if (data.getMp() < spell.getMpCost()){
             // not enough mana
-            p.sendMessage("no mana");
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
             return;
         }
         // finally, able to cast the spell
         data.useMP(spell.getMpCost());
         data.addCooldown(spell.getName(),spell.getCooldown());
-        p.sendMessage("cast burn yay ");
 
 
         Location front = p.getEyeLocation().add(p.getLocation().getDirection().multiply(1.3));
@@ -444,22 +482,22 @@ public class SpellIndex {
         PlayerData data = findPlayer(p.getUniqueId());
         if (data.onCooldown(spell.getName())){
             // on cooldown
-            p.sendMessage("on cooldown");
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
             return;
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage("no level");
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
             return;
         }
         if (data.getMp() < spell.getMpCost()){
             // not enough mana
-            p.sendMessage("no mana");
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
             return;
         }
         // finally, able to cast the spell
         data.useMP(spell.getMpCost());
-        p.sendMessage("cast zap yay ");
+        data.addCooldown(spell.getName(), spell.getCooldown());
 
         Location iF1 = p.getEyeLocation().add(p.getLocation().getDirection().multiply(0.7));
         Location iF = new Location(iF1.getWorld(), iF1.getX(), iF1.getY() + 0.7, iF1.getZ());
@@ -587,6 +625,27 @@ public class SpellIndex {
     }
 
     public void snipe(Player p) {
+        Spell spell = spells.get(5);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Location launchLocation = p.getEyeLocation().add(p.getEyeLocation().getDirection());
         Vector launchDirection = p.getEyeLocation().getDirection().normalize();
         assert launchLocation.getWorld() != null;
@@ -645,6 +704,27 @@ public class SpellIndex {
     }
 
     public void heal(Player p){
+        Spell spell = spells.get(2);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         for (Entity entity : p.getWorld().getNearbyEntities(p.getLocation(), 5,5,5)){
             if (entity instanceof LivingEntity){
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,0));
@@ -653,6 +733,27 @@ public class SpellIndex {
         }
     }
     public void strength(Player p){
+        Spell spell = spells.get(3);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         for (Entity entity : p.getWorld().getNearbyEntities(p.getLocation(), 5,5,5)){
             if (entity instanceof LivingEntity){
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600,0));
@@ -665,6 +766,27 @@ public class SpellIndex {
         return spells;
     }
     public void burst(Player p) {
+        Spell spell = spells.get(4);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Vector v = new Vector(0 - p.getLocation().getDirection().getX(), 0.7, 0 - p.getLocation().getDirection().getZ());
         Vector v2 = new Vector(p.getLocation().getDirection().getX(), -0.4, p.getLocation().getDirection().getZ());
         Location start = p.getLocation().add(v.multiply(12));
@@ -705,6 +827,27 @@ public class SpellIndex {
 
     }
     public void locate(Player p){
+        Spell spell = spells.get(6);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Player closest = null;
         List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
         for (Entity b : near) {
@@ -741,10 +884,31 @@ public class SpellIndex {
                 }
             }.runTaskTimer(plugin, 0, 3L);
         } else {
-            p.sendMessage(magic.eventClass.prefix + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There are no players in your world!");
+            p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There are no players in your world!");
         }
     }
     public void teleport(Player p){
+        Spell spell = spells.get(7);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Block target = p.getTargetBlock(null, 10);
         Location l = new Location(p.getTargetBlock(null, 10).getLocation().getWorld(), target.getLocation().getX(), target.getLocation().getY(), target.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch());
         p.getWorld().spawnParticle(Particle.WARPED_SPORE, p.getLocation(), 10);
@@ -755,6 +919,27 @@ public class SpellIndex {
         p.teleport(l);
     }
     public void ironWallAttack(Player p){
+        Spell spell = spells.get(8);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         IronGolem golem = p.getWorld().spawn(p.getEyeLocation().add(p.getEyeLocation().getDirection()), IronGolem.class);
         golem.setAware(false);
         golem.setVelocity(p.getLocation().getDirection().multiply(1.5));
@@ -794,6 +979,27 @@ public class SpellIndex {
         }.runTaskTimer(plugin, 0L, 3);
     }
     public void lifeSteal(Player p) {
+        Spell spell = spells.get(9);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         LivingEntity target = null;
         for (Entity e : p.getWorld().getNearbyEntities(p.getLocation(), 20, 20, 20)) {
             if (e instanceof LivingEntity)
@@ -868,18 +1074,81 @@ public class SpellIndex {
         return dot > 0.99D;
     }
     public void smite(Player p){
+        Spell spell = spells.get(10);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Location target = p.getTargetBlock(null, 50).getLocation();
         LightningStrike lightningStrike = p.getWorld().strikeLightning(target);
         lightningStrike.setMetadata("magic", new FixedMetadataValue(plugin, true));
         lightningStrike.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin, true));
     }
     public void fireball(Player p){
+        Spell spell = spells.get(11);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Fireball fireball = p.launchProjectile(Fireball.class);
         fireball.setMetadata("magic", new FixedMetadataValue(plugin, true));
         fireball.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin,true));
         fireball.setShooter(p);
     }
     public void iceShards(Player p) {
+        Spell spell = spells.get(12);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
         Particle.DustOptions dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(10, 50, 200), 1);
         Location front = p.getEyeLocation().add(p.getLocation().getDirection().multiply(1.3));
         p.getWorld().spawnParticle(Particle.REDSTONE, front, 1, dustOptions);

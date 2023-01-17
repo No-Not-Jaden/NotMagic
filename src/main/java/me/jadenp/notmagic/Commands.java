@@ -38,7 +38,6 @@ public class Commands implements CommandExecutor, TabCompleter {
     Items items = new Items();
     private Plugin plugin;
     private NotMagic notMagic;
-    private String prefix;
     private HashMap<String, Integer> levels = new HashMap<>();
     public List<String> language = new ArrayList<>();
 
@@ -51,7 +50,6 @@ public class Commands implements CommandExecutor, TabCompleter {
     public Commands(NotMagic plugin){
         this.plugin = plugin;
         this.notMagic = plugin;
-        prefix = plugin.getPrefix();
 
     }
 
@@ -114,6 +112,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("nm")) {
+            String prefix = NotMagic.getInstance().getPrefix();
 
             if (args.length == 0) {
                 if (sender.hasPermission("notmagic.basic")) {

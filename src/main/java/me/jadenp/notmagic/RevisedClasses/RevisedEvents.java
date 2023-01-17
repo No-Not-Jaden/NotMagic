@@ -32,14 +32,12 @@ public class RevisedEvents implements Listener {
     private List<PlayerData> playerData = new ArrayList<>();
     private List<WorkshopSpell> workshopSpells = new ArrayList<>();
     Items items = new Items();
-    public String prefix;
 
 
     public RevisedEvents(NotMagic notMagic) throws IOException {
         this.plugin = notMagic;
         this.notMagic = notMagic;
         magicClass = new Magic(notMagic,this);
-        prefix = notMagic.getPrefix();
 
         // load key from recordKey file to get uuids of every player, then grab their corresponding file and place it in a list
         Bukkit.getLogger().info("Loading Player Data...");

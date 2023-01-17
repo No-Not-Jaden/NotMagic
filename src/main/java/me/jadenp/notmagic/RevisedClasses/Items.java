@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public class Items {
     // stick bamboo amethyst blaze rod bone feather
-    public ItemStack data(String s){
+    public static ItemStack data(String s){
         if (s.equalsIgnoreCase("BasicWand")){
             ItemStack item = new ItemStack(Material.BLAZE_ROD);
             ItemMeta Meta = item.getItemMeta();
@@ -1146,15 +1146,85 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return item;
+        } else if (s.equalsIgnoreCase("smallCatalystCrystal")) {
+            ItemStack item = new ItemStack(Material.SMALL_AMETHYST_BUD);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Small Catalyst Crystal");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Holds a small amount of magic");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("mediumCatalystCrystal")) {
+            ItemStack item = new ItemStack(Material.MEDIUM_AMETHYST_BUD);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Medium Catalyst Crystal");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Holds a medium amount of magic");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("largeCatalystCrystal")) {
+            ItemStack item = new ItemStack(Material.LARGE_AMETHYST_BUD);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Large Catalyst Crystal");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Holds a Large amount of magic");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("unstableCatalystCrystal")) {
+            ItemStack item = new ItemStack(Material.AMETHYST_CLUSTER);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Unst" + ChatColor.MAGIC + "a" + ChatColor.LIGHT_PURPLE + "ble C" + ChatColor.MAGIC + "a" + ChatColor.LIGHT_PURPLE + "taly" + ChatColor.MAGIC + "s" + ChatColor.LIGHT_PURPLE + "t Cryst" + ChatColor.MAGIC + "a" + ChatColor.LIGHT_PURPLE + "l");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.ITALIC + "Holds enormous amounts of magic");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("weakMagicCore")) {
+            ItemStack item = new ItemStack(Material.CONDUIT);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.YELLOW + "Weak Magic Core");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Controls and redirects magic");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         }
         return null;
     }
 
-    public boolean isWand(ItemStack itemStack){
+    public static boolean isWand(ItemStack itemStack){
         return (itemStack.isSimilar(data("BasicWand")) || itemStack.isSimilar(data("ProsaicWand")) || itemStack.isSimilar(data("ShadowWand")) || itemStack.isSimilar(data("EnhancedWand")) || itemStack.isSimilar(data("WardenWand")) || itemStack.isSimilar(data("DestructionWand")) || itemStack.isSimilar(data("AquaWand")));
     }
 
-    public boolean isEssence(ItemStack itemStack){
+    public static boolean isEssence(ItemStack itemStack){
         return itemStack.isSimilar(data("fireEssence")) || itemStack.isSimilar(data("earthEssence")) || itemStack.isSimilar(data("waterEssence")) || itemStack.isSimilar(data("windEssence")) || itemStack.isSimilar(data("electricityEssence")) || itemStack.isSimilar(data("iceEssence")) || itemStack.isSimilar(data("poisonEssence")) || itemStack.isSimilar(data("livingEssence")) || itemStack.isSimilar(data("spectralEssence"));
     }
 

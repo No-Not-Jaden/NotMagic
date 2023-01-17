@@ -1,10 +1,7 @@
 package me.jadenp.notmagic;
 
 import me.jadenp.notmagic.Alchemy.RevisedAlchemy;
-import me.jadenp.notmagic.RevisedClasses.CustomSpell;
-import me.jadenp.notmagic.RevisedClasses.Items;
-import me.jadenp.notmagic.RevisedClasses.RevisedEvents;
-import me.jadenp.notmagic.RevisedClasses.Spell;
+import me.jadenp.notmagic.RevisedClasses.*;
 import me.jadenp.notmagic.SpellWorkshop.CraftingInterface;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -133,7 +130,7 @@ public final class NotMagic extends JavaPlugin {
             }
         }
         // loading configurations
-        loadConfig();
+
         // starting event listening and command listening
         commandClass = new Commands(this);
         Objects.requireNonNull(this.getCommand("nm")).setExecutor(commandClass);
@@ -150,10 +147,16 @@ public final class NotMagic extends JavaPlugin {
         getServer().getPluginManager().registerEvents(eventClass.magicClass, this);
         craftingInterface = new CraftingInterface(this);
         // creating files if they don't exist
-        File config = new File(this.getDataFolder() + File.separator + "config.yml");
-        if (!config.exists()) {
-            this.saveDefaultConfig();
+        this.saveDefaultConfig();
+
+        try {
+            getServer().getPluginManager().registerEvents(new Industrial(), this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        loadConfig();
+
+
 
 
 

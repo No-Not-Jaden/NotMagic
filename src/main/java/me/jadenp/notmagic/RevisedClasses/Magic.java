@@ -380,7 +380,7 @@ public class Magic implements Listener {
                                         // calculated in minecraft meters, so 0.25 meters away from last vertex point
                                         // distance x and z is calculated using yaw degrees which makes it a little easier
                                         // to find the degrees to get 0.25 away its just (distance between reference & point) * atan(0.25)
-                                        double pDistanceY = 15 * (Math.PI / 180);
+                                        double pDistanceY = 20 * (Math.PI / 180);
                                         double diagonalMultiplier = 0.5;
                                         // because pDistanceXZ is for 2 axes, we can use the getReferenceAngle() method I created to
                                         // check if the new point is to the left or to the right of the last point
