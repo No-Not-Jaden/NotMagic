@@ -414,11 +414,11 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
             return item;
-        } else if (s.equalsIgnoreCase("SBDefence")){
+        } else if (s.equalsIgnoreCase("SBDefense")){
             ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
             ItemMeta Meta = item.getItemMeta();
             assert Meta != null;
-            Meta.setDisplayName(ChatColor.YELLOW + "Defence Spell");
+            Meta.setDisplayName(ChatColor.YELLOW + "Defense Spell");
             ArrayList<String> Lore = new ArrayList<>();
             Lore.add("");
             Lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Secondary Spell:");

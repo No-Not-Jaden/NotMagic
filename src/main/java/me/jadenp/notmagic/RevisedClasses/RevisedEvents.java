@@ -9,11 +9,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -177,6 +181,9 @@ public class RevisedEvents implements Listener {
             p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100,1));
         }
 
+        for (Player hidden : magicClass.spellIndex.getHiddenPlayers()){
+            event.getPlayer().hidePlayer(NotMagic.getInstance(), hidden);
+        }
     }
 
     public PlayerData findPlayer(UUID uuid){
@@ -225,5 +232,40 @@ public class RevisedEvents implements Listener {
             }
         }
         return null;
+    }
+
+    @EventHandler
+    public void onDamageEntity(EntityDamageByEntityEvent event){
+        if (event.getEntity() instanceof EnderCrystal){
+            if (event.getEntity().hasMetadata("magic")){
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDisable(PluginDisableEvent event){
+        if (event.getPlugin().equals(NotMagic.getInstance())){
+            for (Entity entity : magicClass.spellIndex.getMagicEntities()){
+                entity.remove();
+            }
+            for (Player player : Bukkit.getOnlinePlayers()){
+                for (Player hidden : magicClass.spellIndex.getHiddenPlayers()){
+                    player.showPlayer(NotMagic.getInstance(), hidden);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        if (magicClass.spellIndex.getHiddenPlayers().contains(event.getPlayer())){
+            for (Player player : Bukkit.getOnlinePlayers()){
+                    player.showPlayer(NotMagic.getInstance(), event.getPlayer());
+            }
+        }
+        for (Player player : magicClass.spellIndex.getHiddenPlayers()){
+            player.showPlayer(NotMagic.getInstance(), event.getPlayer());
+        }
     }
 }

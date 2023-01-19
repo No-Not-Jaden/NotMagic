@@ -3,10 +3,14 @@ package me.jadenp.notmagic.RevisedClasses;
 import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.SpellWorkshop.NotCallback;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
+import me.jadenp.notmagic.XPChangeEvent;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Crops;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -33,6 +37,8 @@ public class SpellIndex {
     Random rand = new Random();
     private final String noLevelMsg = ChatColor.BLUE + "You are not a high enough level to cast this spell! ";
     boolean debug = true;
+    private List<Entity> magicEntities = new ArrayList<>();
+    private List<Player> hiddenPlayers = new ArrayList<>();
     //File customSpells = new File(plugin.getDataFolder() + File.separator + "customSpells.yml");
 
     private List<Spell> spells = new ArrayList<>();
@@ -55,9 +61,9 @@ public class SpellIndex {
 
         spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), Items.data("SBZap"), plugin, false));
 
-        spells.add(new Spell("Heal", 15, 2,1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), Items.data("SBHeal"), plugin, false));
+        spells.add(new Spell("Heal", 15, 30,1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), Items.data("SBHeal"), plugin, false));
 
-        spells.add(new Spell("Strength", 20, 2,1200, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), Items.data("SBStrength"), plugin, false));
+        spells.add(new Spell("Strength", 20, 30,1200, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), Items.data("SBStrength"), plugin, false));
 
         spells.add(new Spell("Burst", 15, 4,150, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), Items.data("SBBurst"), plugin, true));
 
@@ -76,6 +82,32 @@ public class SpellIndex {
         spells.add(new Spell("Fireball", 30, 3, 100, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), Items.data("SBFireball"), plugin, true));
 
         spells.add(new Spell("Ice Shards", 45, 2, 20, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), Items.data("SBIceShards"), plugin, true));
+
+        spells.add(new Spell("Kinetic Electrocute", 75, 600, 1400, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "RightUp")), Items.data("SBKineticElectrocute"), plugin, false));
+
+        spells.add(new Spell("Thunder Cloud", 20, 30, 400, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "Left")), Items.data("SBThunderCloud"), plugin, false));
+
+        spells.add(new Spell("Dark Summoning", 75, 120, 800, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftUp", "Right", "Left")), Items.data("SBDarkSummoning"), plugin, false));
+
+        spells.add(new Spell("Dark Poisoning", 30, 70, 400, 1, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "Up", "RightDown", "Left")), Items.data("SBDarkPoisoning"), plugin, false));
+
+        spells.add(new Spell("Shield", 70, 20, 800, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Left", "Right")), Items.data("SBShield"), plugin, false));
+
+        spells.add(new Spell("Defense", 35, 30, 1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "RightUp", "Left")), Items.data("SBDefense"), plugin,false));
+
+        spells.add(new Spell("Dark Curse", 100, 100, 3600, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "LeftDown", "Left", "Right", "Up", "DownLeft", "Right")), Items.data("SBDarkCurse"), plugin, false));
+
+        spells.add(new Spell("Shadow Wandering", 20, 40, 400, 1, new ArrayList<>(Arrays.asList("Start", "Down", "Left", "Right", "Left", "Right")), Items.data("SBShadowWandering"), plugin, false));
+
+        spells.add(new Spell("Absorb", 100, 600, 800, 1, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "Right", "Left")), Items.data("SBAbsorb"), plugin, false));
+
+        spells.add(new Spell("Freeze", 30, 20, 600, 1, new ArrayList<>(Arrays.asList("Start", "Up", "LeftDown", "Right")), Items.data("SBFreeze"), plugin, false));
+
+        spells.add(new Spell("Time Bomb", 50, 120, 3600, 1, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "LeftDown", "Down", "Right", "Up")), Items.data("SBTimeBomb"), plugin, false));
+
+        spells.add(new Spell("Drown", 75, 20, 800, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "RightUp", "RightUp")), Items.data("SBDrown"), plugin, false));
+
+
     }
 
     public void addWorkshopSpell(WorkshopSpell spell){
@@ -236,6 +268,10 @@ public class SpellIndex {
         return null;
     }
 
+    public List<Entity> getMagicEntities() {
+        return magicEntities;
+    }
+
     public static Vector rotateVectorCC(Vector vec, Vector axis, double theta){
         double x, y, z;
         double u, v, w;
@@ -293,6 +329,7 @@ public class SpellIndex {
                     }
                 }.runTaskTimer(NotMagic.getInstance(), 0, 10);
             }
+
 
 
             if (obj instanceof WorkshopSpell) {
@@ -398,6 +435,43 @@ public class SpellIndex {
                     case "Locate":
                         locate(p);
                         break;
+                    case "Kinetic Electrocute":
+                        kineticElectrocute(p);
+                        break;
+                    case "Thunder Cloud":
+                        thunderCloud(p);
+                        break;
+                    case "Dark Summoning":
+                        darkSummoning(p);
+                        break;
+                    case "Dark Poisoning":
+                        darkPoisoning(p);
+                        break;
+                    case "Shield":
+                        shield(p);
+                        break;
+                    case "Defense":
+                        defence(p);
+                        break;
+                    case "Dark Curse":
+                        darkCurse(p);
+                        break;
+                    case "Shadow Wandering":
+                        shadowWandering(p);
+                        break;
+                    case "Absorb":
+                        absorb(p);
+                        break;
+                    case "Freeze":
+                        freeze(p);
+                        break;
+                    case "Time Bomb":
+                        timeBomb(p);
+                        break;
+                    case "Drown":
+                        drown(p);
+                        break;
+
                 }
             }
             }/* else{
@@ -412,6 +486,22 @@ public class SpellIndex {
             }*/
 
     }
+
+    public List<Player> getHiddenPlayers() {
+        return hiddenPlayers;
+    }
+    public List<Spell> getSpells() {
+        return spells;
+    }
+    private boolean getLookingAt(Player player, LivingEntity player1)
+    {
+        Location eye = player.getEyeLocation();
+        Vector toEntity = player1.getEyeLocation().toVector().subtract(eye.toVector());
+        double dot = toEntity.normalize().dot(eye.getDirection());
+
+        return dot > 0.99D;
+    }
+
 
     public void burn(Player p) {
         Spell spell = spells.get(0);
@@ -476,7 +566,6 @@ public class SpellIndex {
             }
         }.runTaskTimer(plugin, 0, 1L);
     }
-
     public void zap(Player p){
         Spell spell = spells.get(2);
         PlayerData data = findPlayer(p.getUniqueId());
@@ -623,7 +712,6 @@ public class SpellIndex {
             }
         }.runTaskTimer(plugin, 0, 1L);
     }
-
     public void snipe(Player p) {
         Spell spell = spells.get(5);
         PlayerData data = findPlayer(p.getUniqueId());
@@ -702,7 +790,6 @@ public class SpellIndex {
 
         //arrow.setMetadata("magic", new FixedMetadataValue(plugin, true));
     }
-
     public void heal(Player p){
         Spell spell = spells.get(2);
         PlayerData data = findPlayer(p.getUniqueId());
@@ -760,10 +847,6 @@ public class SpellIndex {
                 entity.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, ((LivingEntity) entity).getEyeLocation().add(0,1,0), 5, .25,.5,.25);
             }
         }
-    }
-
-    public List<Spell> getSpells() {
-        return spells;
     }
     public void burst(Player p) {
         Spell spell = spells.get(4);
@@ -1065,14 +1148,6 @@ public class SpellIndex {
         }.runTaskTimer(plugin, 0, 10);
 
     }
-    private boolean getLookingAt(Player player, LivingEntity player1)
-    {
-        Location eye = player.getEyeLocation();
-        Vector toEntity = player1.getEyeLocation().toVector().subtract(eye.toVector());
-        double dot = toEntity.normalize().dot(eye.getDirection());
-
-        return dot > 0.99D;
-    }
     public void smite(Player p){
         Spell spell = spells.get(10);
         PlayerData data = findPlayer(p.getUniqueId());
@@ -1191,4 +1266,810 @@ public class SpellIndex {
             }
         }.runTaskTimer(plugin, 0, 1L);
     }
+    public void kineticElectrocute(Player p){
+        Spell spell = spells.get(13);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+        EnderCrystal crystal = p.getWorld().spawn(new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY() + 3, p.getLocation().getZ()), EnderCrystal.class);
+            crystal.setShowingBottom(false);
+            crystal.setInvulnerable(true);
+            crystal.setGlowing(true);
+            magicEntities.add(crystal);
+            new BukkitRunnable(){
+                int timer = 0;
+                @Override
+                public void run() {
+                    Location loc = crystal.getLocation();
+                    int r = 6;
+                    int x;
+                    double y = loc.getBlockY() - 2.7;
+                    int z;
+                    int w = 0;
+                    for (double i = 0.0; i < 360.0; i += 0.1) {
+                        double angle = i * Math.PI / 180;
+                        x = (int)(loc.getX() + r * Math.cos(angle));
+                        z = (int)(loc.getZ() + r * Math.sin(angle));
+                        if (w < 30) {
+                            w++;
+                        } else {
+                            w = 0;
+                            Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.FALLING_OBSIDIAN_TEAR, x,y,z, 1, 0.2, 0, 0.2);
+                        }
+                    }
+                    double radius = 6D;
+                    List<Entity> near = Objects.requireNonNull(crystal.getWorld()).getEntities();
+                    boolean hit = false;
+                    for (Entity e: near) {
+                        if (e.getLocation().distance(crystal.getLocation()) <= radius) {
+                            if (e instanceof LivingEntity) {
+                                if (e != p) {
+
+                                    crystal.setBeamTarget(new Location(e.getWorld(), e.getLocation().getX(), e.getLocation().getY() -1, e.getLocation().getZ()));
+                                    hit = true;
+
+
+                                    ((LivingEntity) e).damage(4, p);
+                                    e.getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getLocation(), 10, 1, 1, 1);
+
+
+                                    break;
+
+                                }
+                            }
+                        }
+                    }
+                    if (!hit){
+                        crystal.setBeamTarget(null);
+                    }
+                    if (!p.isOnline()){
+                        this.cancel();
+                        magicEntities.remove(crystal);
+                        crystal.remove();
+                    }
+                    if (timer >= 1200){
+                        this.cancel();
+                        magicEntities.remove(crystal);
+                        crystal.remove();
+                    }
+                    timer+= 10;
+
+                }
+            }.runTaskTimer(plugin, 0, 10L);
+
+
+
+    }
+    public void thunderCloud(Player p){
+        Spell spell = spells.get(14);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+            double radius = 6D;
+            List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+            boolean hit = false;
+            Player pHit = null;
+            for (Entity e: near) {
+                if (e.getLocation().distance(p.getLocation()) <= radius) {
+                    if (e instanceof Player) {
+                        if (e != p) {
+                            hit = true;
+                            pHit = (Player) e;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (hit) {
+                Player finalPHit = pHit;
+                new BukkitRunnable() {
+                    int timer = 0;
+                    @Override
+                    public void run() {
+                        Location loc = new Location(finalPHit.getWorld(), finalPHit.getLocation().getX(), finalPHit.getLocation().getY() + 2.5, finalPHit.getLocation().getZ());
+                        Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 0, 0, 0, 0);
+
+                        for (int i = 0; i < 3; i++) {
+                            Location location = new Location(loc.getWorld(), loc.getX() + (((double)rand.nextInt(11)/10)-0.5), loc.getY(), loc.getZ() + (((double)rand.nextInt(11)/10)-0.5));
+                            loc.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 0, 0, 0, 0);
+                            loc.getWorld().spawnParticle(Particle.DRIP_WATER, location, 1);
+                        }
+                        if (timer == 2000){
+                            this.cancel();
+                        }
+                        timer++;
+                        if (Bukkit.getPlayer(finalPHit.getUniqueId()) == null){
+                            this.cancel();
+                        }
+                    }
+                }.runTaskTimer(plugin, 0, 10L);
+            } else {
+                p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There is nobody to cast the spell on!");
+            }
+
+    }
+    public void darkSummoning(Player p){
+        Spell spell = spells.get(15);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+            WitherSkeleton w = p.getWorld().spawn(p.getLocation(), WitherSkeleton.class);
+            magicEntities.add(w);
+            w.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin, true));
+            w.setCustomName(net.md_5.bungee.api.ChatColor.DARK_GRAY + "Dark Wither Skeleton");
+            w.setCustomNameVisible(true);
+            w.setPersistent(true);
+            w.setRemoveWhenFarAway(false);
+            Objects.requireNonNull(w.getLocation().getWorld()).spawnParticle(Particle.CLOUD, w.getLocation(), 10, 3, 3, 3);
+
+            EntityEquipment ee = w.getEquipment();
+            assert ee != null;
+            ee.setChestplate(new ItemStack(Material.NETHERITE_CHESTPLATE));
+            ee.setHelmet(new ItemStack(Material.NETHERITE_HELMET));
+            ee.setLeggings(new ItemStack(Material.NETHERITE_LEGGINGS));
+            ee.setBoots(new ItemStack(Material.NETHERITE_BOOTS));
+            ee.setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD));
+            ee.setBootsDropChance(0);
+            ee.setChestplateDropChance(0);
+            ee.setHelmetDropChance(0);
+            ee.setLeggingsDropChance(0);
+            ee.setItemInMainHandDropChance(0);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                if (w.isValid()) {
+                    w.getLocation().getWorld().spawnParticle(Particle.CLOUD, w.getLocation(), 10, 3, 3, 3);
+                    magicEntities.remove(w);
+                    w.remove();
+                }
+            }, 1000L);
+
+    }
+    public void darkPoisoning(Player p){
+        Spell spell = spells.get(16);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+        Vector v1 = p.getEyeLocation().getDirection();
+
+            Location front = p.getEyeLocation().add(v1.multiply(1.3));
+            Location loc;
+            for (int i = 0; i < 7; i++){
+                loc = front.add(v1.multiply(1 + ((double) i / 10)));
+                double radius = 4D;
+                List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+                for (Entity e: near) {
+                    if (e.getLocation().distance(loc) <= radius) {
+                        if (e instanceof LivingEntity) {
+                            if (e != p) {
+
+                                e.getWorld().spawn(e.getLocation(), EvokerFangs.class);
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 600, 2)), 20L);
+
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+    }
+    public void shield(Player p){
+        Spell spell = spells.get(17);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+
+            Location loc = p.getLocation();
+            Vector direction = p.getLocation().getDirection();
+            Location front = loc.add(direction);
+            ArmorStand stand1 = p.getWorld().spawn(front, ArmorStand.class);
+            Location b = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw() + 30, p.getLocation().getPitch());
+            Vector direction2 = b.getDirection();
+            Location front2 = b.add(direction2);
+            ArmorStand stand2 = b.getWorld().spawn(front2, ArmorStand.class);
+            Location a = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw() - 30, p.getLocation().getPitch());
+            Vector direction3 = a.getDirection();
+            Location front3 = a.add(direction3);
+            ArmorStand stand3 = a.getWorld().spawn(front3, ArmorStand.class);
+            Location c = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw() + 60, p.getLocation().getPitch());
+            Vector direction4 = c.getDirection();
+            Location front4 = c.add(direction4);
+            ArmorStand stand4 = c.getWorld().spawn(front4, ArmorStand.class);
+            Location d = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw() - 60, p.getLocation().getPitch());
+            Vector direction5 = d.getDirection();
+            Location front5 = d.add(direction5);
+            ArmorStand stand5 = d.getWorld().spawn(front5, ArmorStand.class);
+            stand1.setGravity(false);
+            stand2.setGravity(false);
+            stand3.setGravity(false);
+            stand4.setGravity(false);
+            stand5.setGravity(false);
+            stand1.setCollidable(true);
+            stand2.setCollidable(true);
+            stand3.setCollidable(true);
+            stand4.setCollidable(true);
+            stand5.setCollidable(true);
+            stand1.setVisible(false);
+            stand2.setVisible(false);
+            stand3.setVisible(false);
+            stand4.setVisible(false);
+            stand5.setVisible(false);
+            stand1.setInvulnerable(true);
+            stand2.setInvulnerable(true);
+            stand3.setInvulnerable(true);
+            stand4.setInvulnerable(true);
+            stand5.setInvulnerable(true);
+            magicEntities.add(stand1);
+            magicEntities.add(stand2);
+            magicEntities.add(stand3);
+            magicEntities.add(stand4);
+            magicEntities.add(stand5);
+
+            Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.CLOUD, front, 10);
+            Objects.requireNonNull(front2.getWorld()).spawnParticle(Particle.CLOUD, front2, 10);
+            Objects.requireNonNull(front3.getWorld()).spawnParticle(Particle.CLOUD, front3, 10);
+            Objects.requireNonNull(front4.getWorld()).spawnParticle(Particle.CLOUD, front4, 10);
+            Objects.requireNonNull(front5.getWorld()).spawnParticle(Particle.CLOUD, front5, 10);
+
+            new BukkitRunnable() {
+                int timer = 0;
+                @Override
+                public void run(){
+
+                    if (timer < 300){
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front.getX(), front.getY() + 1, front.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front.getX(), front.getY() + 2, front.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front2.getX(), front2.getY() + 1, front2.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front2.getX(), front2.getY() + 2, front2.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front3.getX(), front3.getY() + 1, front3.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front3.getX(), front3.getY() + 2, front3.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front4.getX(), front4.getY() + 1, front4.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front4.getX(), front4.getY() + 2, front4.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front5.getX(), front5.getY() + 1, front5.getZ(), 10);
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.BLOCK_MARKER, front5.getX(), front5.getY() + 2, front5.getZ(), 10);
+
+                        timer+= 70;
+
+
+                    } else {
+                        this.cancel();
+                        Objects.requireNonNull(front.getWorld()).spawnParticle(Particle.CLOUD, front, 10);
+                        Objects.requireNonNull(front2.getWorld()).spawnParticle(Particle.CLOUD, front2, 10);
+                        Objects.requireNonNull(front3.getWorld()).spawnParticle(Particle.CLOUD, front3, 10);
+                        Objects.requireNonNull(front4.getWorld()).spawnParticle(Particle.CLOUD, front4, 10);
+                        Objects.requireNonNull(front5.getWorld()).spawnParticle(Particle.CLOUD, front5, 10);
+                        magicEntities.remove(stand1);
+                        magicEntities.remove(stand2);
+                        magicEntities.remove(stand3);
+                        magicEntities.remove(stand4);
+                        magicEntities.remove(stand5);
+                        stand1.remove();
+                        stand2.remove();
+                        stand3.remove();
+                        stand4.remove();
+                        stand5.remove();
+
+                    }
+                }
+            }.runTaskTimer(plugin, 0L, 70L);
+
+    }
+    public void defence(Player p){
+        Spell spell = spells.get(18);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+            Location loc = p.getLocation();
+            int r = 4;
+            int x;
+            int y = loc.getBlockY();
+            int z;
+            int w = 0;
+            for (double i = 0.0; i < 360.0; i += 0.1) {
+                double angle = i * Math.PI / 180;
+                x = (int)(loc.getX() + r * Math.cos(angle));
+                z = (int)(loc.getZ() + r * Math.sin(angle));
+                if (w < 5) {
+                    w++;
+                } else {
+                    w = 0;
+                    Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.LANDING_OBSIDIAN_TEAR, x,y,z, 1, 0.2, 0, 0.2);
+                }
+            }
+            double radius = 4D;
+            List<Entity> near = Objects.requireNonNull(loc.getWorld()).getEntities();
+            for (Entity e: near) {
+                if (e.getLocation().distance(loc) <= radius) {
+                    if (e instanceof LivingEntity) {
+                        if (!(e instanceof Monster)) {
+                            ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 800, 0));
+                            e.getWorld().spawnParticle(Particle.CRIT_MAGIC, e.getLocation().getX(), e.getLocation().getY() + 2, e.getLocation().getZ(), 3, 0.2, 0.2, 0.2);
+                        }
+                    }
+                }
+            }
+
+    }
+    public void darkCurse(Player p){
+        Spell spell = spells.get(19);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+
+            Vector v1 = p.getEyeLocation().getDirection();
+            Location front = p.getEyeLocation().add(v1.multiply(1.3));
+            Location loc;
+            for (int i = 0; i < 7; i++){
+                loc = front.add(v1.multiply(1 + ((double) i / 10)));
+                double radius = 4D;
+                List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+                for (Entity e: near) {
+                    if (e.getLocation().distance(loc) <= radius) {
+                        if (e instanceof LivingEntity) {
+                            if (e != p) {
+
+                                e.getWorld().spawnParticle(Particle.SUSPENDED_DEPTH, e.getLocation(),100,1,1,1);
+                                e.getWorld().playSound(e.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE,1,1);
+                                ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, 1000, 2));
+                                if (e instanceof Player)
+                                    e.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_PURPLE + p.getName() + " has cursed you!");
+                                break;
+
+                            }
+                        }
+                    }
+                }
+            }
+    }
+    public void shadowWandering(Player p){
+        Spell spell = spells.get(20);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+        for (Player player : Bukkit.getOnlinePlayers()){
+            player.hidePlayer(NotMagic.getInstance(), p);
+        }
+
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                if (p.isOnline()){
+                    PlayerData data = findPlayer(p.getUniqueId());
+                    if (data.getMp() < (data.getMpRegen() * 2) + 1){
+                        this.cancel();
+                        hiddenPlayers.remove(p);
+                        for (Player player : Bukkit.getOnlinePlayers()){
+                                player.showPlayer(NotMagic.getInstance(), p);
+                        }
+                    } else {
+                        // show particles
+                        for (int i = 0; i < 10; i++){
+                            Block floor = p.getLocation().getBlock().getRelative(0, -i, 0);
+                            if (!floor.getType().isAir()){
+                                floor.getWorld().spawnParticle(Particle.SQUID_INK, floor.getLocation().add(.5, floor.getBoundingBox().getMaxY(), .5), 10,.5, .05, .5);
+                            }
+                        }
+                    }
+                } else {
+                    this.cancel();
+                    hiddenPlayers.remove(p);
+                    for (Player player : Bukkit.getOnlinePlayers()){
+                            player.showPlayer(NotMagic.getInstance(), p);
+                    }
+                }
+
+            }
+        }.runTaskTimer(NotMagic.getInstance(), 10, 10);
+
+    }
+    public void absorb(Player p){
+        Spell spell = spells.get(21);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+
+        Particle.DustOptions dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(0, 0, 0), 10);
+            Location location = p.getEyeLocation().add(p.getEyeLocation().getDirection().multiply(3));
+            int slot = p.getInventory().getHeldItemSlot();
+
+            new BukkitRunnable(){
+                int timer = 0;
+                @Override
+                public void run() {
+                    p.getInventory().setHeldItemSlot(slot);
+                    if (p.isOnline()){
+                        for (int i = 0; i < 10; i++)
+                            p.spawnParticle(Particle.REDSTONE, new Location(location.getWorld(),location.getX() + (((double)rand.nextInt(8) / 10)-0.4),location.getY() + (((double)rand.nextInt(8) / 10)-0.4),location.getZ() + (((double)rand.nextInt(8) / 10)-0.4)), 1, dustOptions);
+                        Location particle = new Location(location.getWorld(),location.getX() + (((double)rand.nextInt(20))-10),location.getY() + (((double)rand.nextInt(20))-10),location.getZ() + (((double)rand.nextInt(20))-10));
+                        Vector vector = location.toVector().subtract(particle.toVector()).normalize();
+                        p.spawnParticle(Particle.SQUID_INK, particle , 0, vector.getX(),vector.getY(),vector.getZ());
+                        p.spawnParticle(Particle.CRIT_MAGIC,p.getLocation(),15,1,1,1);
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,15,20));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 15, 250));
+                        double radius = 10D;
+                        List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+                        for (Entity e: near) {
+                            if (e.getLocation().distance(location) <= radius) {
+                                if (e instanceof LivingEntity) {
+                                    if (e != p) {
+
+                                        if (e.getLocation().distance(location) <= 2) {
+                                            e.setVelocity(new Vector(0,0,0));
+                                            ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,15,1));
+                                            if (((LivingEntity) e).getHealth() < 30 && !(e instanceof Player)){
+                                                p.playSound(e.getLocation(), Sound.ENTITY_STRIDER_EAT,1,1);
+                                                p.spawnParticle(Particle.SUSPENDED,e.getLocation(),20,1,1,1);
+                                                XPChangeEvent event = new XPChangeEvent((int) (((LivingEntity) e).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * 3), p);
+                                                Bukkit.getServer().getPluginManager().callEvent(event);
+                                                e.remove();
+                                            } else {
+                                                ((LivingEntity) e).damage(30,p);
+                                            }
+
+                                        } else {
+                                            Vector v = location.toVector().subtract(e.getLocation().toVector()).normalize();
+                                            e.setVelocity(e.getVelocity().add(v.multiply((10 - e.getLocation().distance(p.getLocation())) / 5)));
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        if (timer > 32){
+                            this.cancel();
+                        }
+                        timer++;
+                    } else {
+                        this.cancel();
+                    }
+
+                }
+            }.runTaskTimer(plugin,0,10L);
+
+    }
+    public void freeze(Player p){
+        Spell spell = spells.get(22);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+            double radius = 6D;
+            List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+            for (Entity e: near) {
+                if (e.getLocation().distance(p.getLocation()) <= radius) {
+                    if (e instanceof LivingEntity) {
+                        if (e != p) {
+
+                            ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,400,30));
+                            ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.JUMP,400,250));
+                            e.getWorld().spawnParticle(Particle.SNOWBALL,e.getLocation(),20,1,1,1);
+                            if (e instanceof Player)
+                                e.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.BLUE + p.getName() + net.md_5.bungee.api.ChatColor.AQUA + " has froze you!.");
+
+                        }
+                    }
+                }
+            }
+
+    }
+    public void timeBomb(Player p){
+        Spell spell = spells.get(23);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+            EnderCrystal crystal = p.getWorld().spawn(p.getLocation(),EnderCrystal.class);
+            magicEntities.add(crystal);
+            new BukkitRunnable(){
+                int timer = 0;
+                int speed = 0;
+                @Override
+                public void run() {
+                    if (!(crystal.isValid())){
+                        this.cancel();
+                        return;
+                    }
+                    //10 10 | 10 5 | 10 2|
+                    Particle.DustOptions dustOptions = null;
+                    if (speed == 0){
+                        if (timer % 4 == 0){
+                            crystal.getWorld().playSound(crystal.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
+                            dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(32, 240, 10), 1);
+                            crystal.getWorld().spawnParticle(Particle.REDSTONE, crystal.getLocation().add(0.5, 3, 0.5), 1, dustOptions);
+                        }
+                    } else if (speed == 1){
+                        if (timer % 3 == 0){
+                            crystal.getWorld().playSound(crystal.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
+                            dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(217, 240, 10), 1);
+                            crystal.getWorld().spawnParticle(Particle.REDSTONE, crystal.getLocation().add(0.5, 3, 0.5), 1, dustOptions);
+                        }
+                    } else if (speed == 2){
+                        if (timer % 2 == 0){
+                            crystal.getWorld().playSound(crystal.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
+                            dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(240, 148, 10), 1);
+                            crystal.getWorld().spawnParticle(Particle.REDSTONE, crystal.getLocation().add(0.5, 3, 0.5), 1, dustOptions);
+                        }
+                    } else if (speed == 3){
+                        crystal.getWorld().playSound(crystal.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
+                        dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(237, 74, 52), 1);
+                        crystal.getWorld().spawnParticle(Particle.REDSTONE, crystal.getLocation().add(0.5, 3, 0.5), 1, dustOptions);
+                    }
+
+                    timer++;
+                    if (timer == 40){
+                        speed++;
+                    } else if (timer == 60){
+                        speed++;
+                    } else if (timer == 72){
+                        speed++;
+                    } else if (timer == 80){
+                        for (int i = 0; i < 20; i++) {
+                            TNTPrimed tnt = crystal.getWorld().spawn(crystal.getLocation(), TNTPrimed.class);
+                            tnt.setFuseTicks(rand.nextInt(20));
+                        }
+                        magicEntities.remove(crystal);
+                        crystal.remove();
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimer(plugin, 0, 5);
+        }
+    public void drown(Player p){
+        Spell spell = spells.get(24);
+        PlayerData data = findPlayer(p.getUniqueId());
+        if (data.onCooldown(spell.getName())){
+            // on cooldown
+            p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+            return;
+        }
+        if (data.getLevel() < spell.getRequiredLevel()){
+            // level too small
+            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            return;
+        }
+        if (data.getMp() < spell.getMpCost()){
+            // not enough mana
+            p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+            return;
+        }
+        // finally, able to cast the spell
+        data.useMP(spell.getMpCost());
+        data.addCooldown(spell.getName(),spell.getCooldown());
+
+        LivingEntity target = null;
+            Vector v1 = p.getEyeLocation().getDirection().normalize();
+            Location front = p.getEyeLocation().add(v1.multiply(1.3));
+            Location loc;
+            for (int i = 0; i < 7; i++) {
+                loc = front.add(v1.multiply(1 + ((double) i / 10)));
+                double radius = 4D;
+                List<Entity> near = Objects.requireNonNull(p.getWorld()).getEntities();
+                for (Entity e : near) {
+                    if (e.getLocation().distance(loc) <= radius) {
+                        if (e instanceof LivingEntity) {
+                            if (e != p) {
+
+                                target = (LivingEntity) e;
+
+                            }
+                        }
+                    }
+                }
+            }
+            if (target == null){
+                p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_BLUE + "You didn't drown anyone!");
+                return;
+            }
+            final Location start = p.getLocation();
+            LivingEntity finalTarget = target;
+            if (target instanceof Player){
+                target.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.AQUA + p.getName() + " is drowning you!");
+            }
+            new BukkitRunnable(){
+                @Override
+                public void run() {
+                    if (!p.isOnline()){
+                        this.cancel();
+                    }
+                    if (p.getLocation().distance(start) > 1){
+                        p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.BLUE + "Spell canceled! You moved.");
+                        this.cancel();
+                        return;
+                    }
+                    if (finalTarget.isValid()){
+                        finalTarget.damage(1, p);
+                        finalTarget.getWorld().playSound(finalTarget.getLocation(), Sound.ENTITY_PLAYER_HURT_DROWN, 1, 1);
+                    }
+                    if (finalTarget.isDead()){
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimer(plugin, 0, 20);
+        }
+
 }

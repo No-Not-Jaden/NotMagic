@@ -13,7 +13,7 @@ public class PlayerData {
 
     private int mp = 50;
     private int mpMax = 50;
-    // mp regen / second
+    // mp regen / 5 ticks
     private double mpRegen = 0.5;
 
     private long interactCooldown = 0;
