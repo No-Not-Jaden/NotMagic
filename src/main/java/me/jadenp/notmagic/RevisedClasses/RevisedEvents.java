@@ -9,12 +9,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.EnderCrystal;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -32,10 +31,13 @@ public class RevisedEvents implements Listener {
     private Plugin plugin;
     private NotMagic notMagic;
     public Magic magicClass;
-
     private List<PlayerData> playerData = new ArrayList<>();
     private List<WorkshopSpell> workshopSpells = new ArrayList<>();
+    private Map<UUID, Integer> magicEntities = new HashMap<>();
     Items items = new Items();
+
+    private final double magicEntityChance = 0.05;
+
 
 
     public RevisedEvents(NotMagic notMagic) throws IOException {
@@ -241,6 +243,17 @@ public class RevisedEvents implements Listener {
                 event.setCancelled(true);
             }
         }
+        if (event.getDamager() instanceof LivingEntity) {
+            if (magicEntities.containsKey(event.getDamager().getUniqueId())) {
+                int level = magicEntities.get(event.getDamager().getUniqueId());
+                Essence type = entityToEssence((LivingEntity) event.getDamager());
+                if (type == Essence.FIRE){
+                    event.getEntity().setFireTicks(20 * level);
+                    event.getEntity().getWorld().spawnParticle(Particle.LAVA, event.getEntity().getLocation().add(0,1,0), 10, .5,.5,.5);
+                }
+                event.setDamage(event.getDamage() * (.5 + ((double) level / 2)));
+            }
+        }
     }
 
     @EventHandler
@@ -267,5 +280,47 @@ public class RevisedEvents implements Listener {
         for (Player player : magicClass.spellIndex.getHiddenPlayers()){
             player.showPlayer(NotMagic.getInstance(), event.getPlayer());
         }
+    }
+
+    @EventHandler
+    public void onSpawn(EntitySpawnEvent event) {
+        if (event.getEntity() instanceof Mob) {
+            if (Math.random() < magicEntityChance) {
+                // spawn magic entity if it can be one
+                if (entityToEssence((LivingEntity) event.getEntity()) != Essence.EMPTY){
+                    magicEntities.put(event.getEntity().getUniqueId(), (int) Math.sqrt(Math.random() * 36));
+                }
+            }
+        }
+    }
+
+
+    public Essence entityToEssence(LivingEntity entity){
+        if (entity instanceof WitherSkeleton || entity instanceof PigZombie || entity instanceof Piglin || entity instanceof Hoglin || entity instanceof MagmaCube){
+            return Essence.FIRE;
+        }
+        if (entity instanceof CaveSpider || entity instanceof Witch){
+            return Essence.POISON;
+        }
+        if (entity instanceof Vex || entity instanceof Enderman || entity instanceof Shulker || entity instanceof Endermite || entity instanceof Silverfish){
+            return Essence.SPECTRAL;
+        }
+        if (entity instanceof PolarBear || entity instanceof Stray){
+            return Essence.ICE;
+        }
+        if (entity instanceof Pillager || entity instanceof Evoker || entity instanceof Vindicator || entity instanceof Ravager){
+            return Essence.LIVING;
+        }
+        if (entity instanceof Drowned || entity instanceof Guardian){
+            return Essence.WATER;
+        }
+        if (entity instanceof Phantom || entity instanceof Blaze || entity instanceof Ghast){
+            return Essence.WIND;
+        }
+        if (entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Spider || entity instanceof Creeper){
+            return Essence.EARTH;
+        }
+        return Essence.EMPTY;
+
     }
 }

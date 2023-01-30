@@ -3,7 +3,6 @@ package me.jadenp.notmagic.RevisedClasses;
 import me.jadenp.notmagic.NotMagic;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Waterlogged;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -155,6 +153,7 @@ public class Industrial implements Listener {
                                 if (validBlockStructure(magicStorage, event.getClickedBlock().getLocation())){
                                     // add to stuctures
                                     multiBlockStructures.add(new MultiBlockStructures("Storage", getAllLocations(magicStorage, event.getClickedBlock().getLocation())));
+                                    event.getPlayer().sendMessage("Created Magic Storage");
                                 }
                                 else {
                                     event.getPlayer().playSound(event.getPlayer(), Sound.ENTITY_VILLAGER_NO,1,1);
@@ -216,6 +215,14 @@ public class Industrial implements Listener {
                     Objects.requireNonNull(event.getBlock().getLocation().getWorld()).dropItem(event.getBlock().getLocation(), Objects.requireNonNull(Items.data(magicCores.get(event.getBlock().getLocation()))));
                 magicCores.remove(event.getBlock().getLocation());
                 event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_BEACON_DEACTIVATE,1,1);
+            }
+        }
+        ListIterator<MultiBlockStructures> multiBlockStructuresListIterator = multiBlockStructures.listIterator();
+        while (multiBlockStructuresListIterator.hasNext()){
+            MultiBlockStructures structures = multiBlockStructuresListIterator.next();
+            if (structures.getBlocks().contains(event.getBlock().getLocation())){
+                event.getPlayer().sendMessage("Broken structure");
+                multiBlockStructuresListIterator.remove();
             }
         }
     }

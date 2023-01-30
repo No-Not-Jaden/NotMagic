@@ -24,7 +24,13 @@ public enum Essence {
     FIRE(8, 6, 3),
     EARTH(5, 8, 2),
     WATER(7, 5, 1),
-    WIND(9,7,2);
+    WIND(9,7,2),
+    ELECTRICITY(10,3,3),
+    ICE(4,10,1),
+    POISON(3,9,2),
+    LIVING(1,3,1),
+    SPECTRAL(2,4,3),
+    BARRIER(0,4,1);
 
     private final int potentialPower; // speed
     private final int areaEffectPower;
