@@ -13,6 +13,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.C;
+
+
 
 import java.util.*;
 
@@ -20,27 +23,33 @@ public enum Essence {
     /**
      * don't forget to add more names to SpellNames.java !
      */
-    EMPTY(0,0,0),
-    FIRE(8, 6, 3),
-    EARTH(5, 8, 2),
-    WATER(7, 5, 1),
-    WIND(9,7,2),
-    ELECTRICITY(10,3,3),
-    ICE(4,10,1),
-    POISON(3,9,2),
-    LIVING(1,3,1),
-    SPECTRAL(2,4,3),
-    BARRIER(0,4,1);
+    EMPTY(0,0,0, Color.fromRGB(187, 189, 187)),
+    FIRE(8, 6, 3, Color.fromRGB(194, 47, 54)),
+    EARTH(5, 8, 2, Color.fromRGB(94, 69, 42)),
+    WATER(7, 5, 1, Color.fromRGB(7, 106, 186)),
+    WIND(9,7,2, Color.fromRGB(199, 255, 231)),
+    ELECTRICITY(10,3,3, Color.fromRGB(220, 222, 93)),
+    ICE(4,10,1, Color.fromRGB(141, 181, 235)),
+    POISON(3,9,2, Color.fromRGB(40, 77, 42)),
+    LIVING(1,3,1, Color.fromRGB(202, 119, 217)),
+    SPECTRAL(2,4,3, Color.fromRGB(146, 90, 214)),
+    BARRIER(0,4,1, Color.fromRGB(82, 2, 2));
 
     private final int potentialPower; // speed
     private final int areaEffectPower;
     private final int intensityPower;
     private final NotMagic notMagic;
-    Essence(int potentialPower, int areaEffectPower, int intensityPower){
+    private final Color color;
+    Essence(int potentialPower, int areaEffectPower, int intensityPower, Color color){
         this.potentialPower = potentialPower;
         this.areaEffectPower = areaEffectPower;
         this.intensityPower = intensityPower;
+        this.color = color;
         notMagic = NotMagic.getInstance();
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     public void potentialResults(Location point, Location start, final NotCallback callback) {
@@ -421,6 +430,36 @@ public enum Essence {
             }
         }
         return playerLoc;
+    }
+
+    public void spawnParticles(Location location){
+        if (this == Essence.FIRE){
+            location.getWorld().spawnParticle(Particle.LAVA, location, 10, .5,.5,.5);
+        } else if (this == Essence.EARTH){
+            for (int i = 0; i < 10; i++){
+                BlockData data = Material.COARSE_DIRT.createBlockData();
+                location.getWorld().spawnParticle(Particle.BLOCK_CRACK,new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)) , 1, data);
+            }
+        } else if (this == Essence.WATER){
+            location.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 10, .5,.5,.5);
+        } else if (this == Essence.WIND){
+            for (int i = 0; i < 10; i++){
+                location.getWorld().spawnParticle(Particle.CLOUD,new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)) , 0, Math.random() * .4 - .2, Math.random() * .4 - .2, Math.random() * .4 - .2);
+            }
+        } else if (this == Essence.ELECTRICITY){
+            location.getWorld().spawnParticle(Particle.FLASH, location, 10, .5,.5,.5);
+        } else if (this == Essence.ICE){
+            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
+        } else if (this == Essence.POISON){
+            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
+        } else if (this == Essence.LIVING){
+            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
+        } else if (this == Essence.SPECTRAL){
+            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
+        } else if (this == Essence.BARRIER){
+            BlockData data = Material.DEEPSLATE_BRICKS.createBlockData();
+            location.getWorld().spawnParticle(Particle.BLOCK_MARKER, location, 1, data);
+        }
     }
 
     public int getPotentialMana(int multiplier){

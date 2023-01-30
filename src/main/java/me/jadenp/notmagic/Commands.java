@@ -17,10 +17,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 
 import java.awt.*;
@@ -409,7 +412,16 @@ public class Commands implements CommandExecutor, TabCompleter {
                 } else {
                     sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
                 }
-            } else {
+            } else if (args[0].equalsIgnoreCase("spawn")) {
+                if (sender.hasPermission("notmagic.admin")){
+                    if (args.length > 1){
+                        Entity entity = ((Player) sender).getWorld().spawn(((Player) sender).getLocation(), EnumUtils.findEnumInsensitiveCase(EntityType.class, args[1]).getEntityClass());
+                        notMagic.eventClass.addMagicEntity(entity, 1);
+                        sender.sendMessage(prefix + ChatColor.GREEN + "Successfully spawned in a magic entity.");
+                    }
+                }
+            }
+            else {
                     sender.sendMessage(prefix + ChatColor.RED + "Unknown NM Command!");
                 }
 

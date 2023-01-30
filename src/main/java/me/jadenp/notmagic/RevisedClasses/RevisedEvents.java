@@ -1,19 +1,24 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import me.jadenp.notmagic.Commands;
 import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.SpellWorkshop.Essence;
 import me.jadenp.notmagic.SpellWorkshop.SpellNames;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -21,9 +26,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class RevisedEvents implements Listener {
@@ -34,7 +44,8 @@ public class RevisedEvents implements Listener {
     private List<PlayerData> playerData = new ArrayList<>();
     private List<WorkshopSpell> workshopSpells = new ArrayList<>();
     private Map<UUID, Integer> magicEntities = new HashMap<>();
-    Items items = new Items();
+    private File magicEntitiesFile;
+    Gson gson;
 
     private final double magicEntityChance = 0.05;
 
@@ -44,6 +55,10 @@ public class RevisedEvents implements Listener {
         this.plugin = notMagic;
         this.notMagic = notMagic;
         magicClass = new Magic(notMagic,this);
+        magicEntitiesFile = new File(plugin.getDataFolder() + File.separator + "magic-entities.json");
+        GsonBuilder builder = new GsonBuilder();
+        builder.setPrettyPrinting();
+        gson = builder.create();
 
         // load key from recordKey file to get uuids of every player, then grab their corresponding file and place it in a list
         Bukkit.getLogger().info("Loading Player Data...");
@@ -94,6 +109,13 @@ public class RevisedEvents implements Listener {
                     notMagic));
             i++;
         }
+        if (!magicEntitiesFile.exists()){
+            magicEntitiesFile.createNewFile();
+        } else {
+            Type mapType = new TypeToken<Map<UUID, Integer>>() {}.getType();
+            magicEntities = gson.fromJson(new String(Files.readAllBytes(Paths.get(magicEntitiesFile.getPath()))), mapType);
+        }
+
 
         // auto save every 5 min
         new BukkitRunnable(){
@@ -102,6 +124,26 @@ public class RevisedEvents implements Listener {
                 saveData();
             }
         }.runTaskTimerAsynchronously(plugin,3600, 3600);
+
+        // spawn particles at magic entities
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                Iterator<Map.Entry<UUID, Integer>> iterator = magicEntities.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<UUID, Integer> entry = iterator.next();
+                    Entity entity = Bukkit.getEntity(entry.getKey());
+                    if (entity != null){
+                        if (entity.getLocation().getChunk().isEntitiesLoaded()){
+                            entityToEssence((LivingEntity) entity).spawnParticles(entity.getLocation().add(0,1,0));
+                        }
+                    } else {
+                        iterator.remove();
+                    }
+                }
+
+            }
+        }.runTaskTimer(plugin, 20, 40);
     }
 
     public void saveData(){
@@ -148,6 +190,13 @@ public class RevisedEvents implements Listener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            FileWriter writer = new FileWriter(magicEntitiesFile);
+            gson.toJson(magicEntities, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @EventHandler
@@ -179,7 +228,7 @@ public class RevisedEvents implements Listener {
             data.relog();
         }
 
-        if (p.getInventory().contains(items.data("RegenDust"))){
+        if (p.getInventory().contains(Items.data("RegenDust"))){
             p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100,1));
         }
 
@@ -235,6 +284,9 @@ public class RevisedEvents implements Listener {
         }
         return null;
     }
+    public void addMagicEntity(Entity entity, int level){
+        magicEntities.put(entity.getUniqueId(), level);
+    }
 
     @EventHandler
     public void onDamageEntity(EntityDamageByEntityEvent event){
@@ -248,11 +300,65 @@ public class RevisedEvents implements Listener {
                 int level = magicEntities.get(event.getDamager().getUniqueId());
                 Essence type = entityToEssence((LivingEntity) event.getDamager());
                 if (type == Essence.FIRE){
+                    // burn em
                     event.getEntity().setFireTicks(20 * level);
-                    event.getEntity().getWorld().spawnParticle(Particle.LAVA, event.getEntity().getLocation().add(0,1,0), 10, .5,.5,.5);
+                } else if (type == Essence.EARTH){
+                    // fling em
+                    event.getEntity().setVelocity(event.getEntity().getVelocity().add(new Vector(Math.random() * (level * 0.6) - (level * 0.3), Math.random() * (level * 0.6) - (level * 0.3), Math.random() * (level * 0.6) - (level * 0.3))));
+                } else if (type == Essence.WATER){
+                    // drown em
+                    ((LivingEntity) event.getEntity()).setRemainingAir((int) (((LivingEntity) event.getEntity()).getRemainingAir() - Math.random() * 20 * level));
+                } else if (type == Essence.WIND){
+                    // whip em
+                    event.getEntity().setVelocity(event.getEntity().getVelocity().add(new Vector(0, Math.random() * (level * 1.2) - (level * 0.6), 0)));
+                } else if (type == Essence.ELECTRICITY){
+                    // zap ep
+                    event.getEntity().setVelocity(new Vector(0,0,0));
+                } else if (type == Essence.ICE){
+                    // freeze em
+                    event.getEntity().setFreezeTicks(20 * level);
+                } else if (type == Essence.POISON){
+                    // poison em
+                    ((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20 + (level * 10), level / 2 - 1));
+                } else if (type == Essence.LIVING){
+                    // heal em
+                    ((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 20 + (level * 10), level / 2 - 1));
+                } else if (type == Essence.SPECTRAL){
+                    // teleport em
+                    event.getEntity().teleport(event.getEntity().getLocation().add(new Vector(Math.random() * (level * 1.2) - (level * 0.6), Math.random() * (level * 1.2) - (level * 0.6), Math.random() * (level * 1.2) - (level * 0.6))));
+                } else if  (type == Essence.BARRIER){
+                    // fatigue em
+                    ((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 20 + (level * 10), level / 2 - 1));
                 }
+                type.spawnParticles(event.getEntity().getLocation().add(0,1,0));
                 event.setDamage(event.getDamage() * (.5 + ((double) level / 2)));
             }
+        }
+    }
+
+    @EventHandler
+    public void onTarget(EntityTargetLivingEntityEvent event){
+        if (magicEntities.containsKey(event.getEntity().getUniqueId())){
+            event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_SKELETON_HORSE_AMBIENT_WATER, 1, 1);
+            int level = magicEntities.get(event.getEntity().getUniqueId());
+
+            new BukkitRunnable(){
+                int i = 0;
+                final Essence type = entityToEssence((LivingEntity) event.getEntity());
+                final Location location = ((LivingEntity) event.getEntity()).getEyeLocation().add(0,0.8,0);
+                @Override
+                public void run() {
+                    if (i < level){
+                        Particle.DustOptions options = new Particle.DustOptions(type.getColor(), 3.0f);
+                        location.getWorld().spawnParticle(Particle.REDSTONE, location.add(0,.2,0), 1, options);
+                        location.getWorld().playSound(location, Sound.ITEM_FIRECHARGE_USE, 0.5f, 2);
+                        i++;
+                    } else {
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimer(plugin, 5, 5);
+
         }
     }
 
@@ -287,8 +393,14 @@ public class RevisedEvents implements Listener {
         if (event.getEntity() instanceof Mob) {
             if (Math.random() < magicEntityChance) {
                 // spawn magic entity if it can be one
+                int level = (int) Math.sqrt(Math.random() * 36);
                 if (entityToEssence((LivingEntity) event.getEntity()) != Essence.EMPTY){
-                    magicEntities.put(event.getEntity().getUniqueId(), (int) Math.sqrt(Math.random() * 36));
+                    AttributeInstance attribute = ((Mob) event.getEntity()).getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    assert attribute != null;
+                    double maxHealth = attribute.getValue() * (.5 + ((double) level / 2));
+                    attribute.setBaseValue(maxHealth);
+                    ((Mob) event.getEntity()).setHealth(maxHealth);
+                    magicEntities.put(event.getEntity().getUniqueId(), level);
                 }
             }
         }
