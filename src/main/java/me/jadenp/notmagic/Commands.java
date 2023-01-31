@@ -1,10 +1,7 @@
 package me.jadenp.notmagic;
 
 
-import me.jadenp.notmagic.RevisedClasses.Items;
-import me.jadenp.notmagic.RevisedClasses.PlayerData;
-import me.jadenp.notmagic.RevisedClasses.RevisedEvents;
-import me.jadenp.notmagic.RevisedClasses.Spell;
+import me.jadenp.notmagic.RevisedClasses.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -38,7 +35,6 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
-    Items items = new Items();
     private Plugin plugin;
     private NotMagic notMagic;
     private HashMap<String, Integer> levels = new HashMap<>();
@@ -115,7 +111,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("nm")) {
-            String prefix = NotMagic.getInstance().getPrefix();
+            String prefix = Language.prefix();
 
             if (args.length == 0) {
                 if (sender.hasPermission("notmagic.basic")) {
@@ -273,14 +269,14 @@ public class Commands implements CommandExecutor, TabCompleter {
                     if (sender.hasPermission("notmagic.admin")) {
                         if (args[1] != null) {
                             if (Bukkit.getPlayer(args[1]) != null && args.length > 2) {
-                                if (items.data(args[2]) != null) {
+                                if (Items.data(args[2]) != null) {
                                     if (args.length > 3) {
                                         for (int i = 0; i < Integer.parseInt(args[3]); i++) {
-                                            givePlayer(Objects.requireNonNull(Bukkit.getPlayer(args[1])), items.data(args[2]));
+                                            givePlayer(Objects.requireNonNull(Bukkit.getPlayer(args[1])), Items.data(args[2]));
                                         }
                                         sender.sendMessage(prefix + ChatColor.GREEN + "Gave " + args[3] + " " + args[2] + " to " + args[1] + ".");
                                     } else {
-                                        givePlayer(Objects.requireNonNull(Bukkit.getPlayer(args[1])), items.data(args[2]));
+                                        givePlayer(Objects.requireNonNull(Bukkit.getPlayer(args[1])), Items.data(args[2]));
                                         sender.sendMessage(prefix + ChatColor.GREEN + "Gave 1 " + args[2] + " to " + args[1] + ".");
                                     }
 
@@ -288,12 +284,12 @@ public class Commands implements CommandExecutor, TabCompleter {
                                     sender.sendMessage(prefix+ ChatColor.RED + "Invalid Item!");
                                 }
                             } else {
-                                if (items.data(args[1]) != null) {
+                                if (Items.data(args[1]) != null) {
                                     if (args.length > 2) {
                                         for (int i = 0; i < Integer.parseInt(args[3]); i++) {
                                             if (sender instanceof  Player) {
                                                 Player p = (Player) sender;
-                                                givePlayer(p, items.data(args[1]));
+                                                givePlayer(p, Items.data(args[1]));
                                             } else {
                                                 sender.sendMessage(prefix + "You are not a player!");
                                             }
@@ -307,7 +303,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                                     } else {
                                         if (sender instanceof  Player) {
                                             Player p = (Player) sender;
-                                            givePlayer(p, items.data(args[1]));
+                                            givePlayer(p, Items.data(args[1]));
                                             sender.sendMessage(prefix + ChatColor.GREEN + "Gave 1 " + args[1] + " to " + p.getName() + ".");
                                         } else {
                                             sender.sendMessage(prefix + "You are not a player!");
@@ -387,19 +383,21 @@ public class Commands implements CommandExecutor, TabCompleter {
                         PlayerData data = findPlayer(((Player) sender).getUniqueId());
                         if (!data.isDisplayingSpell()) {
                             if (data.getSpellsUnlocked().contains(spell.getName()) || sender.hasPermission("notmagic.admin")) {
-                                sender.sendMessage("demonstrating spell " + spell.getName());
+                                sender.sendMessage(prefix + Language.demonstrateSpell().replace("{spell}", spell.getName()));
                                 data.setDisplayingSpell(true);
                                 spell.displayRealSpell((Player) sender);
                             } else {
-                                sender.sendMessage("spell not unlocked");
+                                sender.sendMessage(prefix + Language.unrecognizedSpell());
                             }
+                        } else {
+                            sender.sendMessage(prefix + Language.displayWait());
                         }
 
                     } else {
-                        sender.sendMessage("unknown spell");
+                        sender.sendMessage(prefix + Language.unrecognizedSpell());
                     }
                     } else {
-                        sender.sendMessage("only players can use this command");
+                        sender.sendMessage(prefix + "You are not a player!");
                     }
                 } else if (args.length == 3){
 
@@ -415,9 +413,13 @@ public class Commands implements CommandExecutor, TabCompleter {
             } else if (args[0].equalsIgnoreCase("spawn")) {
                 if (sender.hasPermission("notmagic.admin")){
                     if (args.length > 1){
-                        Entity entity = ((Player) sender).getWorld().spawn(((Player) sender).getLocation(), EnumUtils.findEnumInsensitiveCase(EntityType.class, args[1]).getEntityClass());
-                        notMagic.eventClass.addMagicEntity(entity, 1);
-                        sender.sendMessage(prefix + ChatColor.GREEN + "Successfully spawned in a magic entity.");
+                        try {
+                            Entity entity = ((Player) sender).getWorld().spawn(((Player) sender).getLocation(), EnumUtils.findEnumInsensitiveCase(EntityType.class, args[1]).getEntityClass());
+                            notMagic.eventClass.addMagicEntity(entity, 1);
+                            sender.sendMessage(prefix + ChatColor.GREEN + "Successfully spawned in a magic entity.");
+                        } catch (IllegalArgumentException ignored){
+                            sender.sendMessage(prefix + ChatColor.RED + "Unknown Entity!");
+                        }
                     }
                 }
             }

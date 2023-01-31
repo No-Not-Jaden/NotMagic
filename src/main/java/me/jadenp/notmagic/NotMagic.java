@@ -329,53 +329,11 @@ public final class NotMagic extends JavaPlugin {
     }
 
     public void loadConfig(){
-        language.clear();
         this.reloadConfig();
-        prefix = color(this.getConfig().getString("prefix"));
-        // 0 - spell-cooldown
-        language.add(color(this.getConfig().getString("spell-cooldown")));
-        // 1 - spell-insufficient-mana
-        language.add(color(this.getConfig().getString("spell-insufficient-mana")));
-        // 2 - cast-spell
-        language.add(color(this.getConfig().getString("cast-spell")));
-        // 3 - main-spell
-        language.add(color(this.getConfig().getString("main-spell")));
-        // 4 - item-too-powerful
-        language.add(color(this.getConfig().getString("item-too-powerful")));
-        // 5 - spell-too-powerful
-        language.add(color(this.getConfig().getString("spell-too-powerful")));
-
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(customSpells);
-        List<CustomSpell> spells = new ArrayList<>();
-        int i = 1;
-        while (configuration.getString("spells." + i + ".name") != null){
-            CustomSpell spell = new CustomSpell(configuration.getString("spells." + i + ".name"), configuration.getBoolean("spells." + i + ".main-spell"), configuration.getInt("spells." + i + ".mp-cost"), configuration.getInt("spells." + i + ".cast-time"), configuration.getInt("spells." + i + ".cooldown"), configuration.getInt("spells." + i + ".required-level"), configuration.getStringList("spells." + i + ".castPattern"), configuration.getStringList("spells." + i + ".actions"), configuration.getStringList("spells." + i + ".lore"), this, eventClass.magicClass.spellIndex);
-            spells.add(spell);
-            i++;
-        }
-        boolean useCustomSpells = configuration.getBoolean("use-built-in-spells");
+        Language.setLanguage();
 
     }
-    public String color(String str){
-        str = ChatColor.translateAlternateColorCodes('&', str);
-        return translateHexColorCodes("&#","", str);
-    }
-    public String translateHexColorCodes(String startTag, String endTag, String message)
-    {
-        final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})" + endTag);
-        Matcher matcher = hexPattern.matcher(message);
-        StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
-        while (matcher.find())
-        {
-            String group = matcher.group(1);
-            matcher.appendReplacement(buffer, COLOR_CHAR + "x"
-                    + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
-                    + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
-                    + COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5)
-            );
-        }
-        return matcher.appendTail(buffer).toString();
-    }
+
 
     @Override
     public void onDisable() {

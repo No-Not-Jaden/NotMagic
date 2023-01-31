@@ -1,5 +1,6 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.*;
@@ -8,7 +9,7 @@ public class PlayerData {
     private UUID uuid;
     private String playerName;
 
-    private int level = 0;
+    private int level = 1;
     private int xp = 0;
 
     private int mp = 50;
@@ -204,8 +205,11 @@ public class PlayerData {
 
     public void addXP(int amount){
         xp += amount;
-        if (xp <= Math.pow(level,2) * 200){
+        if (xp >= Math.pow(level,2) * 200){
+            // level up
             level++;
+            Objects.requireNonNull(Bukkit.getPlayer(uuid)).sendMessage(Language.prefix() + Language.levelUp().replace("{level}",  level + ""));
+
         }
     }
 

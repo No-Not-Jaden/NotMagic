@@ -35,12 +35,11 @@ public class SpellIndex {
     private Plugin plugin;
     private Magic magic;
     Random rand = new Random();
-    private final String noLevelMsg = ChatColor.BLUE + "You are not a high enough level to cast this spell! ";
     boolean debug = true;
     private List<Entity> magicEntities = new ArrayList<>();
     private List<Player> hiddenPlayers = new ArrayList<>();
     //File customSpells = new File(plugin.getDataFolder() + File.separator + "customSpells.yml");
-
+    private List<Spell> lootList = new ArrayList<>();
     private List<Spell> spells = new ArrayList<>();
     private List<CustomSpell> customSpells = new ArrayList<>();
     public SpellIndex(Plugin plugin, Magic magic){
@@ -59,55 +58,64 @@ public class SpellIndex {
         // save LeftDown to start the custom spells
         spells.add(new Spell("Burn", 3, 0,15, 1, new ArrayList<>(Arrays.asList("Start", "Up")), Items.data("SBBurn"), plugin, true));
 
-        spells.add(new Spell("Zap", 9, 0,100, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), Items.data("SBZap"), plugin, false));
+        spells.add(new Spell("Zap", 9, 0,100, 2, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown")), Items.data("SBZap"), plugin, false));
 
         spells.add(new Spell("Heal", 15, 30,1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "Right", "Up", "Down", "Right", "Left", "Down", "Up")), Items.data("SBHeal"), plugin, false));
 
-        spells.add(new Spell("Strength", 20, 30,1200, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), Items.data("SBStrength"), plugin, false));
+        spells.add(new Spell("Strength", 20, 30,1200, 2, new ArrayList<>(Arrays.asList("Start", "Up", "Left", "RightDown", "Right")), Items.data("SBStrength"), plugin, false));
 
         spells.add(new Spell("Burst", 15, 4,150, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Down")), Items.data("SBBurst"), plugin, true));
 
-        spells.add(new Spell("Snipe", 30, 60, 200,1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), Items.data("SBSnipe"), plugin, true));
+        spells.add(new Spell("Snipe", 30, 60, 200,3, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "RightUp", "LeftDown")), Items.data("SBSnipe"), plugin, true));
 
-        spells.add(new Spell("Locate", 50, 15, 300, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), Items.data("SBLocate"), plugin, true));
+        spells.add(new Spell("Locate", 50, 15, 300, 2, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "LeftDown", "Down")), Items.data("SBLocate"), plugin, true));
 
-        spells.add(new Spell("Teleport", 25, 5, 25, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Up", "Down", "Up", "Down")), Items.data("SBTeleport"), plugin, true));
+        spells.add(new Spell("Teleport", 25, 5, 25, 5, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Up", "Down", "Up", "Down")), Items.data("SBTeleport"), plugin, true));
 
-        spells.add(new Spell("Iron Wall Attack", 50, 5, 30, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Right", "Down", "Left")), Items.data("SBIronWallAttack"), plugin, true));
+        spells.add(new Spell("Iron Wall Attack", 50, 5, 30, 4, new ArrayList<>(Arrays.asList("Start", "Up", "Right", "Down", "Left")), Items.data("SBIronWallAttack"), plugin, true));
 
-        spells.add(new Spell("Life Steal", 75, 120, 600, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftDown", "Right", "LeftUp")), Items.data("SBLifeSteal"), plugin, true));
+        spells.add(new Spell("Life Steal", 75, 120, 600, 4, new ArrayList<>(Arrays.asList("Start", "Down", "LeftDown", "Right", "LeftUp")), Items.data("SBLifeSteal"), plugin, true));
 
-        spells.add(new Spell("Smite", 35, 5, 200, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown", "LeftDown")), Items.data("SBSmite"), plugin, true));
+        spells.add(new Spell("Smite", 35, 5, 200, 5, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftDown", "RightDown", "LeftDown")), Items.data("SBSmite"), plugin, true));
 
-        spells.add(new Spell("Fireball", 30, 3, 100, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), Items.data("SBFireball"), plugin, true));
+        spells.add(new Spell("Fireball", 30, 3, 100, 3, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "LeftDown")), Items.data("SBFireball"), plugin, true));
 
-        spells.add(new Spell("Ice Shards", 45, 2, 20, 1, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), Items.data("SBIceShards"), plugin, true));
+        spells.add(new Spell("Ice Shards", 45, 2, 20, 4, new ArrayList<>(Arrays.asList("Start", "RightDown", "LeftUp", "Down", "Up", "LeftDown", "RightUp")), Items.data("SBIceShards"), plugin, true));
 
-        spells.add(new Spell("Kinetic Electrocute", 75, 600, 1400, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "RightUp")), Items.data("SBKineticElectrocute"), plugin, false));
+        spells.add(new Spell("Kinetic Electrocute", 75, 600, 1400, 3, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "RightUp")), Items.data("SBKineticElectrocute"), plugin, false));
 
-        spells.add(new Spell("Thunder Cloud", 20, 30, 400, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "Left")), Items.data("SBThunderCloud"), plugin, false));
+        spells.add(new Spell("Thunder Cloud", 20, 30, 400, 2, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "Left")), Items.data("SBThunderCloud"), plugin, false));
 
-        spells.add(new Spell("Dark Summoning", 75, 120, 800, 1, new ArrayList<>(Arrays.asList("Start", "Down", "LeftUp", "Right", "Left")), Items.data("SBDarkSummoning"), plugin, false));
+        spells.add(new Spell("Dark Summoning", 75, 120, 800, 3, new ArrayList<>(Arrays.asList("Start", "Down", "LeftUp", "Right", "Left")), Items.data("SBDarkSummoning"), plugin, false));
 
-        spells.add(new Spell("Dark Poisoning", 30, 70, 400, 1, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "Up", "RightDown", "Left")), Items.data("SBDarkPoisoning"), plugin, false));
+        spells.add(new Spell("Dark Poisoning", 30, 70, 400, 4, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "Up", "RightDown", "Left")), Items.data("SBDarkPoisoning"), plugin, false));
 
-        spells.add(new Spell("Shield", 70, 20, 800, 1, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Left", "Right")), Items.data("SBShield"), plugin, false));
+        spells.add(new Spell("Shield", 70, 20, 800, 3, new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Left", "Right")), Items.data("SBShield"), plugin, false));
 
-        spells.add(new Spell("Defense", 35, 30, 1200, 1, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "RightUp", "Left")), Items.data("SBDefense"), plugin,false));
+        spells.add(new Spell("Defense", 35, 30, 1200, 2, new ArrayList<>(Arrays.asList("Start", "Left", "RightDown", "RightUp", "Left")), Items.data("SBDefense"), plugin,false));
 
-        spells.add(new Spell("Dark Curse", 100, 100, 3600, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "LeftDown", "Left", "Right", "Up", "DownLeft", "Right")), Items.data("SBDarkCurse"), plugin, false));
+        spells.add(new Spell("Dark Curse", 100, 100, 3600, 5, new ArrayList<>(Arrays.asList("Start", "RightUp", "LeftDown", "Left", "Right", "Up", "DownLeft", "Right")), Items.data("SBDarkCurse"), plugin, false));
 
-        spells.add(new Spell("Shadow Wandering", 20, 40, 400, 1, new ArrayList<>(Arrays.asList("Start", "Down", "Left", "Right", "Left", "Right")), Items.data("SBShadowWandering"), plugin, false));
+        spells.add(new Spell("Shadow Wandering", 20, 40, 400, 6, new ArrayList<>(Arrays.asList("Start", "Down", "Left", "Right", "Left", "Right")), Items.data("SBShadowWandering"), plugin, false));
 
-        spells.add(new Spell("Absorb", 100, 600, 800, 1, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "Right", "Left")), Items.data("SBAbsorb"), plugin, false));
+        spells.add(new Spell("Absorb", 100, 600, 800, 8, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "Right", "Left")), Items.data("SBAbsorb"), plugin, false));
 
-        spells.add(new Spell("Freeze", 30, 20, 600, 1, new ArrayList<>(Arrays.asList("Start", "Up", "LeftDown", "Right")), Items.data("SBFreeze"), plugin, false));
+        spells.add(new Spell("Freeze", 30, 20, 600, 3, new ArrayList<>(Arrays.asList("Start", "Up", "LeftDown", "Right")), Items.data("SBFreeze"), plugin, false));
 
-        spells.add(new Spell("Time Bomb", 50, 120, 3600, 1, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "LeftDown", "Down", "Right", "Up")), Items.data("SBTimeBomb"), plugin, false));
+        spells.add(new Spell("Time Bomb", 50, 120, 3600, 4, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "LeftDown", "Down", "Right", "Up")), Items.data("SBTimeBomb"), plugin, false));
 
-        spells.add(new Spell("Drown", 75, 20, 800, 1, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "RightUp", "RightUp")), Items.data("SBDrown"), plugin, false));
+        spells.add(new Spell("Drown", 75, 20, 800, 4, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "RightUp", "RightUp")), Items.data("SBDrown"), plugin, false));
 
+        for (Spell spell : spells){
+            for (int i = 0; i < spell.getRequiredLevel(); i++){
+                lootList.add(spell);
+            }
+        }
 
+    }
+
+    public Spell getLootListSpell(){
+        return lootList.get((int) (Math.random() * lootList.size()));
     }
 
     public void addWorkshopSpell(WorkshopSpell spell){
@@ -118,8 +126,8 @@ public class SpellIndex {
         List<String> names = new ArrayList<>();
         for (Spell spell : spells){
             if (spell.getSpellBook() != null)
-            if (spell.getSpellBook().getItemMeta() != null)
-            names.add(ChatColor.stripColor(spell.getSpellBook().getItemMeta().getDisplayName()));
+                if (spell.getSpellBook().getItemMeta() != null)
+                    names.add(ChatColor.stripColor(spell.getSpellBook().getItemMeta().getDisplayName()));
         }
         return names;
     }
@@ -513,7 +521,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -576,7 +584,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -722,7 +730,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -800,7 +808,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -829,7 +837,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -858,7 +866,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -919,7 +927,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -967,7 +975,7 @@ public class SpellIndex {
                 }
             }.runTaskTimer(plugin, 0, 3L);
         } else {
-            p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There are no players in your world!");
+            p.sendMessage(Language.prefix() + Language.noPlayerWorld());
         }
     }
     public void teleport(Player p){
@@ -980,7 +988,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1011,7 +1019,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1071,7 +1079,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1158,7 +1166,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1185,7 +1193,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1212,7 +1220,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1276,7 +1284,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1367,7 +1375,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1432,7 +1440,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1484,7 +1492,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1531,7 +1539,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1649,7 +1657,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1702,7 +1710,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1750,7 +1758,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1808,7 +1816,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1890,7 +1898,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1931,7 +1939,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -2009,7 +2017,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(NotMagic.getInstance().getPrefix() + noLevelMsg + ChatColor.GRAY + "(" + spell.getRequiredLevel() + ")");
+            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){

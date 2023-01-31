@@ -497,8 +497,7 @@ public enum Essence {
 
 
     public static Essence fromItemStack(ItemStack itemStack){
-        Items items = new Items();
-        if (items.isEssence(itemStack)){
+        if (Items.isEssence(itemStack)){
             assert itemStack.getItemMeta() != null;
             String name = itemStack.getItemMeta().getDisplayName();
             String essence = ChatColor.stripColor(name);
@@ -512,5 +511,8 @@ public enum Essence {
             return result;
         }
         return EMPTY;
+    }
+    public ItemStack getItemStack(){
+        return Items.data(this.toString() + "Essence");
     }
 }

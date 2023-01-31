@@ -13,15 +13,19 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -402,6 +406,32 @@ public class RevisedEvents implements Listener {
                     ((Mob) event.getEntity()).setHealth(maxHealth);
                     magicEntities.put(event.getEntity().getUniqueId(), level);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDeath(EntityDeathEvent event){
+        // drop magic dust and possibly a book
+        if (magicEntities.containsKey(event.getEntity().getUniqueId())){
+            int amount = magicEntities.get(event.getEntity().getUniqueId());
+            magicEntities.remove(event.getEntity().getUniqueId());
+            ItemStack essence = entityToEssence(event.getEntity()).getItemStack();
+            Player killer = event.getEntity().getKiller();
+            if (killer != null){
+                ItemStack handItem = killer.getInventory().getItemInMainHand();
+                if (handItem.hasItemMeta()) {
+                    ItemMeta meta = handItem.getItemMeta();
+                    assert meta != null;
+                    if (meta.hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
+                        amount *= (Math.random() * meta.getEnchantLevel(Enchantment.LOOT_BONUS_MOBS)) + 1;
+                    }
+                }
+            }
+            essence.setAmount(amount);
+            event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), essence);
+            if (Math.random() <= 0.05) {
+                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), magicClass.spellIndex.getLootListSpell().getSpellBook());
             }
         }
     }

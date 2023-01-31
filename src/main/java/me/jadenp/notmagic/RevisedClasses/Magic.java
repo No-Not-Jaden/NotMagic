@@ -292,7 +292,7 @@ public class Magic implements Listener {
         if (event.getItem() == null)
             return;
         Player player = event.getPlayer();
-        if (items.isWand(event.getItem())){
+        if (Items.isWand(event.getItem())){
             PlayerData data = findPlayer(event.getPlayer().getUniqueId());
             event.setCancelled(true);
             if (System.currentTimeMillis() - data.getInteractCooldown() < 50)
@@ -554,11 +554,15 @@ public class Magic implements Listener {
             if (spell != null){
                 PlayerData data = findPlayer(event.getPlayer().getUniqueId());
                 if (!data.getSpellsUnlocked().contains(spell.getName())) {
-                    player.sendMessage("You learned the " + spell.getName() + " spell!");
-                    data.learnSpell(spell.getName());
-                    removeItem(player, spell.getSpellBook());
+                    if (data.getLevel() < spell.getRequiredLevel()) {
+                        player.sendMessage(Language.prefix() + Language.learnSpell());
+                        data.learnSpell(spell.getName());
+                        removeItem(player, spell.getSpellBook());
+                    } else {
+                        player.sendMessage(Language.prefix() + Language.insufficientLevelReading().replace("{level}", spell.getRequiredLevel() + ""));
+                    }
                 } else {
-                    player.sendMessage("You already have this spell unlocked!");
+                    player.sendMessage(Language.prefix() + Language.repeatSpell());
                 }
             }
         }
