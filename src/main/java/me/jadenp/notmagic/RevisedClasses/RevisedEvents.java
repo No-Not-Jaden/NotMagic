@@ -45,77 +45,33 @@ public class RevisedEvents implements Listener {
     private Plugin plugin;
     private NotMagic notMagic;
     public Magic magicClass;
-    private List<PlayerData> playerData = new ArrayList<>();
+    public Map<UUID, PlayerData> playerData = new HashMap<>();
+    private final File workshopSpellsFile;
     private List<WorkshopSpell> workshopSpells = new ArrayList<>();
     private Map<UUID, Integer> magicEntities = new HashMap<>();
-    private File magicEntitiesFile;
+    private final File magicEntitiesFile;
+    private static RevisedEvents instance;
     Gson gson;
-
-    private final double magicEntityChance = 0.05;
-
 
 
     public RevisedEvents(NotMagic notMagic) throws IOException {
+        instance = this;
         this.plugin = notMagic;
         this.notMagic = notMagic;
         magicClass = new Magic(notMagic,this);
         magicEntitiesFile = new File(plugin.getDataFolder() + File.separator + "magic-entities.json");
+        workshopSpellsFile = new File(plugin.getDataFolder() + File.separator + "workshopSpells.json");
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
         gson = builder.create();
 
-        // load key from recordKey file to get uuids of every player, then grab their corresponding file and place it in a list
-        Bukkit.getLogger().info("Loading Player Data...");
-        playerData.clear();
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(notMagic.recordKey);
-        List<String> players = configuration.getStringList("uuids");
-        for (String uuid : players){
-            File pFile = new File(notMagic.playerRecords+File.separator+uuid+".yml");
-            if (pFile.exists()){
-                YamlConfiguration c = YamlConfiguration.loadConfiguration(pFile);
-                playerData.add(new PlayerData(UUID.fromString(uuid), c.getString("name"), c.getInt("level"), c.getInt("xp"), c.getInt("mp-max"), c.getDouble("mp-regen"), (ArrayList<String>) c.getStringList("spells-unlocked")));
+        if (!workshopSpellsFile.createNewFile()){
+            workshopSpells = gson.fromJson(new String(Files.readAllBytes(Paths.get(workshopSpellsFile.getPath()))), new TypeToken<List<WorkshopSpell>>(){}.getType());
+        }
 
-            } else {
-                pFile.createNewFile();
-                Bukkit.getLogger().warning("<!> Could not find file for " + uuid + ". Created new one. <!>");
-                YamlConfiguration c = new YamlConfiguration();
-                c.set("name", "null");
-                c.set("level", 1);
-                c.set("xp", 0);
-                c.set("mp-max", 50);
-                c.set("mp-regen", 0.5);
-                ArrayList<String> spellsUnlocked = new ArrayList<>();
-                spellsUnlocked.add("Burn");
-                c.set("spells-unlocked", spellsUnlocked);
-                c.save(pFile);
-            }
-        }
-        Bukkit.getLogger().info("Loading Workshop Spells...");
-        YamlConfiguration configuration1 = YamlConfiguration.loadConfiguration(notMagic.craftedSpells);
-        workshopSpells.clear();
-        int i = 0;
-        while (configuration1.isSet(i + ".name")){
-            workshopSpells.add(new WorkshopSpell(
-                    Essence.valueOf(configuration1.getString(i + ".potential").toUpperCase(Locale.ROOT)), configuration1.getInt(i + ".potential-amount"),
-                    Essence.valueOf(configuration1.getString(i + ".area-effect").toUpperCase(Locale.ROOT)), configuration1.getInt(i + ".area-effect-amount"),
-                    Essence.valueOf(configuration1.getString(i + ".intensity").toUpperCase(Locale.ROOT)), configuration1.getInt(i + ".intensity-amount"),
-                    Essence.valueOf(configuration1.getString(i + ".control").toUpperCase(Locale.ROOT)), configuration1.getInt(i + ".control-amount"),
-                    configuration1.getInt(i + ".accuracy"),
-                    configuration1.getString(i + ".name"),
-                    configuration1.getInt(i + ".mana-cost"),
-                    configuration1.getBoolean(i + ".main-spell"),
-                    configuration1.getInt(i + ".magic-value"),
-                    configuration1.getInt(i + ".cast-time"),
-                    UUID.fromString(configuration1.getString(i + ".uuid")),
-                    configuration1.getInt("cooldown"),
-                    configuration1.getInt("required-level"),
-                    configuration1.getStringList("cast-pattern"),
-                    notMagic));
-            i++;
-        }
-        if (!magicEntitiesFile.exists()){
-            magicEntitiesFile.createNewFile();
-        } else {
+
+
+        if (!magicEntitiesFile.createNewFile()){
             Type mapType = new TypeToken<Map<UUID, Integer>>() {}.getType();
             magicEntities = gson.fromJson(new String(Files.readAllBytes(Paths.get(magicEntitiesFile.getPath()))), mapType);
         }
@@ -150,49 +106,27 @@ public class RevisedEvents implements Listener {
         }.runTaskTimer(plugin, 20, 40);
     }
 
+    public static RevisedEvents getInstance() {
+        return instance;
+    }
+
     public void saveData(){
-        for (PlayerData data : playerData){
-            File pFile = new File(notMagic.playerRecords+File.separator+data.getUuid()+".yml");
-            YamlConfiguration c = new YamlConfiguration();
-            c.set("name", data.getPlayerName());
-            c.set("level", data.getLevel());
-            c.set("xp", data.getXp());
-            c.set("mp-max", data.getMpMax());
-            c.set("mp-regen", data.getMpRegen());
-            c.set("spells-unlocked", data.getSpellsUnlocked());
+        for (Map.Entry<UUID, PlayerData> entry : playerData.entrySet()){
+            File pFile = new File(notMagic.playerRecords + File.separator + entry.getKey() + ".json");
             try {
-                c.save(pFile);
+                FileWriter writer = new FileWriter(pFile);
+                gson.toJson(entry.getValue(), writer);
+                writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
-        int i = 0;
-        YamlConfiguration c = new YamlConfiguration();
-        for (WorkshopSpell workshopSpell : workshopSpells) {
-            c.set(i + ".potential", workshopSpell.getPotential().toString());
-            c.set(i + ".potential-amount", workshopSpell.getPotentialAmount());
-            c.set(i + ".area-effect", workshopSpell.getAreaEffect().toString());
-            c.set(i + ".area-effect-amount", workshopSpell.getAreaEffectAmount());
-            c.set(i + ".intensity", workshopSpell.getIntensity().toString());
-            c.set(i + ".intensity-amount", workshopSpell.getIntensityAmount());
-            c.set(i + ".control", workshopSpell.getControl().toString());
-            c.set(i + ".control-amount", workshopSpell.getControlAmount());
-            c.set(i + ".accuracy", workshopSpell.getAccuracy());
-            c.set(i + ".name", workshopSpell.getName());
-            c.set(i + ".mana-cost", workshopSpell.getMpCost());
-            c.set(i + ".main-spell", workshopSpell.isMainSpell());
-            c.set(i + ".magic-value", workshopSpell.getMagicValue());
-            c.set(i + ".cast-time", workshopSpell.getCastTime());
-            c.set(i + ".uuid", workshopSpell.getUuid().toString());
-            c.set(i + ".cooldown", workshopSpell.getCooldown());
-            c.set(i + ".required-level", workshopSpell.getRequiredLevel());
-            c.set(i + ".cast-pattern", workshopSpell.getSpellPattern());
-            i++;
-        }
         try {
-            c.save(notMagic.craftedSpells);
+            FileWriter writer = new FileWriter(workshopSpellsFile);
+            gson.toJson(workshopSpells, writer);
+            writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         try {
             FileWriter writer = new FileWriter(magicEntitiesFile);
@@ -203,31 +137,23 @@ public class RevisedEvents implements Listener {
         }
     }
 
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
         Player p = event.getPlayer();
         String uID = p.getUniqueId().toString();
-        PlayerData data = findPlayer(p.getUniqueId());
-        if (data == null){
-            File pFile = new File(notMagic.playerRecords+File.separator+uID+".yml");
-            if (pFile.exists()){
-                YamlConfiguration c = YamlConfiguration.loadConfiguration(pFile);
-                playerData.add(new PlayerData(p.getUniqueId(), p.getName(), c.getInt("level"), c.getInt("xp"), c.getInt("mp-max"), c.getDouble("mp-regen"), (ArrayList<String>) c.getStringList("spells-unlocked")));
 
+        if (!playerData.containsKey(p.getUniqueId())){
+            File pFile = new File(notMagic.playerRecords+File.separator+uID+".json");
+            if (pFile.exists()){
+                PlayerData pData = gson.fromJson(new String(Files.readAllBytes(Paths.get(pFile.getPath()))), PlayerData.class);
+                playerData.put(p.getUniqueId(), pData);
             } else {
                 Bukkit.getLogger().info("Unique player joined! Creating Player Data.");
-                pFile.createNewFile();
-                YamlConfiguration c = new YamlConfiguration();
-                c.set("name", p.getName());
-                c.set("level", 1);
-                c.set("xp", 0);
-                c.set("mp-max", 50);
-                c.set("mp-regen", 0.5);
-                c.set("spells-unlocked", Collections.singletonList("Burn"));
-                c.save(pFile);
-
+                playerData.put(p.getUniqueId(), new PlayerData(p.getUniqueId(), p.getName(), 1, 0, 50, 0.5, (ArrayList<String>) Collections.singletonList("Burn")));
             }
         } else {
+            PlayerData data = playerData.get(p.getUniqueId());
             data.setPlayerName(p.getName());
             data.relog();
         }
@@ -241,18 +167,7 @@ public class RevisedEvents implements Listener {
         }
     }
 
-    public PlayerData findPlayer(UUID uuid){
-        for (PlayerData data : playerData){
-            if (data.getUuid().equals(uuid)){
-                return data;
-            }
-        }
-        return null;
-    }
 
-    public List<PlayerData> getPlayerData() {
-        return playerData;
-    }
 
 
     public List<WorkshopSpell> getWorkshopSpells() {
@@ -395,6 +310,7 @@ public class RevisedEvents implements Listener {
     @EventHandler
     public void onSpawn(EntitySpawnEvent event) {
         if (event.getEntity() instanceof Mob) {
+            double magicEntityChance = 0.05;
             if (Math.random() < magicEntityChance) {
                 // spawn magic entity if it can be one
                 int level = (int) Math.sqrt(Math.random() * 36);

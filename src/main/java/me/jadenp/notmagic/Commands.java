@@ -448,11 +448,10 @@ public class Commands implements CommandExecutor, TabCompleter {
     return true;
 
     }
-    public PlayerData findPlayer(UUID uuid){
-        for (PlayerData data : eventClass.getPlayerData()){
-            if (data.getUuid().equals(uuid)){
-                return data;
-            }
+    private PlayerData findPlayer(UUID uuid){
+        Map<UUID, PlayerData> playerDataMap = RevisedEvents.getInstance().playerData;
+        if (playerDataMap.containsKey(uuid)){
+            return playerDataMap.get(uuid);
         }
         return null;
     }

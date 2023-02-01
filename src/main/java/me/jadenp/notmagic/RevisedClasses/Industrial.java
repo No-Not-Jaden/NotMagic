@@ -1,6 +1,10 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import me.jadenp.notmagic.NotMagic;
+import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,9 +19,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Score;
+import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -69,24 +78,19 @@ public class Industrial implements Listener {
         put(new Integer[]{0,1,0}, Material.GRAY_CARPET);
     }};
 
-    private HashMap<Location, String> magicCores = new HashMap<>();
-    private File specialBlockFile = new File(NotMagic.getInstance().getDataFolder() + File.separator + "special-blocks.yml");
-
+    private Map<Location, CustomBlocks> customBlocks = new HashMap<>();
+    private final File specialBlockFile = new File(NotMagic.getInstance().getDataFolder() + File.separator + "special-blocks.json");
+    private final Gson gson;
     public Industrial() throws IOException {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setPrettyPrinting();
+        gson = builder.create();
         // load placed magic cores
         if (specialBlockFile.createNewFile()){
             Bukkit.getLogger().info("Created new special block file");
         } else {
-            YamlConfiguration configuration = YamlConfiguration.loadConfiguration(specialBlockFile);
-            int i = 0;
-            while (configuration.isSet(i + ".type")){
-                String type = configuration.getString(i + ".type");
-                assert type != null;
-                if (type.contains("MagicCore")){
-                    magicCores.put(configuration.getLocation(i + ".location"), type);
-                }
-                i++;
-            }
+            customBlocks = gson.fromJson(new String(Files.readAllBytes(Paths.get(specialBlockFile.getPath()))), new TypeToken<Map<Location, CustomBlocks>>(){}.getType());
+
         }
 
         RecipeChoice magicDust = new RecipeChoice.ExactChoice(Items.data("MagicDust"));
@@ -115,10 +119,10 @@ public class Industrial implements Listener {
         new BukkitRunnable(){
             @Override
             public void run() {
-                final Map<Location, String> cores = (Map<Location, String>) magicCores.clone();
+                final Map<Location, CustomBlocks> blocks = customBlocks;
                 Bukkit.getScheduler().runTaskAsynchronously(NotMagic.getInstance(), () -> {
                     try {
-                        saveSpecialBlocks(cores);
+                        saveSpecialBlocks(blocks);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -128,15 +132,14 @@ public class Industrial implements Listener {
         }.runTaskTimer(NotMagic.getInstance(), 36000, 36000);
     }
 
-    private void saveSpecialBlocks(Map<Location, String> magicCores) throws IOException {
-        YamlConfiguration configuration = new YamlConfiguration();
-        int i = 0;
-        for (Map.Entry<Location, String> entry : magicCores.entrySet()){
-            configuration.set(i + ".type", entry.getValue());
-            configuration.set(i + ".location", entry.getKey());
-            i++;
+    private void saveSpecialBlocks(Map<Location, CustomBlocks> customBlocks) throws IOException {
+        try {
+            FileWriter writer = new FileWriter(specialBlockFile);
+            gson.toJson(customBlocks, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        configuration.save(specialBlockFile);
     }
 
     @EventHandler
@@ -146,9 +149,9 @@ public class Industrial implements Listener {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK){
                 if (event.getClickedBlock() != null)
                     if (event.getClickedBlock().getType() == Material.CONDUIT){
-                        if (magicCores.containsKey(event.getClickedBlock().getLocation())){
+                        if (customBlocks.containsKey(event.getClickedBlock().getLocation())){
                             // check if it can be turned into a structure
-                            if (magicCores.get(event.getClickedBlock().getLocation()).equals("weakMagicCore")){
+                            if (customBlocks.get(event.getClickedBlock().getLocation()).getType().equals("weakMagicCore")){
                                 // go through weak core buildings
                                 if (validBlockStructure(magicStorage, event.getClickedBlock().getLocation())){
                                     // add to stuctures
@@ -199,7 +202,7 @@ public class Industrial implements Listener {
                 event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
             } else {
                 // add to list of magic cores
-                magicCores.put(event.getBlockPlaced().getLocation(), "weakMagicCore");
+                customBlocks.put(event.getBlockPlaced().getLocation(), new CustomBlocks(event.getBlockPlaced().getLocation(), "weakMagicCore"));
                 event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_BEACON_ACTIVATE,1,1);
             }
         }
@@ -209,11 +212,11 @@ public class Industrial implements Listener {
     public void onBreak(BlockBreakEvent event){
         if (!event.isCancelled())
             if (event.getBlock().getType() == Material.CONDUIT){
-            if (magicCores.containsKey(event.getBlock().getLocation())){
+            if (customBlocks.containsKey(event.getBlock().getLocation())){
                 event.setDropItems(false);
                 if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-                    Objects.requireNonNull(event.getBlock().getLocation().getWorld()).dropItem(event.getBlock().getLocation(), Objects.requireNonNull(Items.data(magicCores.get(event.getBlock().getLocation()))));
-                magicCores.remove(event.getBlock().getLocation());
+                    Objects.requireNonNull(event.getBlock().getLocation().getWorld()).dropItem(event.getBlock().getLocation(), Objects.requireNonNull(Items.data(customBlocks.get(event.getBlock().getLocation()).getType())));
+                customBlocks.remove(event.getBlock().getLocation());
                 event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_BEACON_DEACTIVATE,1,1);
             }
         }
@@ -233,11 +236,11 @@ public class Industrial implements Listener {
             while (blockIterator.hasNext()) {
                 Block block = blockIterator.next();
                 if (block.getType() == Material.CONDUIT) {
-                    if (magicCores.containsKey(block.getLocation())) {
+                    if (customBlocks.containsKey(block.getLocation())) {
                         blockIterator.remove();
                         block.setType(Material.AIR);
-                        Objects.requireNonNull(block.getLocation().getWorld()).dropItem(block.getLocation(), Objects.requireNonNull(Items.data(magicCores.get(block.getLocation()))));
-                        magicCores.remove(block.getLocation());
+                        Objects.requireNonNull(block.getLocation().getWorld()).dropItem(block.getLocation(), Objects.requireNonNull(Items.data(customBlocks.get(block.getLocation()).getType())));
+                        customBlocks.remove(block.getLocation());
                     }
                 }
             }
@@ -245,13 +248,13 @@ public class Industrial implements Listener {
     }
     @EventHandler
     public void onWaterPlace(PlayerBucketEmptyEvent event){
-        if (magicCores.containsKey(event.getBlock().getLocation())){
+        if (customBlocks.containsKey(event.getBlock().getLocation())){
             event.setCancelled(true);
         }
     }
     @EventHandler
     public void onWaterChange(BlockFromToEvent event){
-        if (magicCores.containsKey(event.getToBlock().getLocation())){
+        if (customBlocks.containsKey(event.getToBlock().getLocation())){
             event.setCancelled(true);
         }
 
@@ -259,7 +262,7 @@ public class Industrial implements Listener {
     @EventHandler
     public void onDisable(PluginDisableEvent event) throws IOException {
         if (event.getPlugin().equals(NotMagic.getInstance())){
-            saveSpecialBlocks(magicCores);
+            saveSpecialBlocks(customBlocks);
         }
     }
 

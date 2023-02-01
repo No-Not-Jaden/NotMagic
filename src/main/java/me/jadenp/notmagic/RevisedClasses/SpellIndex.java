@@ -1,7 +1,7 @@
 package me.jadenp.notmagic.RevisedClasses;
 
+import me.jadenp.notmagic.CustomSpell;
 import me.jadenp.notmagic.NotMagic;
-import me.jadenp.notmagic.SpellWorkshop.NotCallback;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import me.jadenp.notmagic.XPChangeEvent;
 import org.bukkit.*;
@@ -10,7 +10,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Crops;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -18,8 +17,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import javax.swing.*;
-import java.io.File;
 import java.util.*;
 
 public class SpellIndex {
@@ -176,16 +173,6 @@ public class SpellIndex {
         }
     }
 
-
-    public PlayerData findPlayer(UUID uuid){
-        for (PlayerData data : magic.eventClass.getPlayerData()){
-            if (data.getUuid().equals(uuid)){
-                return data;
-            }
-        }
-        return null;
-    }
-
     public Spell querySpell(ArrayList<String> pattern){
         if (pattern == null) {
             if (debug){
@@ -279,7 +266,13 @@ public class SpellIndex {
     public List<Entity> getMagicEntities() {
         return magicEntities;
     }
-
+    private PlayerData findPlayer(UUID uuid){
+        Map<UUID, PlayerData> playerDataMap = RevisedEvents.getInstance().playerData;
+        if (playerDataMap.containsKey(uuid)){
+            return playerDataMap.get(uuid);
+        }
+        return null;
+    }
     public static Vector rotateVectorCC(Vector vec, Vector axis, double theta){
         double x, y, z;
         double u, v, w;

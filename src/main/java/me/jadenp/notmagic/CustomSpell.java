@@ -1,5 +1,7 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic;
 
+import me.jadenp.notmagic.RevisedClasses.Spell;
+import me.jadenp.notmagic.RevisedClasses.SpellIndex;
 import org.bukkit.plugin.Plugin;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;

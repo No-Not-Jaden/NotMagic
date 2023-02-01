@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Spell {
@@ -195,7 +196,7 @@ public class Spell {
                     spellPhase += 0.5;
                 } else {
                     this.cancel();
-                    spellIndex.findPlayer(uuid).setDisplayingSpell(false);
+                    findPlayer(uuid).setDisplayingSpell(false);
                 }
             }
         }.runTaskTimerAsynchronously(plugin,5,5L);
@@ -296,10 +297,17 @@ public class Spell {
                     lastPoint = nextPoint;
                 } else {
                     this.cancel();
-                    spellIndex.findPlayer(uuid).setDisplayingSpell(false);
+                    findPlayer(uuid).setDisplayingSpell(false);
                 }
             }
         }.runTaskTimerAsynchronously(plugin,20,5);
+    }
+    private PlayerData findPlayer(UUID uuid){
+        Map<UUID, PlayerData> playerDataMap = RevisedEvents.getInstance().playerData;
+        if (playerDataMap.containsKey(uuid)){
+            return playerDataMap.get(uuid);
+        }
+        return null;
     }
     public static float getLookAtYaw(Vector motion) {
         double dx = motion.getX();
