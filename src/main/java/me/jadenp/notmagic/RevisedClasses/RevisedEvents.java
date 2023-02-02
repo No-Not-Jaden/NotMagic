@@ -3,16 +3,14 @@ package me.jadenp.notmagic.RevisedClasses;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import me.jadenp.notmagic.Commands;
 import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.SpellWorkshop.Essence;
 import me.jadenp.notmagic.SpellWorkshop.SpellNames;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
+import me.jadenp.notmagic.SpellWorkshop.WorkshopSpellAdapter;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -63,15 +61,17 @@ public class RevisedEvents implements Listener {
         workshopSpellsFile = new File(plugin.getDataFolder() + File.separator + "workshopSpells.json");
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
+        builder.registerTypeAdapter(PlayerData.class, new PlayerDataAdapter());
+        builder.registerTypeAdapter(WorkshopSpell.class, new WorkshopSpellAdapter());
         gson = builder.create();
 
-        if (!workshopSpellsFile.createNewFile()){
-            workshopSpells = gson.fromJson(new String(Files.readAllBytes(Paths.get(workshopSpellsFile.getPath()))), new TypeToken<List<WorkshopSpell>>(){}.getType());
+        if (workshopSpellsFile.exists()){
+            workshopSpells = Arrays.asList(gson.fromJson(new String(Files.readAllBytes(Paths.get(workshopSpellsFile.getPath()))), WorkshopSpell[].class));
         }
 
 
 
-        if (!magicEntitiesFile.createNewFile()){
+        if (magicEntitiesFile.exists()){
             Type mapType = new TypeToken<Map<UUID, Integer>>() {}.getType();
             magicEntities = gson.fromJson(new String(Files.readAllBytes(Paths.get(magicEntitiesFile.getPath()))), mapType);
         }
@@ -111,29 +111,39 @@ public class RevisedEvents implements Listener {
     }
 
     public void saveData(){
-        for (Map.Entry<UUID, PlayerData> entry : playerData.entrySet()){
-            File pFile = new File(notMagic.playerRecords + File.separator + entry.getKey() + ".json");
+        if (playerData.size() > 0) {
+            for (Map.Entry<UUID, PlayerData> entry : playerData.entrySet()) {
+                File pFile = new File(notMagic.playerRecords + File.separator + entry.getKey() + ".json");
+                try {
+                    pFile.createNewFile();
+                    PlayerData value = entry.getValue();
+                    FileWriter writer = new FileWriter(pFile);
+                    gson.toJson(value, writer);
+                    writer.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (workshopSpells.size() > 0) {
             try {
-                FileWriter writer = new FileWriter(pFile);
-                gson.toJson(entry.getValue(), writer);
+                workshopSpellsFile.createNewFile();
+                FileWriter writer = new FileWriter(workshopSpellsFile);
+                gson.toJson(workshopSpells.toArray(), writer);
                 writer.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        try {
-            FileWriter writer = new FileWriter(workshopSpellsFile);
-            gson.toJson(workshopSpells, writer);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            FileWriter writer = new FileWriter(magicEntitiesFile);
-            gson.toJson(magicEntities, writer);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (magicEntities.size() > 0) {
+            try {
+                magicEntitiesFile.createNewFile();
+                FileWriter writer = new FileWriter(magicEntitiesFile);
+                gson.toJson(magicEntities, writer);
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -150,7 +160,7 @@ public class RevisedEvents implements Listener {
                 playerData.put(p.getUniqueId(), pData);
             } else {
                 Bukkit.getLogger().info("Unique player joined! Creating Player Data.");
-                playerData.put(p.getUniqueId(), new PlayerData(p.getUniqueId(), p.getName(), 1, 0, 50, 0.5, (ArrayList<String>) Collections.singletonList("Burn")));
+                playerData.put(p.getUniqueId(), new PlayerData(p.getUniqueId(), p.getName(), 1, 0, 50, 0.5, new ArrayList<>(Collections.singletonList("Burn"))));
             }
         } else {
             PlayerData data = playerData.get(p.getUniqueId());

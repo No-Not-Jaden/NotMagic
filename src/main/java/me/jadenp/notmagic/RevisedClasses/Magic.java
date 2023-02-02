@@ -73,61 +73,66 @@ public class Magic implements Listener {
         new BukkitRunnable(){
             @Override
             public void run() {
-                for (Player p : Bukkit.getOnlinePlayers()){
-                    PlayerData data = findPlayer(p.getUniqueId());
-                    final List<Location> castVertexes = data.getCastVertexes();
-                    if (castVertexes != null) {
-                        if (castVertexes.size() > 0) {
+                Map<UUID, PlayerData> playerData = RevisedEvents.getInstance().playerData;
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        PlayerData data = playerData.get(p.getUniqueId());
+                        final List<Location> castVertexes = data.getCastVertexes();
+                        if (castVertexes != null) {
+                            if (castVertexes.size() > 0) {
 
-                                    for (int i = 0; i < castVertexes.size(); i++) {
-                                        if (i == 0) {
-                                            //p.spawnParticle(Particle.REDSTONE, castVertexes.get(i), 1, colors.get(i));
-                                            spellTrails.add(new SpellTrail(p, castVertexes.get(i), colors.get(i)));
-                                        } else {
-                                            //p.spawnParticle(Particle.REDSTONE, castVertexes.get(i), 1, colors.get(i - 1));
-                                            spellTrails.add(new SpellTrail(p, castVertexes.get(i), colors.get(i-1)));
-                                            // getting location between 2 of the points
-                                            Location beginning = castVertexes.get(i-1);
-                                            Location end = castVertexes.get(i);
-                                            double minDistance = 0.2;
-                                            double distance = end.distance(beginning);
-                                            if (distance > minDistance) {
-                                                double newPoints = distance / minDistance;
-                                                double xVal = end.getX();
-                                                double yVal = end.getY();
-                                                double zVal = end.getZ();
-                                                double xChange = (beginning.getX() - end.getX()) / newPoints;
-                                                double yChange = (beginning.getY() - end.getY()) / newPoints;
-                                                double zChange = (beginning.getZ() - end.getZ()) / newPoints;
-                                                for (double d = 0; d < distance - minDistance; d+= minDistance ){
-                                                    xVal += xChange;
-                                                    yVal += yChange;
-                                                    zVal += zChange;
-                                                    Location middle = new Location(end.getWorld(), xVal, yVal, zVal);
-                                                    spellTrails.add(new SpellTrail(p, middle, colors.get(i-1)));
-                                                    //p.spawnParticle(Particle.REDSTONE, middle, 1, colors.get(i - 1));
-                                                }
-
+                                for (int i = 0; i < castVertexes.size(); i++) {
+                                    if (i == 0) {
+                                        //p.spawnParticle(Particle.REDSTONE, castVertexes.get(i), 1, colors.get(i));
+                                        spellTrails.add(new SpellTrail(p, castVertexes.get(i), colors.get(i)));
+                                    } else {
+                                        //p.spawnParticle(Particle.REDSTONE, castVertexes.get(i), 1, colors.get(i - 1));
+                                        spellTrails.add(new SpellTrail(p, castVertexes.get(i), colors.get(i - 1)));
+                                        // getting location between 2 of the points
+                                        Location beginning = castVertexes.get(i - 1);
+                                        Location end = castVertexes.get(i);
+                                        double minDistance = 0.2;
+                                        double distance = end.distance(beginning);
+                                        if (distance > minDistance) {
+                                            double newPoints = distance / minDistance;
+                                            double xVal = end.getX();
+                                            double yVal = end.getY();
+                                            double zVal = end.getZ();
+                                            double xChange = (beginning.getX() - end.getX()) / newPoints;
+                                            double yChange = (beginning.getY() - end.getY()) / newPoints;
+                                            double zChange = (beginning.getZ() - end.getZ()) / newPoints;
+                                            for (double d = 0; d < distance - minDistance; d += minDistance) {
+                                                xVal += xChange;
+                                                yVal += yChange;
+                                                zVal += zChange;
+                                                Location middle = new Location(end.getWorld(), xVal, yVal, zVal);
+                                                spellTrails.add(new SpellTrail(p, middle, colors.get(i - 1)));
+                                                //p.spawnParticle(Particle.REDSTONE, middle, 1, colors.get(i - 1));
                                             }
+
                                         }
                                     }
-                            if (data.getTimeSinceLastCast() != 0)
-                                if (data.getTimeSinceLastCast() + 30000 < System.currentTimeMillis()) {
-                                    // been 30 seconds since last cast point
-                                    breakSpell(p, data.getCastPoints());
-                                    data.resetCast();
                                 }
+                                if (data.getTimeSinceLastCast() != 0)
+                                    if (data.getTimeSinceLastCast() + 30000 < System.currentTimeMillis()) {
+                                        // been 30 seconds since last cast point
+                                        breakSpell(p, data.getCastPoints());
+                                        data.resetCast();
+                                    }
+                            }
                         }
                     }
-                }
+                });
             }
-        }.runTaskTimerAsynchronously(plugin,200,5);
+        }.runTaskTimer(plugin,200,5);
         new BukkitRunnable(){
             @Override
             public void run() {
+                Map<UUID, PlayerData> playerData = RevisedEvents.getInstance().playerData;
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (items.isWand(player.getInventory().getItemInMainHand()))  {
-                        PlayerData data = findPlayer(player.getUniqueId());
+                    if (Items.isWand(player.getInventory().getItemInMainHand()))  {
+                        PlayerData data = playerData.get(player.getUniqueId());
                         data.setMp((int) (data.getMp() + data.getMpRegen() * 2));
                         if (data.getMp() > data.getMpMax())
                             data.setMp(data.getMpMax());
@@ -283,8 +288,9 @@ public class Magic implements Listener {
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(String.valueOf(str)));
                     }
                 }
+                });
             }
-        }.runTaskTimerAsynchronously(plugin,200,10);
+        }.runTaskTimer(plugin,200,10);
     }
 
     @EventHandler
@@ -293,7 +299,7 @@ public class Magic implements Listener {
             return;
         Player player = event.getPlayer();
         if (Items.isWand(event.getItem())){
-            PlayerData data = findPlayer(event.getPlayer().getUniqueId());
+            PlayerData data = eventClass.playerData.get(player.getUniqueId());
             event.setCancelled(true);
             if (System.currentTimeMillis() - data.getInteractCooldown() < 50)
                 return;
@@ -552,10 +558,10 @@ public class Magic implements Listener {
         } else if (player.getInventory().getItemInMainHand().getType().equals(Material.ENCHANTED_BOOK)){
             Spell spell = spellIndex.querySpell(player.getInventory().getItemInMainHand());
             if (spell != null){
-                PlayerData data = findPlayer(event.getPlayer().getUniqueId());
+                PlayerData data = eventClass.playerData.get(player.getUniqueId());
                 if (!data.getSpellsUnlocked().contains(spell.getName())) {
-                    if (data.getLevel() < spell.getRequiredLevel()) {
-                        player.sendMessage(Language.prefix() + Language.learnSpell());
+                    if (data.getLevel() >= spell.getRequiredLevel()) {
+                        player.sendMessage(Language.prefix() + Language.learnSpell().replace("{spell}", spell.getName()));
                         data.learnSpell(spell.getName());
                         removeItem(player, spell.getSpellBook());
                     } else {
@@ -601,13 +607,7 @@ public class Magic implements Listener {
         }
     }
 
-    private PlayerData findPlayer(UUID uuid){
-        Map<UUID, PlayerData> playerDataMap = RevisedEvents.getInstance().playerData;
-        if (playerDataMap.containsKey(uuid)){
-            return playerDataMap.get(uuid);
-        }
-        return null;
-    }
+
 
     // next 3 methods are a bunch of math that get directions and distances from points
     // in order to get relative direction and distances we need to turn the points into vectors beforehand

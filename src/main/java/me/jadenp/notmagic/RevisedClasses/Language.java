@@ -37,7 +37,7 @@ public class Language {
 
     public static String color(String str){
         str = ChatColor.translateAlternateColorCodes('&', str);
-        return translateHexColorCodes("{#","}", str);
+        return translateHexColorCodes("&#","", str);
     }
     public static String translateHexColorCodes(String startTag, String endTag, String message)
     {

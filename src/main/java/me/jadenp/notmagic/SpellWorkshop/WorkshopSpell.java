@@ -27,11 +27,10 @@ public class WorkshopSpell extends Spell {
     private final int accuracy;
     private final boolean mainSpell;
     private final int magicValue;
-    private final int castTime; // in ticks
     private final UUID uuid;
 
     public WorkshopSpell(Essence potential, int potentialAmount, Essence areaEffect, int areaEffectAmount, Essence intensity, int intensityAmount, Essence control, int controlAmount, int accuracy, NotMagic notMagic){
-        // constants will have to be changed eventually - spell size should be dependant on the magic value
+        // constants will have to be changed eventually - spell size should be dependent on the magic value
         super(null, 0, 0, 0, 0, null, null, notMagic, false);
 
         int manaCost;
@@ -58,7 +57,6 @@ public class WorkshopSpell extends Spell {
 
 
         this.magicValue = potentialAmount * potential.getPotentialPower() + areaEffectAmount * areaEffect.getAreaEffectPower() + intensityAmount * intensity.getIntensityPower() + controlAmount * control.getControlPower() + accuracy * 2;
-        this.castTime = 3; // to be changed later
         uuid = UUID.randomUUID();
 
         this.mainSpell = manaCost < 25;
@@ -79,7 +77,6 @@ public class WorkshopSpell extends Spell {
         this.accuracy = accuracy;
         this.mainSpell = mainSpell;
         this.magicValue = magicValue;
-        this.castTime = castTime;
         this.uuid = uuid;
         super.setSpellBook(getSpellBook());
     }
@@ -118,9 +115,6 @@ public class WorkshopSpell extends Spell {
         return magicValue;
     }
 
-    public int getCastTime() {
-        return castTime;
-    }
 
     public Essence getAreaEffect() {
         return areaEffect;

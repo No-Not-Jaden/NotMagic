@@ -1,6 +1,6 @@
 # Classic chat color codes & hex work {#ffffff}
 # replacement characters can be used in some text
-prefix: '&7[{#1ac2e8}Not{#e81ae1}Magic&7] &8» '
+prefix: '&7[&#1ac2e8Not&#e81ae1Magic&7] &8» '
 insufficient-level-reading: '&9You are unable to decipher the symbols in this book. &7({level})'
 insufficient-level-casting: '&9Your mind freezes when trying to preform this spell. &7({level})'
 learn-spell: '&aYou learned the {spell} spell!'

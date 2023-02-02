@@ -25,6 +25,7 @@ import org.checkerframework.checker.units.qual.C;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -84,15 +85,13 @@ public class Industrial implements Listener {
     public Industrial() throws IOException {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
+        builder.registerTypeAdapter(CustomBlocks.class, new CustomBlocksAdapter());
         gson = builder.create();
         // load placed magic cores
-        if (specialBlockFile.createNewFile()){
-            Bukkit.getLogger().info("Created new special block file");
-        } else {
-            customBlocks = gson.fromJson(new String(Files.readAllBytes(Paths.get(specialBlockFile.getPath()))), new TypeToken<Map<Location, CustomBlocks>>(){}.getType());
-
+        if (specialBlockFile.exists()){
+            Type mapType = new TypeToken<Map<Location, CustomBlocks>>() {}.getType();
+            customBlocks = gson.fromJson(new String(Files.readAllBytes(Paths.get(specialBlockFile.getPath()))), mapType);
         }
-
         RecipeChoice magicDust = new RecipeChoice.ExactChoice(Items.data("MagicDust"));
         NamespacedKey key = new NamespacedKey(NotMagic.getInstance(), "smallCatalystCrystal");
         ShapedRecipe smallCatalystCrystal = new ShapedRecipe(key, Items.data("smallCatalystCrystal"));
@@ -133,12 +132,15 @@ public class Industrial implements Listener {
     }
 
     private void saveSpecialBlocks(Map<Location, CustomBlocks> customBlocks) throws IOException {
-        try {
-            FileWriter writer = new FileWriter(specialBlockFile);
-            gson.toJson(customBlocks, writer);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (customBlocks.size() > 0) {
+            try {
+                specialBlockFile.createNewFile();
+                FileWriter writer = new FileWriter(specialBlockFile);
+                gson.toJson(customBlocks, writer);
+                writer.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
