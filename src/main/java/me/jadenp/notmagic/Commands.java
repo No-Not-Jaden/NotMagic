@@ -111,7 +111,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("nm")) {
-            String prefix = Language.prefix();
+            String prefix = Language.prefix;
 
             if (args.length == 0) {
                 if (sender.hasPermission("notmagic.basic")) {
@@ -127,7 +127,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     sendGradientBottom(sender);
                     return true;
                 } else {
-                    sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                    sender.sendMessage(prefix + Language.noPermission);
                 }
             }
 
@@ -251,7 +251,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
                     sendGradientBottom(sender);
                 } else {
-                    sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                    sender.sendMessage(prefix + Language.noPermission);
                 }
                 } else if (args[0].equalsIgnoreCase("admin")) {
                     if (sender.hasPermission("notmagic.admin")){
@@ -259,9 +259,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                         sender.sendMessage(ChatColor.GREEN + "/nm give [player] (NM Item)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Gives yourself or a player a NM Item");
                         sender.sendMessage(ChatColor.GREEN + "/nm setlevel (player) (#)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Changes a player's magic level");
                         sender.sendMessage(ChatColor.GREEN + "/nm reload" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "reloads the plugin's configuration");
+                        sender.sendMessage(ChatColor.GREEN + "/nm spawn (mob ID)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Spawns a magic mob");
                         sendGradientBottom(sender);
                     } else {
-                        sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                        sender.sendMessage(prefix + Language.noPermission);
                     }
                 } else if (args[0].equalsIgnoreCase("give")) {
                     if (sender.hasPermission("notmagic.admin")) {
@@ -317,7 +318,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         }
 
                     } else {
-                        sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                        sender.sendMessage(prefix + Language.noPermission);
                     }
                 } else if (args[0].equalsIgnoreCase("setlevel")) {
                 if (sender.hasPermission("notmagic.admin")) {
@@ -339,7 +340,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         sender.sendMessage(prefix + ChatColor.DARK_PURPLE + "/nm setlevel (player) (#)");
                     }
                 } else {
-                    sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                    sender.sendMessage(prefix + Language.noPermission);
                 }
             } else if (args[0].equalsIgnoreCase("spell")) {
                 if (args.length > 1){
@@ -355,18 +356,18 @@ public class Commands implements CommandExecutor, TabCompleter {
                         PlayerData data = findPlayer(((Player) sender).getUniqueId());
                         if (!data.isDisplayingSpell()) {
                             if (data.getSpellsUnlocked().contains(spell.getName()) || sender.hasPermission("notmagic.admin")) {
-                                sender.sendMessage(prefix + Language.demonstrateSpell().replace("{spell}", spell.getName()));
+                                sender.sendMessage(prefix + Language.demonstrateSpell.replace("{spell}", spell.getName()));
                                 data.setDisplayingSpell(true);
                                 spell.displayRealSpell((Player) sender);
                             } else {
-                                sender.sendMessage(prefix + Language.unrecognizedSpell());
+                                sender.sendMessage(prefix + Language.unrecognizedSpell);
                             }
                         } else {
-                            sender.sendMessage(prefix + Language.displayWait());
+                            sender.sendMessage(prefix + Language.displayWait);
                         }
 
                     } else {
-                        sender.sendMessage(prefix + Language.unrecognizedSpell());
+                        sender.sendMessage(prefix + Language.unrecognizedSpell);
                     }
                     } else {
                         sender.sendMessage(prefix + "You are not a player!");
@@ -380,7 +381,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (sender.hasPermission("notmagic.admin")){
                     notMagic.loadConfig();
                 } else {
-                    sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
+                    sender.sendMessage(prefix + Language.noPermission);
                 }
             } else if (args[0].equalsIgnoreCase("spawn")) {
                 if (sender.hasPermission("notmagic.admin")){
@@ -393,6 +394,19 @@ public class Commands implements CommandExecutor, TabCompleter {
                             sender.sendMessage(prefix + ChatColor.RED + "Unknown Entity!");
                         }
                     }
+                } else {
+                    sender.sendMessage(prefix + Language.noPermission);
+                }
+            } else if (args[0].equalsIgnoreCase("debug")){
+                if (sender.hasPermission("notmagic.admin")) {
+                    Settings.debug = !Settings.debug;
+                    if (Settings.debug) {
+                        sender.sendMessage(prefix + ChatColor.YELLOW + "Debug mode is now " + ChatColor.GREEN + "enabled " + ChatColor.YELLOW + "for admins.");
+                    } else {
+                        sender.sendMessage(prefix + ChatColor.YELLOW + "Debug mode is now " + ChatColor.RED + "disabled " + ChatColor.YELLOW + "for admins.");
+                    }
+                } else {
+                    sender.sendMessage(prefix + Language.noPermission);
                 }
             }
             else {
@@ -425,7 +439,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         if (playerDataMap.containsKey(uuid)){
             return playerDataMap.get(uuid);
         }
-        return null;
+        return new PlayerData(uuid, "", 1, 0, 50, 0.5, new ArrayList<>(Collections.singletonList("Burn")));
     }
     public void sendGradientTop(CommandSender sender){
         StringBuilder end = new StringBuilder();
@@ -478,10 +492,9 @@ public class Commands implements CommandExecutor, TabCompleter {
                     list.add("admin");
                     list.add("give");
                     list.add("setLevel");
-                    list.add("spellColor");
-                    list.add("mine");
                     list.add("debug");
                     list.add("spell");
+                    list.add("spawn");
                 }
             } else if (args.length == 2){
                 if (args[0].equalsIgnoreCase("help")){
@@ -500,11 +513,6 @@ public class Commands implements CommandExecutor, TabCompleter {
                         list.add("basicWand");
                         //list.addAll(eventClass.getMagicClass().getSpellIndex().getSpellBookNames());
 
-                    }
-                } else if (args[0].equalsIgnoreCase("mines")){
-                    if (sender.hasPermission("notmagic.admin")) {
-                        list.add("add");
-                        list.add("remove");
                     }
                 }
             }

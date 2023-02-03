@@ -18,9 +18,6 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class Magic implements Listener {
-    Items items = new Items();
-    boolean debug = true;
-
     private final Plugin plugin;
     //private NotMagic notMagic;
      RevisedEvents eventClass;
@@ -32,7 +29,7 @@ public class Magic implements Listener {
         this.plugin = plugin;
         //notMagic = plugin;
         this.eventClass = eventClass;
-        spellIndex = new SpellIndex(plugin, this);
+        spellIndex = new SpellIndex(plugin);
         // colors of the 9 cast points
         float size = 0.75F;
         colors.add(new Particle.DustOptions(Color.fromRGB(196, 78, 212), size));
@@ -310,7 +307,7 @@ public class Magic implements Listener {
                     if (data.getCastVertexes().size() > 0) {
                         // casting a spell
                         ArrayList<String> castPoints = data.getSpellCasting();
-                        if (debug) {
+                        if (Settings.debug && player.hasPermission("notmagic.admin")) {
                             for (String str : castPoints) {
                                 player.sendMessage(ChatColor.BLUE + str);
                             }
@@ -319,7 +316,7 @@ public class Magic implements Listener {
 
                         if (spell != null) {
                             // <!> add new Main spells here <!>
-                            if (debug) {
+                            if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                 player.sendMessage(spell.getName());
                             }
                             // main spell switch
@@ -419,7 +416,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("RightDown");
                                                 }
                                             } else {
@@ -432,7 +429,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("LeftDown");
                                                 }
                                             }
@@ -449,7 +446,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("RightUp");
                                                 }
                                             } else {
@@ -462,7 +459,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("LeftUp");
                                                 }
                                             }
@@ -477,7 +474,7 @@ public class Magic implements Listener {
                                             } else {
                                                 data.replaceLastVertex(point);
                                             }
-                                            if (debug) {
+                                            if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                 p.sendMessage("Down");
                                             }
                                             // point is above last vertex
@@ -491,7 +488,7 @@ public class Magic implements Listener {
                                             } else {
                                                 data.replaceLastVertex(point);
                                             }
-                                            if (debug) {
+                                            if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                 p.sendMessage("Up");
                                             }
                                             // point is left or right
@@ -507,7 +504,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("Right");
                                                 }
                                             } else {
@@ -520,7 +517,7 @@ public class Magic implements Listener {
                                                 } else {
                                                     data.replaceLastVertex(point);
                                                 }
-                                                if (debug) {
+                                                if (Settings.debug && player.hasPermission("notmagic.admin")) {
                                                     p.sendMessage("Left");
                                                 }
                                             }
@@ -562,14 +559,14 @@ public class Magic implements Listener {
                     PlayerData data = eventClass.playerData.get(player.getUniqueId());
                     if (!data.getSpellsUnlocked().contains(spell.getName())) {
                         if (data.getLevel() >= spell.getRequiredLevel()) {
-                            player.sendMessage(Language.prefix() + Language.learnSpell().replace("{spell}", spell.getName()));
+                            player.sendMessage(Language.prefix + Language.learnSpell.replace("{spell}", spell.getName()));
                             data.learnSpell(spell.getName());
                             removeItem(player, spell.getSpellBook());
                         } else {
-                            player.sendMessage(Language.prefix() + Language.insufficientLevelReading().replace("{level}", spell.getRequiredLevel() + ""));
+                            player.sendMessage(Language.prefix + Language.insufficientLevelReading.replace("{level}", spell.getRequiredLevel() + ""));
                         }
                     } else {
-                        player.sendMessage(Language.prefix() + Language.repeatSpell());
+                        player.sendMessage(Language.prefix + Language.repeatSpell);
                     }
                 }
             }

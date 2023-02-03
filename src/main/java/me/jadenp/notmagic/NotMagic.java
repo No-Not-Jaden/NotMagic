@@ -38,6 +38,8 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
  *     Workshop spell books work
  *     Can cast workshop spells
  *     change constant variables and pattern size in workshopspell
+ *     Make sure all spells work
+ *     Add more lower level spells
  * </TODO>
  * To-Do:
  * PlayerData
@@ -56,20 +58,12 @@ import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 
 public final class NotMagic extends JavaPlugin {
-    Items items = new Items();
     public RevisedEvents eventClass;
     public Commands commandClass;
-    public ArrayList<String> language = new ArrayList<>();
-    private String prefix;
     // files - need to make the other files reloadable
-    public File customSpells = new File(this.getDataFolder() + File.separator + "customSpells.yml"); // custom spells file
     public CraftingInterface craftingInterface;
-    public File manaMines = new File(this.getDataFolder() + File.separator + "mana-mines.yml");
-    public File alcStations = new File(this.getDataFolder() + File.separator + "alchemy-stations.yml");
     public File playerRecords = new File(this.getDataFolder()+File.separator+"player-records");
     public File backups = new File(this.getDataFolder()+File.separator+"backups");
-    public File recordKey = new File(playerRecords + File.separator + "record-key.yml");
-    public File craftedSpells = new File(playerRecords + File.separator + "craftedSpells.yml");
 
     private static NotMagic instance;
 
@@ -90,44 +84,13 @@ public final class NotMagic extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("      " + ChatColor.DARK_GREEN + "Made by: Not_Jaden           " + ChatColor.LIGHT_PURPLE + " |___/          ");
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "" + ChatColor.UNDERLINE + "" + ChatColor.BOLD + "_________________________________________________________");
         //                        Made by: Not_Jaden
-        if (!manaMines.exists()) {
-            try {
-                manaMines.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        if (!alcStations.exists()) {
-            try {
-                alcStations.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        if (!customSpells.exists()) {
-            saveResource("customSpells.yml", false);
-        }
         if (!playerRecords.exists()) {
             playerRecords.mkdir();
         }
         if (!backups.exists()) {
             backups.mkdir();
-        }
-        if (!recordKey.exists()){
-            try {
-                recordKey.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (!craftedSpells.exists()){
-            try {
-                craftedSpells.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         // loading configurations
 
@@ -156,75 +119,13 @@ public final class NotMagic extends JavaPlugin {
         }
         loadConfig();
 
-
-
-
-
-
-            /*YamlConfiguration configuration = new YamlConfiguration();
-            // basic spell info
-            configuration.set("use-built-in-spells", true);
-            configuration.set("spells.1.name", "CustomSpell");
-            configuration.set("spells.1.main-spell", false);
-            configuration.set("spells.1.mp-cost", 10);
-            configuration.set("spells.1.cast-time", 2);
-            configuration.set("spells.1.cooldown", 200);
-            configuration.set("spells.1.required-level", 9001);
-            List<String> spellPattern = new ArrayList<>(Arrays.asList("Start", "Up", "Down", "Left", "Right", "LeftUp", "LeftDown", "RightUp", "RightDown"));
-            configuration.set("spells.1.cast-pattern", spellPattern);*/
-
-            // spellCreation - use a set of strings to add actions to the spell
-            // Particles
-            // particle:<spigotParticle> - selects a particle from spigot to use https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
-            // can combine the front/behind/etc - need target or player before. ex: spawn:player1front
-            // spawn:<player/playerEye/[x]front/[x]behind/[x]left/[x]right/[x]up/[x]down> - spawn particles at players feet, player's eye, x blocks in front/behind/left/right/up/down from player
-            // spawn:<[radius]{entity:<SpigotEntity>}/[radius]air/[x]x[y]y[z]z> - spawns particles at nearby entities, air, or in a relative location from the player
-            // spawn:<target/targetEye/[x]front/[x]behind/[x]left/[x]right/[x]up/[x]down> - will spawn particles at the target (found later) - does for each target if there are multiple
-            // amount:<integer> - amount of particles to spawn - default is 1
-            // delay:<ticks> - when the particles will spawn - default is 0
-            // vvv These are only for directional particles vvv
-            // direction: - same as spawn parameters
-            // speed:<float> how fast the particles will go
-            // ^^^                                          ^^^
-            //
-            // Targeting
-            // you can replace EntityType with "all" to target all entities
-            // you can add a '!' after "Entity:" to exclude a specific entityType from the list ex: target:5{radiusEntity:all}{radiusEntity:!cow}
-            // delay does not effect target, but it can effect when the damage occurs
-            // target:[x]{radiusEntity:<EntityType>} - targets entities in a radius [x] https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html
-            // target:[x]{forwardEntity:<EntityType>} - targets entities in the player's line of sight with a maximum distance of [x]
-            // target:[x]block - targets block players are looking at with a maximum distance of [x]
-            // blocks cannot be damaged
-            // damage:[y]<damageType> - how much damage [y] it should do and what type of damage (optional) https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
-            // damageDuration:[a]every[b]for[c]<damageType> - replaces damage and hurts target for [a] hit points every [b] ticks for [c] time in ticks ex: damageDuration:1every25for900magic - this is what an un-extended poison potion does
-            // delay:<ticks> - when the damage will occur
-            //
-            // Other Effects
-            // move:<player/target><[x]front/[x]behind/[x]left/[x]right/[x]up/[x]down> - adds a vector to the player/target's motion - requires player or target
-            // teleport:<player/target><[x]front/[x]behind/[x]left/[x]right/[x]up/[x]down> - teleports player or target to a relative location
-            // teleport:<player/target><[x]x[y]y[z]z[world]> - teleports player or target to a specific location (world is optional)
-            // delay:<ticks> - when the effect will occur
-            // effect:<player/target>[ticks]<spigotEffect>[strength]<true/false> - give the player, or targets a potion effect for a desired amount of ticks and strength. true/false is optional - default is false. strength is optional - default is 0
-
-            /*List<String> creation = new ArrayList<>(Arrays.asList("particle:END_ROD spawn:5air amount:100", "particle:CLOUD spawn:playerEye1front direction:targetEye speed:2 amount:5 delay:20", "target:10{radiusEntity:all}{radiusEntity:!player} damage:10 effect:target200LEVITATION delay:20"));
-            configuration.set("spells.1.actions", creation);
-            try {
-                configuration.save(customSpells);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
-
-
-
-
         // initializing scheduled tasks to run while server is online
         new OnlineTasks(this);
 
         // custom recipes
-        RecipeChoice magicDust = new RecipeChoice.ExactChoice(items.data("MagicDust"));
+        RecipeChoice magicDust = new RecipeChoice.ExactChoice(Items.data("MagicDust"));
         NamespacedKey key = new NamespacedKey(this, "basicwand");
-        ShapedRecipe basicWand = new ShapedRecipe(key, items.data("BasicWand"));
+        ShapedRecipe basicWand = new ShapedRecipe(key, Items.data("BasicWand"));
         basicWand.shape("*%%", "%&%", "%%*");
         basicWand.setIngredient('*', Material.AIR);
         basicWand.setIngredient('%', magicDust);
@@ -232,25 +133,25 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(basicWand);
 
         NamespacedKey key2 = new NamespacedKey(this, "magicblock");
-        ShapedRecipe magicBlock = new ShapedRecipe(key2, items.data("MagicBlock"));
+        ShapedRecipe magicBlock = new ShapedRecipe(key2, Items.data("MagicBlock"));
         magicBlock.shape("***", "***", "***");
         magicBlock.setIngredient('*', magicDust);
         getServer().addRecipe(magicBlock);
 
-        RecipeChoice mBlock = new RecipeChoice.ExactChoice(items.data("MagicBlock"));
-        RecipeChoice bWand = new RecipeChoice.ExactChoice(items.data("BasicWand"));
+        RecipeChoice mBlock = new RecipeChoice.ExactChoice(Items.data("MagicBlock"));
+        RecipeChoice bWand = new RecipeChoice.ExactChoice(Items.data("BasicWand"));
         NamespacedKey key3 = new NamespacedKey(this, "prosaicwand");
-        ShapedRecipe prosaicWand = new ShapedRecipe(key3, items.data("ProsaicWand"));
+        ShapedRecipe prosaicWand = new ShapedRecipe(key3, Items.data("ProsaicWand"));
         prosaicWand.shape("*%%", "%&%", "%%*");
         prosaicWand.setIngredient('*', Material.AIR);
         prosaicWand.setIngredient('%', mBlock);
         prosaicWand.setIngredient('&', bWand);
         getServer().addRecipe(prosaicWand);
 
-        RecipeChoice shadowRose = new RecipeChoice.ExactChoice(items.data("shadowRose"));
-        RecipeChoice pWand = new RecipeChoice.ExactChoice(items.data("ProsaicWand"));
+        RecipeChoice shadowRose = new RecipeChoice.ExactChoice(Items.data("shadowRose"));
+        RecipeChoice pWand = new RecipeChoice.ExactChoice(Items.data("ProsaicWand"));
         NamespacedKey key4 = new NamespacedKey(this, "shadowwand");
-        ShapedRecipe shadowWand = new ShapedRecipe(key4, items.data("ShadowWand"));
+        ShapedRecipe shadowWand = new ShapedRecipe(key4, Items.data("ShadowWand"));
         shadowWand.shape("*#*", "%&%", "%%%");
         shadowWand.setIngredient('*', Material.AIR);
         shadowWand.setIngredient('%', mBlock);
@@ -258,9 +159,9 @@ public final class NotMagic extends JavaPlugin {
         shadowWand.setIngredient('#', shadowRose);
         getServer().addRecipe(shadowWand);
 
-        RecipeChoice sWand = new RecipeChoice.ExactChoice(items.data("ShadowWand"));
+        RecipeChoice sWand = new RecipeChoice.ExactChoice(Items.data("ShadowWand"));
         NamespacedKey key5 = new NamespacedKey(this, "enhancedwand");
-        ShapedRecipe enhancedWand = new ShapedRecipe(key5, items.data("EnhancedWand"));
+        ShapedRecipe enhancedWand = new ShapedRecipe(key5, Items.data("EnhancedWand"));
         enhancedWand.shape("*%*", "%&%", "*%*");
         enhancedWand.setIngredient('*', Material.EMERALD_ORE);
         enhancedWand.setIngredient('%', Material.EMERALD_BLOCK);
@@ -268,7 +169,7 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(enhancedWand);
 
         NamespacedKey key6 = new NamespacedKey(this, "invizitemframe");
-        ShapedRecipe invizItemFrame = new ShapedRecipe(key6, items.data("iItem"));
+        ShapedRecipe invizItemFrame = new ShapedRecipe(key6, Items.data("iItem"));
         invizItemFrame.shape("*%*", "%&%", "*%*");
         invizItemFrame.setIngredient('*', Material.AIR);
         invizItemFrame.setIngredient('%', magicDust);
@@ -276,7 +177,7 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(invizItemFrame);
 
         NamespacedKey key7 = new NamespacedKey(this, "alccontroller");
-        ShapedRecipe alcController = new ShapedRecipe(key7, items.data("AlcController"));
+        ShapedRecipe alcController = new ShapedRecipe(key7, Items.data("AlcController"));
         alcController.shape("*%*", "%&%", "*%*");
         alcController.setIngredient('*', Material.AIR);
         alcController.setIngredient('%', magicDust);
@@ -284,33 +185,33 @@ public final class NotMagic extends JavaPlugin {
         getServer().addRecipe(alcController);
 
         NamespacedKey key8 = new NamespacedKey(this, "alcdust");
-        ShapedRecipe alcDust = new ShapedRecipe(key8, items.data("AlchemyDust"));
+        ShapedRecipe alcDust = new ShapedRecipe(key8, Items.data("AlchemyDust"));
         alcDust.shape("*%*", "%&%", "*%*");
         alcDust.setIngredient('*', Material.AIR);
         alcDust.setIngredient('%', magicDust);
         alcDust.setIngredient('&', Material.BLAZE_POWDER);
         getServer().addRecipe(alcDust);
 
-        RecipeChoice alchemyDust = new RecipeChoice.ExactChoice(items.data("AlchemyDust"));
+        RecipeChoice alchemyDust = new RecipeChoice.ExactChoice(Items.data("AlchemyDust"));
         NamespacedKey key9 = new NamespacedKey(this, "alcblock");
-        ShapedRecipe alcBlock = new ShapedRecipe(key9, items.data("AlchemyBlock"));
+        ShapedRecipe alcBlock = new ShapedRecipe(key9, Items.data("AlchemyBlock"));
         alcBlock.shape("***", "***", "***");
         alcBlock.setIngredient('*', alchemyDust);
         getServer().addRecipe(alcBlock);
 
-        RecipeChoice compressedMagicBlock = new RecipeChoice.ExactChoice(items.data("CompressedMagicBlock"));
+        RecipeChoice compressedMagicBlock = new RecipeChoice.ExactChoice(Items.data("CompressedMagicBlock"));
         NamespacedKey key10 = new NamespacedKey(this, "zyniumfragment");
-        ShapedRecipe zyniumFragment = new ShapedRecipe(key10, items.data("AlchemyBlock"));
+        ShapedRecipe zyniumFragment = new ShapedRecipe(key10, Items.data("AlchemyBlock"));
         zyniumFragment.shape("*^*", "^$^", "*^*");
         zyniumFragment.setIngredient('*', mBlock);
         zyniumFragment.setIngredient('^', compressedMagicBlock);
         zyniumFragment.setIngredient('$', Material.NETHERITE_BLOCK);
         getServer().addRecipe(zyniumFragment);
 
-        RecipeChoice wardenRemanents = new RecipeChoice.ExactChoice(items.data("wardenRemnants"));
-        RecipeChoice eWand = new RecipeChoice.ExactChoice(items.data("EnhancedWand"));
+        RecipeChoice wardenRemanents = new RecipeChoice.ExactChoice(Items.data("wardenRemnants"));
+        RecipeChoice eWand = new RecipeChoice.ExactChoice(Items.data("EnhancedWand"));
         NamespacedKey key11 = new NamespacedKey(this, "wardenwand");
-        ShapedRecipe wardenWand = new ShapedRecipe(key11, items.data("WardenWand"));
+        ShapedRecipe wardenWand = new ShapedRecipe(key11, Items.data("WardenWand"));
         wardenWand.shape("^*%", "*$*", "^*^");
         wardenWand.setIngredient('*', mBlock);
         wardenWand.setIngredient('^', magicDust);
@@ -324,9 +225,6 @@ public final class NotMagic extends JavaPlugin {
         return instance;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
 
     public void loadConfig(){
         this.reloadConfig();

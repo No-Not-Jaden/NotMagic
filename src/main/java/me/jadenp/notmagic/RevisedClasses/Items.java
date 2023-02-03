@@ -891,6 +891,54 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
             return item;
+        } else if (s.equalsIgnoreCase("SBPasturize")){
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.YELLOW + "Pasturize Spell");
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Secondary Spell:");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Has a chance of turning");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "dirt into grass");
+            Lore.add("");
+            Meta.setLore(Lore);
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("SBArrowBurst")){
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.YELLOW + "Arrow Burst Spell");
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Secondary Spell:");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Fire a volley of arrows");
+            Lore.add("");
+            Meta.setLore(Lore);
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
+        } else if (s.equalsIgnoreCase("SBFlowerLauncher")){
+            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.YELLOW + "Flower Launcher Spell");
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Main Spell:");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "You get a flower!");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "And you get a flower!");
+            Lore.add(ChatColor.DARK_GREEN + "" + ChatColor.ITALIC + "Everyone gets a flower!");
+            Lore.add("");
+            Meta.setLore(Lore);
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+            return item;
         } else if (s.equalsIgnoreCase("wardenRemnants")) {
             ItemStack item = new ItemStack(Material.IRON_BLOCK);
             ItemMeta Meta = item.getItemMeta();
@@ -1216,8 +1264,21 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return item;
+        } else if (s.equalsIgnoreCase("ManaPotion")) {
+            ItemStack item = new ItemStack(Material.POTION);
+            PotionMeta Meta = (PotionMeta) item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.BLUE + "Mana Potion");
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.DARK_BLUE + "" + ChatColor.ITALIC + "Grants +25 Mana");
+            Lore.add("");
+            Meta.setLore(Lore);
+            Meta.setColor(org.bukkit.Color.fromRGB(229, 237, 83));
+            item.setItemMeta(Meta);
+            return item;
         }
-        return null;
+        return new ItemStack(Material.AIR);
     }
 
     public static boolean isWand(ItemStack itemStack){

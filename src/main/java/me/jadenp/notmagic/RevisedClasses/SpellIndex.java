@@ -1,6 +1,5 @@
 package me.jadenp.notmagic.RevisedClasses;
 
-import me.jadenp.notmagic.CustomSpell;
 import me.jadenp.notmagic.NotMagic;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import me.jadenp.notmagic.XPChangeEvent;
@@ -22,28 +21,29 @@ import java.util.*;
 public class SpellIndex {
 
     /**
-     * How to add a new spell: (I think)
+     * How to add a new spell:
      * Add a spell object to the spells list in the main SpellIndex class (this)
      * Add to the bookmarked switch statement in this class
      * Add a method in this class for the spell that accepts a Player parameter
-     * go to Magic.java and add an if statement to check for the spell name if it is a main spell
      */
 
     private Plugin plugin;
-    private Magic magic;
+    private static SpellIndex instance;
     Random rand = new Random();
-    boolean debug = true;
     private List<Entity> magicEntities = new ArrayList<>();
     private List<Player> hiddenPlayers = new ArrayList<>();
     //File customSpells = new File(plugin.getDataFolder() + File.separator + "customSpells.yml");
     private List<Spell> lootList = new ArrayList<>();
     private List<Spell> spells = new ArrayList<>();
-    private List<CustomSpell> customSpells = new ArrayList<>();
-    public SpellIndex(Plugin plugin, Magic magic){
+    public SpellIndex(Plugin plugin){
         this.plugin = plugin;
-        this.magic = magic;
+        instance = this;
 
         addSpells();
+    }
+
+    public static SpellIndex getInstance(){
+        return instance;
     }
 
     public void addSpells(){
@@ -81,7 +81,7 @@ public class SpellIndex {
 
         spells.add(new Spell("Kinetic Electrocute", 75, 600, 1400, 3, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "RightUp")), Items.data("SBKineticElectrocute"), plugin, false));
 
-        spells.add(new Spell("Thunder Cloud", 20, 30, 400, 2, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "Left")), Items.data("SBThunderCloud"), plugin, false));
+        spells.add(new Spell("Thunder Cloud", 20, 30, 400, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightUp", "RightDown", "Left")), Items.data("SBThunderCloud"), plugin, false));
 
         spells.add(new Spell("Dark Summoning", 75, 120, 800, 3, new ArrayList<>(Arrays.asList("Start", "Down", "LeftUp", "Right", "Left")), Items.data("SBDarkSummoning"), plugin, false));
 
@@ -102,6 +102,12 @@ public class SpellIndex {
         spells.add(new Spell("Time Bomb", 50, 120, 3600, 4, new ArrayList<>(Arrays.asList("Start", "Right", "Left", "LeftDown", "Down", "Right", "Up")), Items.data("SBTimeBomb"), plugin, false));
 
         spells.add(new Spell("Drown", 75, 20, 800, 4, new ArrayList<>(Arrays.asList("Start", "RightUp", "RightDown", "RightUp", "RightUp")), Items.data("SBDrown"), plugin, false));
+
+        spells.add(new Spell("Pasturize", 10, 35, 50, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "RightDown", "Up", "Down")), Items.data("SBPasturize"), plugin, false));
+
+        spells.add(new Spell("Arrow Burst", 40, 20, 200, 1, new ArrayList<>(Arrays.asList("Start", "LeftUp", "Right", "LeftDown", "Up")), Items.data("SBArrowBurst"), plugin, false));
+
+        spells.add(new Spell("Flower Launcher", 10, 0, 3, 1, new ArrayList<>(Arrays.asList("Start", "Left", "LeftUp", "Right", "RightDown", "RightUp", "Right", "LeftDown", "Left")), Items.data("SBFlowerLauncher"), plugin, true));
 
         for (Spell spell : spells){
             for (int i = 0; i < spell.getRequiredLevel(); i++){
@@ -175,66 +181,22 @@ public class SpellIndex {
 
     public Spell querySpell(ArrayList<String> pattern){
         if (pattern == null) {
-            if (debug){
-                Bukkit.getLogger().info("Null spell pattern");
-            }
             return null;
         }
         for (Spell spell : spells){
-            if (debug)
-                Bukkit.getLogger().info("Spell: " + spell.getName());
             if (pattern.size() == spell.getSpellPattern().size()){
                 boolean match = true;
                 for (int i = 0; i < pattern.size(); i++){
                     if (!pattern.get(i).equals(spell.getSpellPattern().get(i))) {
-                        if (debug)
-                            Bukkit.getLogger().info(spell.getSpellPattern().get(i) + " : " + pattern.get(i));
                         match = false;
                         break;
                     }
                 }
                 if (match){
-                    if (debug)
-                        Bukkit.getLogger().info("Match: " + spell.getName());
                     return spell;
-                }
-            } else {
-                if (debug) {
-                    Bukkit.getLogger().info("Different Pattern Size: " + spell.getSpellPattern().size() + " : " + pattern.size());
-                    if (spell.getName().equalsIgnoreCase("Zap")){
-                        Bukkit.getLogger().info("Zap Pattern:");
-                        for (int i = 0; 9 < spell.getSpellPattern().size(); i++){
-                            Bukkit.getLogger().info(spell.getSpellPattern().get(i));
-                        }
-                        Bukkit.getLogger().info("Cast Pattern:");
-                        for (int i = 0; 9 < pattern.size(); i++){
-                            Bukkit.getLogger().info(pattern.get(i));
-                        }
-                    }
                 }
             }
         }
-        /*
-        for (CustomSpell spell : customSpells){
-            if (debug)
-                Bukkit.getLogger().info("Spell: " + spell.getName());
-            if (pattern.size() == spell.getSpellPattern().size()){
-                boolean match = true;
-                for (int i = 0; i < pattern.size(); i++){
-                    if (!pattern.get(i).equals(spell.getSpellPattern().get(i))) {
-                        if (debug)
-                            Bukkit.getLogger().info(spell.getSpellPattern().get(i) + " : " + pattern.get(i));
-                        match = false;
-                        break;
-                    }
-                }
-                if (match){
-                    if (debug)
-                        Bukkit.getLogger().info("Match: " + spell.getName());
-                    return spell;
-                }
-            }
-        }*/
         return null;
     }
 
@@ -245,13 +207,7 @@ public class SpellIndex {
         }
         return null;
     }
-    public CustomSpell queryCustomSpell(String name){
-        for (CustomSpell spell : customSpells){
-            if (spell.getName().equalsIgnoreCase(name))
-                return spell;
-        }
-        return null;
-    }
+
 
 
     public Spell querySpell(ItemStack spellBook){
@@ -271,7 +227,7 @@ public class SpellIndex {
         if (playerDataMap.containsKey(uuid)){
             return playerDataMap.get(uuid);
         }
-        return null;
+        return new PlayerData(uuid, "", 1, 0, 50, 0.5, new ArrayList<>(Collections.singletonList("Burn")));
     }
     public static Vector rotateVectorCC(Vector vec, Vector axis, double theta){
         double x, y, z;
@@ -473,6 +429,15 @@ public class SpellIndex {
                     case "Drown":
                         drown(p);
                         break;
+                    case "Pasturize":
+                        pasturize(p);
+                        break;
+                    case "Arrow Burst":
+                        arrowBurst(p);
+                        break;
+                    case "Flower Launcher":
+                        flowerLauncher(p);
+                        break;
 
                 }
             }
@@ -515,7 +480,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -578,7 +543,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -724,7 +689,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -802,7 +767,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -831,7 +796,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -860,7 +825,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -921,7 +886,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -969,7 +934,7 @@ public class SpellIndex {
                 }
             }.runTaskTimer(plugin, 0, 3L);
         } else {
-            p.sendMessage(Language.prefix() + Language.noPlayerWorld());
+            p.sendMessage(Language.prefix + Language.noPlayerWorld);
         }
     }
     public void teleport(Player p){
@@ -982,7 +947,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1013,7 +978,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1073,7 +1038,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1113,7 +1078,7 @@ public class SpellIndex {
                     }
                 }
 
-                Particle.DustOptions dustOptions = null;
+                Particle.DustOptions dustOptions;
                 if (timer < 2) {
                     dustOptions = new Particle.DustOptions(org.bukkit.Color.fromRGB(32, 240, 10), 1);
                 } else if (timer < 4) {
@@ -1134,7 +1099,7 @@ public class SpellIndex {
                 if (timer > 7 && timer < 12) {
                     if (!(finalTarget.isDead())) {
                         finalTarget.damage(2, p);
-                        if (p.getHealth() + 2 <= p.getMaxHealth()) {
+                        if (p.getHealth() + 2 <= Objects.requireNonNull(p.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue()) {
                             p.setHealth(p.getHealth() + 2);
                         }
                         p.setVelocity(p.getVelocity().add(new Vector(0, 0, 0).subtract(p.getEyeLocation().toVector().subtract(finalTarget.getEyeLocation().toVector())).normalize()));
@@ -1160,7 +1125,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1187,7 +1152,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1214,7 +1179,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1278,7 +1243,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1369,7 +1334,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1402,25 +1367,25 @@ public class SpellIndex {
                     int timer = 0;
                     @Override
                     public void run() {
-                        Location loc = new Location(finalPHit.getWorld(), finalPHit.getLocation().getX(), finalPHit.getLocation().getY() + 2.5, finalPHit.getLocation().getZ());
-                        Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 0, 0, 0, 0);
+                        if (finalPHit.isOnline()) {
+                            Location loc = new Location(finalPHit.getWorld(), finalPHit.getLocation().getX(), finalPHit.getLocation().getY() + 2.5, finalPHit.getLocation().getZ());
+                            Objects.requireNonNull(loc.getWorld()).spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, loc, 0, 0, 0, 0);
 
-                        for (int i = 0; i < 3; i++) {
-                            Location location = new Location(loc.getWorld(), loc.getX() + (((double)rand.nextInt(11)/10)-0.5), loc.getY(), loc.getZ() + (((double)rand.nextInt(11)/10)-0.5));
-                            loc.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 0, 0, 0, 0);
-                            loc.getWorld().spawnParticle(Particle.DRIP_WATER, location, 1);
+                            for (int i = 0; i < 3; i++) {
+                                Location location = new Location(loc.getWorld(), loc.getX() + (((double) rand.nextInt(11) / 10) - 0.5), loc.getY(), loc.getZ() + (((double) rand.nextInt(11) / 10) - 0.5));
+                                loc.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, location, 0, 0, 0, 0);
+                                loc.getWorld().spawnParticle(Particle.DRIP_WATER, location, 1);
+                            }
+
                         }
-                        if (timer == 2000){
+                        if (timer == 2000) {
                             this.cancel();
                         }
                         timer++;
-                        if (Bukkit.getPlayer(finalPHit.getUniqueId()) == null){
-                            this.cancel();
-                        }
                     }
                 }.runTaskTimer(plugin, 0, 10L);
             } else {
-                p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There is nobody to cast the spell on!");
+                p.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.DARK_GREEN + "There is nobody to cast the spell on!");
             }
 
     }
@@ -1434,7 +1399,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1447,7 +1412,6 @@ public class SpellIndex {
         data.addCooldown(spell.getName(),spell.getCooldown());
 
             WitherSkeleton w = p.getWorld().spawn(p.getLocation(), WitherSkeleton.class);
-            magicEntities.add(w);
             w.setMetadata(p.getUniqueId().toString(), new FixedMetadataValue(plugin, true));
             w.setCustomName(net.md_5.bungee.api.ChatColor.DARK_GRAY + "Dark Wither Skeleton");
             w.setCustomNameVisible(true);
@@ -1470,7 +1434,6 @@ public class SpellIndex {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 if (w.isValid()) {
                     w.getLocation().getWorld().spawnParticle(Particle.CLOUD, w.getLocation(), 10, 3, 3, 3);
-                    magicEntities.remove(w);
                     w.remove();
                 }
             }, 1000L);
@@ -1486,7 +1449,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1533,7 +1496,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1651,7 +1614,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1704,7 +1667,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1731,9 +1694,9 @@ public class SpellIndex {
 
                                 e.getWorld().spawnParticle(Particle.SUSPENDED_DEPTH, e.getLocation(),100,1,1,1);
                                 e.getWorld().playSound(e.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE,1,1);
-                                ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, 1000, 2));
+                                ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, Integer.MAX_VALUE, 2));
                                 if (e instanceof Player)
-                                    e.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_PURPLE + p.getName() + " has cursed you!");
+                                    e.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.DARK_PURPLE + p.getName() + " has cursed you!");
                                 break;
 
                             }
@@ -1752,7 +1715,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1810,7 +1773,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1892,7 +1855,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -1915,7 +1878,7 @@ public class SpellIndex {
                             ((LivingEntity) e).addPotionEffect(new PotionEffect(PotionEffectType.JUMP,400,250));
                             e.getWorld().spawnParticle(Particle.SNOWBALL,e.getLocation(),20,1,1,1);
                             if (e instanceof Player)
-                                e.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.BLUE + p.getName() + net.md_5.bungee.api.ChatColor.AQUA + " has froze you!.");
+                                e.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.BLUE + p.getName() + net.md_5.bungee.api.ChatColor.AQUA + " has froze you!.");
 
                         }
                     }
@@ -1933,7 +1896,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -2011,7 +1974,7 @@ public class SpellIndex {
         }
         if (data.getLevel() < spell.getRequiredLevel()){
             // level too small
-            p.sendMessage(Language.prefix() + Language.insufficientLevelCasting().replace("{level}", spell.getRequiredLevel() + ""));
+            p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
             return;
         }
         if (data.getMp() < spell.getMpCost()){
@@ -2044,13 +2007,13 @@ public class SpellIndex {
                 }
             }
             if (target == null){
-                p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.DARK_BLUE + "You didn't drown anyone!");
+                p.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.DARK_BLUE + "You didn't drown anyone!");
                 return;
             }
             final Location start = p.getLocation();
             LivingEntity finalTarget = target;
             if (target instanceof Player){
-                target.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.AQUA + p.getName() + " is drowning you!");
+                target.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.AQUA + p.getName() + " is drowning you!");
             }
             new BukkitRunnable(){
                 @Override
@@ -2059,7 +2022,7 @@ public class SpellIndex {
                         this.cancel();
                     }
                     if (p.getLocation().distance(start) > 1){
-                        p.sendMessage(NotMagic.getInstance().getPrefix() + net.md_5.bungee.api.ChatColor.BLUE + "Spell canceled! You moved.");
+                        p.sendMessage(Language.prefix + net.md_5.bungee.api.ChatColor.BLUE + "Spell canceled! You moved.");
                         this.cancel();
                         return;
                     }
@@ -2072,6 +2035,106 @@ public class SpellIndex {
                     }
                 }
             }.runTaskTimer(plugin, 0, 20);
+        }
+
+        public void pasturize(Player p){
+            Spell spell = spells.get(25);
+            PlayerData data = findPlayer(p.getUniqueId());
+            if (data.onCooldown(spell.getName())){
+                // on cooldown
+                p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+                return;
+            }
+            if (data.getLevel() < spell.getRequiredLevel()){
+                // level too small
+                p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
+                return;
+            }
+            if (data.getMp() < spell.getMpCost()){
+                // not enough mana
+                p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+                return;
+            }
+            // finally, able to cast the spell
+            data.useMP(spell.getMpCost());
+            data.addCooldown(spell.getName(),spell.getCooldown());
+
+            Block target = p.getTargetBlock(null, 10);
+            if (target.getType() == Material.DIRT){
+                if (Math.random() < .25){
+                    target.setType(Material.GRASS_BLOCK);
+                }
+            }
+        }
+
+        public void arrowBurst(Player p){
+            Spell spell = spells.get(26);
+            PlayerData data = findPlayer(p.getUniqueId());
+            if (data.onCooldown(spell.getName())){
+                // on cooldown
+                p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+                return;
+            }
+            if (data.getLevel() < spell.getRequiredLevel()){
+                // level too small
+                p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
+                return;
+            }
+            if (data.getMp() < spell.getMpCost()){
+                // not enough mana
+                p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+                return;
+            }
+            // finally, able to cast the spell
+            data.useMP(spell.getMpCost());
+            data.addCooldown(spell.getName(),spell.getCooldown());
+
+            new BukkitRunnable(){
+            int amount = 10;
+            @Override
+            public void run() {
+                if (p.isOnline()){
+                    if (amount > 0){
+                        p.launchProjectile(Arrow.class, p.getEyeLocation().getDirection());
+                        amount--;
+                    } else {
+                        this.cancel();
+                    }
+                } else {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 1);
+        }
+
+        public static List<Material> flowers = new ArrayList<>(Arrays.asList(Material.DANDELION, Material.POPPY, Material.BLUE_ORCHID, Material.ALLIUM, Material.AZURE_BLUET, Material.ORANGE_TULIP, Material.PINK_TULIP, Material.RED_TULIP, Material.WHITE_TULIP, Material.OXEYE_DAISY, Material.CORNFLOWER, Material.LILY_OF_THE_VALLEY));
+        public void flowerLauncher(Player p){
+            Spell spell = spells.get(27);
+            PlayerData data = findPlayer(p.getUniqueId());
+            if (data.onCooldown(spell.getName())){
+                // on cooldown
+                p.playSound(p, Sound.ITEM_LODESTONE_COMPASS_LOCK, 1, 1);
+                return;
+            }
+            if (data.getLevel() < spell.getRequiredLevel()){
+                // level too small
+                p.sendMessage(Language.prefix + Language.insufficientLevelCasting.replace("{level}", spell.getRequiredLevel() + ""));
+                return;
+            }
+            if (data.getMp() < spell.getMpCost()){
+                // not enough mana
+                p.playSound(p, Sound.ITEM_DYE_USE, 1, 1);
+                return;
+            }
+            // finally, able to cast the spell
+            data.useMP(spell.getMpCost());
+            data.addCooldown(spell.getName(),spell.getCooldown());
+
+            ItemStack flower = new ItemStack(flowers.get((int) (Math.random() * flowers.size())));
+            Item item = p.getWorld().dropItem(p.getEyeLocation(), flower);
+            item.setPickupDelay(60);
+            item.setVelocity(p.getEyeLocation().getDirection().multiply(3));
+
         }
 
 }

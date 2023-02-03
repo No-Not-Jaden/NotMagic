@@ -7,6 +7,7 @@ import me.jadenp.notmagic.NotMagic;
  */
 public class Settings {
     public static int magicMobLevelMax;
+    public static boolean debug = false; // not a config option and can only be enabled in-game for admins
 
     public static void loadConfig(){
         NotMagic notMagic = NotMagic.getInstance();

@@ -19,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -219,10 +221,8 @@ public class RevisedEvents implements Listener {
 
     @EventHandler
     public void onDamageEntity(EntityDamageByEntityEvent event){
-        if (event.getEntity() instanceof EnderCrystal){
-            if (event.getEntity().hasMetadata("magic")){
-                event.setCancelled(true);
-            }
+        if (SpellIndex.getInstance().getMagicEntities().contains(event.getEntity())){
+            event.setCancelled(true);
         }
         if (event.getDamager() instanceof LivingEntity) {
             if (magicEntities.containsKey(event.getDamager().getUniqueId())) {
@@ -292,6 +292,18 @@ public class RevisedEvents implements Listener {
     }
 
     @EventHandler
+    public void onConsume(PlayerItemConsumeEvent event){
+        if (event.getItem().isSimilar(Items.data("ManaPotion"))){
+            PlayerData data = playerData.get(event.getPlayer().getUniqueId());
+            if (data.getMp() >= data.getMpMax() - 25){
+                data.setMp(data.getMpMax());
+            } else {
+                data.setMp(data.getMp() + 25);
+            }
+        }
+    }
+
+    @EventHandler
     public void onDisable(PluginDisableEvent event){
         if (event.getPlugin().equals(NotMagic.getInstance())){
             for (Entity entity : magicClass.spellIndex.getMagicEntities()){
@@ -341,6 +353,7 @@ public class RevisedEvents implements Listener {
         // Drop magic dust for magic entities and possibly a spell book
         if (magicEntities.containsKey(event.getEntity().getUniqueId())){
             int amount = magicEntities.get(event.getEntity().getUniqueId());
+            int dustAmount = 3;
             magicEntities.remove(event.getEntity().getUniqueId());
             ItemStack essence = entityToEssence(event.getEntity()).getItemStack();
             // check if a player killed the mob and if they used looting
@@ -352,12 +365,16 @@ public class RevisedEvents implements Listener {
                     assert meta != null;
                     if (meta.hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
                         amount *= (Math.random() * meta.getEnchantLevel(Enchantment.LOOT_BONUS_MOBS)) + 1;
+                        dustAmount*= (Math.random() * meta.getEnchantLevel(Enchantment.LOOT_BONUS_MOBS)) + 1;
                     }
                 }
             }
+            ItemStack dust = Items.data("magicDust");
+            dust.setAmount(dustAmount);
             essence.setAmount(amount);
             event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), essence);
             // chance that they will drop a spell book
+            event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), dust);
             if (Math.random() <= 0.05) {
                 Spell spell = magicClass.spellIndex.getLootListSpell();
                 // try to get a book that the player can use
