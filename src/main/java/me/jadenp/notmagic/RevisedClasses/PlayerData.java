@@ -205,12 +205,16 @@ public class PlayerData {
 
     public void addXP(int amount){
         xp += amount;
-        if (xp >= Math.pow(level,2) * 200){
+        while (xp >= Math.pow(level,2) * 200){
             // level up
+            xp -= Math.pow(level,2) * 200;
             level++;
             Objects.requireNonNull(Bukkit.getPlayer(uuid)).sendMessage(Language.prefix() + Language.levelUp().replace("{level}",  level + ""));
-
         }
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public void setMainSpell(String mainSpell) {

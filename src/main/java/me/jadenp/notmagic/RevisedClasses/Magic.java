@@ -555,20 +555,22 @@ public class Magic implements Listener {
                     }
                 }.runTaskAsynchronously(plugin);
             }
-        } else if (player.getInventory().getItemInMainHand().getType().equals(Material.ENCHANTED_BOOK)){
-            Spell spell = spellIndex.querySpell(player.getInventory().getItemInMainHand());
-            if (spell != null){
-                PlayerData data = eventClass.playerData.get(player.getUniqueId());
-                if (!data.getSpellsUnlocked().contains(spell.getName())) {
-                    if (data.getLevel() >= spell.getRequiredLevel()) {
-                        player.sendMessage(Language.prefix() + Language.learnSpell().replace("{spell}", spell.getName()));
-                        data.learnSpell(spell.getName());
-                        removeItem(player, spell.getSpellBook());
+        } else if (player.getInventory().getItemInMainHand().getType().equals(Material.ENCHANTED_BOOK)) {
+            if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                Spell spell = spellIndex.querySpell(player.getInventory().getItemInMainHand());
+                if (spell != null) {
+                    PlayerData data = eventClass.playerData.get(player.getUniqueId());
+                    if (!data.getSpellsUnlocked().contains(spell.getName())) {
+                        if (data.getLevel() >= spell.getRequiredLevel()) {
+                            player.sendMessage(Language.prefix() + Language.learnSpell().replace("{spell}", spell.getName()));
+                            data.learnSpell(spell.getName());
+                            removeItem(player, spell.getSpellBook());
+                        } else {
+                            player.sendMessage(Language.prefix() + Language.insufficientLevelReading().replace("{level}", spell.getRequiredLevel() + ""));
+                        }
                     } else {
-                        player.sendMessage(Language.prefix() + Language.insufficientLevelReading().replace("{level}", spell.getRequiredLevel() + ""));
+                        player.sendMessage(Language.prefix() + Language.repeatSpell());
                     }
-                } else {
-                    player.sendMessage(Language.prefix() + Language.repeatSpell());
                 }
             }
         }

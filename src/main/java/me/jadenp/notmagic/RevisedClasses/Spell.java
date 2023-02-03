@@ -123,6 +123,7 @@ public class Spell {
         double distanceAway = 1.0;
         Location startPoint = p.getEyeLocation().add(p.getEyeLocation().getDirection().setY(0).normalize().multiply(distanceAway));
         p.spawnParticle(Particle.REDSTONE, startPoint, 1,colors.get(0));
+        Bukkit.getScheduler().runTaskLater(plugin, () -> p.spawnParticle(Particle.REDSTONE, startPoint, 1,colors.get(0)), 5);
         final Location reference1 = p.getEyeLocation();
         List<Location> pastPoints = new ArrayList<>();
         pastPoints.add(new Location(startPoint.getWorld(), startPoint.getX(), startPoint.getY(), startPoint.getZ()));
@@ -133,73 +134,79 @@ public class Spell {
             Location reference = new Location(reference1.getWorld(), reference1.getX(), reference1.getY(), reference1.getZ());
             // reference to last point
             Vector refToLPoint = new Vector(lastPoint.toVector().getX() - reference.toVector().getX(), lastPoint.toVector().getY() - reference.toVector().getY(), lastPoint.toVector().getZ() - reference.toVector().getZ());
+            int timer = 0;
 
             @Override
             public void run() {
-                if (spellPhase < spellPattern.size()){
-                    if ((spellPhase * 10) % 10 == 0) {
-                        // whole number spell phase
-                        String direction = spellPattern.get((int) spellPhase);
-                        Location nextPoint = lastPoint;
-                        reference = new Location(reference1.getWorld(), reference1.getX(), reference1.getY(), reference1.getZ());
-                        refToLPoint = new Vector(lastPoint.toVector().getX() - reference.toVector().getX(), lastPoint.toVector().getY() - reference.toVector().getY(), lastPoint.toVector().getZ() - reference.toVector().getZ());
-                        Bukkit.broadcastMessage(direction);
-                        switch (direction) {
-                            case "Left":
-                                //         from reference to an orthogonal vector of the refToLPoint that is directed left and added to the last point
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                break;
-                            case "Right":
-                                // only thing different is that the orthogonal vector has the negative sign switched to face right
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                break;
-                            case "Up":
-                                // if this causes problems im uninstalling java
-                                nextPoint = lastPoint.add(0,pointDistance,0);
-                                break;
-                            case "Down":
-                                nextPoint = lastPoint.add(0,-pointDistance,0);
-                                break;
-                            case "LeftDown":
-                                // now just a combo
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                nextPoint = nextPoint.add(0,-pointDistance,0);
-                                break;
-                            case "LeftUp":
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                nextPoint = nextPoint.add(0,pointDistance,0);
-                                break;
-                            case "RightDown":
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                nextPoint = nextPoint.add(0,-pointDistance,0);
-                                break;
-                            case "RightUp":
-                                nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
-                                nextPoint = nextPoint.add(0,pointDistance,0);
-                                break;
-                            default:
-                                nextPoint = lastPoint;
-                                break;
+                if (timer == 1) {
+                    if (spellPhase < spellPattern.size()) {
+                        if ((spellPhase * 10) % 10 == 0) {
+                            // whole number spell phase
+                            String direction = spellPattern.get((int) spellPhase);
+                            Location nextPoint = lastPoint;
+                            reference = new Location(reference1.getWorld(), reference1.getX(), reference1.getY(), reference1.getZ());
+                            refToLPoint = new Vector(lastPoint.toVector().getX() - reference.toVector().getX(), lastPoint.toVector().getY() - reference.toVector().getY(), lastPoint.toVector().getZ() - reference.toVector().getZ());
+                            Bukkit.broadcastMessage(direction);
+                            switch (direction) {
+                                case "Left":
+                                    //         from reference to an orthogonal vector of the refToLPoint that is directed left and added to the last point
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    break;
+                                case "Right":
+                                    // only thing different is that the orthogonal vector has the negative sign switched to face right
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    break;
+                                case "Up":
+                                    // if this causes problems im uninstalling java
+                                    nextPoint = lastPoint.add(0, pointDistance, 0);
+                                    break;
+                                case "Down":
+                                    nextPoint = lastPoint.add(0, -pointDistance, 0);
+                                    break;
+                                case "LeftDown":
+                                    // now just a combo
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    nextPoint = nextPoint.add(0, -pointDistance, 0);
+                                    break;
+                                case "LeftUp":
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ(), 0, refToLPoint.getX() * -1).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    nextPoint = nextPoint.add(0, pointDistance, 0);
+                                    break;
+                                case "RightDown":
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    nextPoint = nextPoint.add(0, -pointDistance, 0);
+                                    break;
+                                case "RightUp":
+                                    nextPoint = reference.add(lastPoint.add(new Vector(refToLPoint.getZ() * -1, 0, refToLPoint.getX()).normalize().multiply(pointDistance)).toVector().subtract(reference.toVector()).normalize().multiply(distanceAway));
+                                    nextPoint = nextPoint.add(0, pointDistance, 0);
+                                    break;
+                                default:
+                                    nextPoint = lastPoint;
+                                    break;
+                            }
+                            lastPoint = nextPoint;
+                            p.spawnParticle(Particle.REDSTONE, nextPoint, 1, colors.get((int) spellPhase));
+                            pastPoints.add(new Location(nextPoint.getWorld(), nextPoint.getX(), nextPoint.getY(), nextPoint.getZ()));
                         }
-                        lastPoint = nextPoint;
-                        p.spawnParticle(Particle.REDSTONE, nextPoint, 1, colors.get((int) spellPhase));
-                        pastPoints.add(new Location(nextPoint.getWorld(), nextPoint.getX(), nextPoint.getY(), nextPoint.getZ()));
-                    }
-                    // display past points
-                    for (int i = 0; i < pastPoints.size(); i++){
-                        p.spawnParticle(Particle.REDSTONE, pastPoints.get(i), 1, colors.get(i));
-                        if (i > 1){
-                            Location between = pastPoints.get(i-1).add(pastPoints.get(i).toVector().subtract(pastPoints.get(i-1).toVector()));
-                            p.spawnParticle(Particle.REDSTONE, between, 1, colors.get(i));
+                        // display past points
+                        for (int i = 0; i < pastPoints.size(); i++) {
+                            p.spawnParticle(Particle.REDSTONE, pastPoints.get(i), 1, colors.get(i));
+                            if (i > 1) {
+                                Location between = pastPoints.get(i - 1).add(pastPoints.get(i).toVector().subtract(pastPoints.get(i - 1).toVector()));
+                                p.spawnParticle(Particle.REDSTONE, between, 1, colors.get(i));
+                            }
                         }
+                        spellPhase += 0.5;
+                    } else {
+                        this.cancel();
+                        findPlayer(uuid).setDisplayingSpell(false);
                     }
-                    spellPhase += 0.5;
+                    timer = 0;
                 } else {
-                    this.cancel();
-                    findPlayer(uuid).setDisplayingSpell(false);
+                    timer++;
                 }
             }
-        }.runTaskTimerAsynchronously(plugin,5,5L);
+        }.runTaskTimerAsynchronously(plugin,10,5L);
     }
 
     public void displaySpell(Player p){

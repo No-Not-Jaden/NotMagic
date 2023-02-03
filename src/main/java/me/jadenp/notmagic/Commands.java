@@ -256,9 +256,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 } else if (args[0].equalsIgnoreCase("admin")) {
                     if (sender.hasPermission("notmagic.admin")){
                         sendGradientTop(sender);
-                        sender.sendMessage(ChatColor.GREEN + "/nm spellcolor (player) (R) (G) (B)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Changes a player's spell color");
                         sender.sendMessage(ChatColor.GREEN + "/nm give [player] (NM Item)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Gives yourself or a player a NM Item");
-                        sender.sendMessage(ChatColor.GREEN + "/nm mine (add/remove) (#)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Adds or removes blocks to the mana mines list");
                         sender.sendMessage(ChatColor.GREEN + "/nm setlevel (player) (#)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Changes a player's magic level");
                         sender.sendMessage(ChatColor.GREEN + "/nm reload" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "reloads the plugin's configuration");
                         sendGradientBottom(sender);
@@ -321,64 +319,38 @@ public class Commands implements CommandExecutor, TabCompleter {
                     } else {
                         sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
                     }
-                }else if (args[0].equalsIgnoreCase("mine")){
-                    if (sender.hasPermission("notmagic.admin")) {
-                        if (args.length == 3){
-                            if (args[1].equalsIgnoreCase("add")){
-                                YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
-                                c.set(args[2], ((Player) sender).getTargetBlock(null, 10).getLocation());
-                                try {
-                                    c.save(notMagic.manaMines);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                sender.sendMessage(prefix + ChatColor.GREEN + "Added mine.");
-                            } else if (args[1].equalsIgnoreCase("remove")){
-                                YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
-                                c.set(args[2], null);
-                                try {
-                                    c.save(notMagic.manaMines);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                sender.sendMessage(prefix + ChatColor.RED + "Removed mine.");
+                } else if (args[0].equalsIgnoreCase("setlevel")) {
+                if (sender.hasPermission("notmagic.admin")) {
+                    if (args.length == 3) {
+                        Player player = Bukkit.getPlayer(args[1]);
+                        if (player != null){
+                            try {
+                              int level = Integer.parseInt(args[2]);
+                              PlayerData data = RevisedEvents.getInstance().playerData.get(player.getUniqueId());
+                              data.setLevel(level);
+                              sender.sendMessage(prefix + org.bukkit.ChatColor.GREEN + "Successfully set " + ChatColor.DARK_GREEN + player.getName() + "'s " + ChatColor.GREEN + "level to " + ChatColor.DARK_GREEN + level + ChatColor.GREEN + ".");
+                            } catch (NumberFormatException ignored){
+                                sender.sendMessage(prefix + ChatColor.DARK_PURPLE + "Invalid Level.");
                             }
-
-                        } else if (args.length == 2 && args[1].equalsIgnoreCase("list")) {
-                            YamlConfiguration c = YamlConfiguration.loadConfiguration(notMagic.manaMines);
-                            int i = 1;
-                            while (true){
-                                if (c.getLocation(i + "") != null){
-                                    Location l = Objects.requireNonNull(c.getLocation(i + ""));
-                                    sender.sendMessage(prefix + ChatColor.BLUE + i + ": " + ChatColor.DARK_AQUA + "world: " + ChatColor.AQUA + l.getWorld().getName() + ChatColor.DARK_AQUA + "x: " + ChatColor.AQUA + l.getX() + ChatColor.DARK_AQUA + "y: " + ChatColor.AQUA + l.getY() + ChatColor.DARK_AQUA + "z: " + ChatColor.AQUA + l.getZ());
-                                } else {
-                                    break;
-                                }
-                                i++;
-                            }
-                        }
-                        else {
-                            sender.sendMessage(prefix + ChatColor.YELLOW + "Usage:");
-                            sender.sendMessage(ChatColor.GREEN + "/nm mine (add/remove) (#)" + ChatColor.DARK_GRAY + " | " + ChatColor.DARK_GREEN + "Adds or removes blocks to the mana mines list");
+                        } else {
+                            sender.sendMessage(prefix + org.bukkit.ChatColor.DARK_PURPLE + "Unknown Player.");
                         }
                     } else {
-                        sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
-                    }
-
-            } else if (args[0].equalsIgnoreCase("setlevel")) {
-                if (sender.hasPermission("notmagic.admin")) {
-                    if (Bukkit.getPlayer(args[1]) != null && args[2] != null) {
-                        ChangeStatsEvent event = new ChangeStatsEvent("level", Integer.parseInt(args[2]), Bukkit.getPlayer(args[1]));
-                        Bukkit.getServer().getPluginManager().callEvent(event);
+                        sender.sendMessage(prefix + ChatColor.DARK_PURPLE + "/nm setlevel (player) (#)");
                     }
                 } else {
                     sender.sendMessage(prefix + ChatColor.RED + "You do not have the permission to use this command!");
                 }
             } else if (args[0].equalsIgnoreCase("spell")) {
-                if (args.length == 2){
+                if (args.length > 1){
                     if (sender instanceof Player){
+                        StringBuilder spellName = new StringBuilder();
+                        for (int i = 1; i < args.length; i++) {
+                            spellName.append(args[i]);
+                        }
+                        spellName = new StringBuilder(spellName.substring(0, spellName.length() - 1));
 
-                    Spell spell = eventClass.magicClass.spellIndex.querySpell(args[1]);
+                    Spell spell = eventClass.magicClass.spellIndex.querySpell(spellName.toString());
                     if (spell != null) {
                         PlayerData data = findPlayer(((Player) sender).getUniqueId());
                         if (!data.isDisplayingSpell()) {

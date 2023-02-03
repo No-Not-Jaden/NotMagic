@@ -338,11 +338,12 @@ public class RevisedEvents implements Listener {
 
     @EventHandler
     public void onDeath(EntityDeathEvent event){
-        // drop magic dust and possibly a book
+        // Drop magic dust for magic entities and possibly a spell book
         if (magicEntities.containsKey(event.getEntity().getUniqueId())){
             int amount = magicEntities.get(event.getEntity().getUniqueId());
             magicEntities.remove(event.getEntity().getUniqueId());
             ItemStack essence = entityToEssence(event.getEntity()).getItemStack();
+            // check if a player killed the mob and if they used looting
             Player killer = event.getEntity().getKiller();
             if (killer != null){
                 ItemStack handItem = killer.getInventory().getItemInMainHand();
@@ -356,8 +357,21 @@ public class RevisedEvents implements Listener {
             }
             essence.setAmount(amount);
             event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), essence);
+            // chance that they will drop a spell book
             if (Math.random() <= 0.05) {
-                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), magicClass.spellIndex.getLootListSpell().getSpellBook());
+                Spell spell = magicClass.spellIndex.getLootListSpell();
+                // try to get a book that the player can use
+                if (killer != null){
+                    PlayerData data = playerData.get(killer.getUniqueId());
+                    for (int i = 0; i < 100; i++) {
+                        if (data.getLevel() < spell.getRequiredLevel()) {
+                            spell = magicClass.spellIndex.getLootListSpell();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), spell.getSpellBook());
             }
         }
     }
