@@ -375,6 +375,7 @@ public class SpellIndex {
                             ws.getPotential().potentialResults(path.get(progress), start, locations -> {
                                 if (locations != null){
                                     // I don't remember why we need these locations, but if we do, we would have to get the callback
+                                    // effects for what happens in the path
                                     return;
                                 }
                             });

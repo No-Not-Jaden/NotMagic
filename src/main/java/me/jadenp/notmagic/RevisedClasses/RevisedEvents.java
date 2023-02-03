@@ -323,7 +323,7 @@ public class RevisedEvents implements Listener {
             double magicEntityChance = 0.05;
             if (Math.random() < magicEntityChance) {
                 // spawn magic entity if it can be one
-                int level = (int) Math.sqrt(Math.random() * 36);
+                int level = (int) (Settings.magicMobLevelMax - Math.sqrt(Math.random() * Math.pow(Settings.magicMobLevelMax,2)));
                 if (entityToEssence((LivingEntity) event.getEntity()) != Essence.EMPTY){
                     AttributeInstance attribute = ((Mob) event.getEntity()).getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     assert attribute != null;

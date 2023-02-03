@@ -331,7 +331,7 @@ public final class NotMagic extends JavaPlugin {
     public void loadConfig(){
         this.reloadConfig();
         Language.setLanguage();
-
+        Settings.loadConfig();
     }
 
 

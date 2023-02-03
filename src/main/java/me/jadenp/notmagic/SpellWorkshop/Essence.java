@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 import org.checkerframework.checker.units.qual.C;
 
 
-
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public enum Essence {
@@ -53,16 +53,17 @@ public enum Essence {
     }
 
     public void potentialResults(Location point, Location start, final NotCallback callback) {
+        Essence essence = this;
         Bukkit.getScheduler().runTaskAsynchronously(notMagic, new Runnable() {
             @Override
             public void run() {
         List<Location> locations = new ArrayList<>();
-        if (this.toString().equalsIgnoreCase("Fire")) {
+        if (essence == Essence.FIRE) {
             Location location = new Location(point.getWorld(), point.getX() + Math.sin(point.getX() - start.getX()), point.getY() + Math.sin(point.getY() - start.getY()), point.getZ() + Math.sin(point.getZ() - start.getZ()));
             locations.add(location);
             if (location.getWorld() != null && location.getChunk().isLoaded())
                 Bukkit.getScheduler().runTask(notMagic, () -> location.getWorld().spawnParticle(Particle.DRIP_LAVA, location,1));
-        } else if (this.toString().equalsIgnoreCase("Earth")){
+        } else if (essence == Essence.EARTH){
             if ((int) (Math.random() * 3) == 0){
                 Vector direction = point.toVector().subtract(start.toVector()).normalize();
                 Vector randomPoint = direction.clone().rotateAroundY(Math.PI / 2);
@@ -75,7 +76,7 @@ public enum Essence {
                 if (point.getWorld() != null && point.getChunk().isLoaded())
                     Bukkit.getScheduler().runTask(notMagic, () -> point.getWorld().spawnParticle(Particle.ASH, point, 3));
             }
-        } else if (this.toString().equalsIgnoreCase("Water")){
+        } else if (essence == Essence.WATER){
             Vector direction = point.toVector().subtract(start.toVector()).normalize();
             Location front = point.clone().add(direction);
             front.add(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
@@ -87,7 +88,7 @@ public enum Essence {
                     Bukkit.getScheduler().runTask(notMagic, () -> point.getWorld().spawnParticle(Particle.WATER_SPLASH, point, 0, splashDirection.getX(), splashDirection.getY(), splashDirection.getZ()));
                 }
             }
-        } else if (this.toString().equalsIgnoreCase("Wind")){
+        } else if (essence == Essence.WIND){
             // horizontal bursts slightly away from center
             Vector direction = point.toVector().subtract(start.toVector()).normalize();
             Vector up = new Vector(0,1,0);
@@ -107,7 +108,33 @@ public enum Essence {
                 }
                 locations.add(location.add(vector));
             }
-        } else {
+        } else if (essence == Essence.ELECTRICITY){
+            // get distance from start and use it to get the a and b change perpendicular from direction
+            Vector direction = point.toVector().subtract(start.toVector());
+            double distance = direction.length();
+            int dir = distance % 5 < 2.5 ? -1 : 1;
+            double multiplier = distance % 2.5;
+            Vector cross = direction.normalize().crossProduct(new Vector(0,1,0));
+            point.add(new Vector(0,1,0).multiply(multiplier * dir));
+            point.add(cross.multiply(multiplier * dir));
+
+            if (point.getWorld() != null && point.getChunk().isLoaded()) {
+                Bukkit.getScheduler().runTask(notMagic, () -> point.getWorld().spawnParticle(Particle.FLASH, point, 1));
+            }
+
+            locations.add(point);
+        } else if (essence == Essence.ICE){
+
+        } else if (essence == Essence.POISON) {
+
+        } else if (essence == Essence.LIVING){
+
+        } else if (essence == Essence.SPECTRAL){
+
+        } else if (essence == Essence.BARRIER){
+
+        }
+        else {
             locations.add(point);
         }
         Bukkit.getScheduler().runTask(notMagic, () -> callback.onCalcFinish(locations));
@@ -117,13 +144,14 @@ public enum Essence {
     }
 
     public void areaEffectResults(Location center, int amount1, NotCallback callback){
+        Essence essence = this;
         Bukkit.getScheduler().runTaskAsynchronously(notMagic, new Runnable() {
             int amount = amount1;
             @Override
             public void run() {
         List<Location> locations = new ArrayList<>();
         while (amount > 0) {
-            if (this.toString().equalsIgnoreCase("Fire")) {
+            if (essence == Essence.FIRE) {
                 // how many points clustered together? 3-7
                 int points = (int) (Math.random() * 5 + 3);
                 if (points > amount)
@@ -143,7 +171,7 @@ public enum Essence {
                             cluster.getZ() + Math.random() * 2 - 1));
                     amount -= 1;
                 }
-            } else if (this.toString().equalsIgnoreCase("Earth")){
+            } else if (essence == Essence.EARTH){
                 Location crack = new Location(center.getWorld(), center.getX() + Math.random() * 2 * areaEffectPower - areaEffectPower, center.getY(), center.getZ() + Math.random() * 2 * areaEffectPower - areaEffectPower);
                     // how many blocks below it looks for a point
                     Block block = crack.getBlock();
@@ -155,7 +183,7 @@ public enum Essence {
                         block = block.getRelative(BlockFace.DOWN);
                     }
                     amount--;
-            } else if (this.toString().equalsIgnoreCase("Water")){
+            } else if (essence == Essence.WATER){
                 double x, z;
                 int radius;
                 if (amount <= 8){
@@ -175,7 +203,7 @@ public enum Essence {
                     locations.add(new Location(center.getWorld(), center.getX() + x, center.getY(), center.getZ() + z));
                 }
                 break;
-            }  else if (this.toString().equalsIgnoreCase("Wind")){
+            }  else if (essence == Essence.WIND){
                 double x;
                 double z;
                 float radius;
@@ -197,6 +225,18 @@ public enum Essence {
                     locations.add(center.clone().add(direction));
                 }
                 break;
+            } else if (essence == Essence.ELECTRICITY){
+
+            } else if (essence == Essence.ICE){
+
+            } else if (essence == Essence.POISON) {
+
+            } else if (essence == Essence.LIVING){
+
+            } else if (essence == Essence.SPECTRAL){
+
+            } else if (essence == Essence.BARRIER){
+
             }
             else {
                 break;
@@ -210,7 +250,7 @@ public enum Essence {
 
     public void intensityResults(Location point, double damageMultiplier, Player player, Location center){
 
-        if (this.toString().equalsIgnoreCase("Fire")){
+        if (this == Essence.FIRE){
             // explosion w/ flame particles
             if (point.getWorld() != null && point.getChunk().isLoaded()) {
                 point.getWorld().spawnParticle(Particle.FLAME, point, 0, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
@@ -240,7 +280,7 @@ public enum Essence {
                     }
                 }
             }
-        } else if (this.toString().equalsIgnoreCase("Earth")){
+        } else if (this == Essence.EARTH){
             if (point.getWorld() != null && point.getChunk().isLoaded()) {
                 BlockData dustData;
                 Block block = point.getBlock();
@@ -268,7 +308,7 @@ public enum Essence {
                     }
                 }
             }
-        } else if (this.toString().equalsIgnoreCase("Water")){
+        } else if (this == Essence.WATER){
             if (point.getWorld() != null && point.getChunk().isLoaded()) {
                 Block block = point.getBlock();
                 if (block.getType().isAir()){
@@ -298,7 +338,7 @@ public enum Essence {
                     entity.setVelocity(entity.getVelocity().add(point.toVector().subtract(center.toVector()).normalize().multiply(5)));
                 }
             }
-        } else if (this.toString().equalsIgnoreCase("Wind")){
+        } else if (this == Essence.WIND){
             if (point.getWorld() != null && point.getChunk().isLoaded()) {
                 Vector push = point.toVector().subtract(center.toVector()).add(new Vector(0,intensityPower,0)).normalize().multiply(2.5);
                 point.getWorld().spawnParticle(Particle.CLOUD, center, 0, push.clone().normalize().getX(), 0, push.clone().normalize().getZ());
@@ -318,6 +358,18 @@ public enum Essence {
                     }
                 }
             }
+        } else if (this == Essence.ELECTRICITY){
+
+        } else if (this == Essence.ICE){
+
+        } else if (this == Essence.POISON) {
+
+        } else if (this == Essence.LIVING){
+
+        } else if (this == Essence.SPECTRAL){
+
+        } else if (this == Essence.BARRIER){
+
         }
     }
 
@@ -432,33 +484,35 @@ public enum Essence {
         return playerLoc;
     }
 
-    public void spawnParticles(Location location){
-        if (this == Essence.FIRE){
-            location.getWorld().spawnParticle(Particle.LAVA, location, 10, .5,.5,.5);
-        } else if (this == Essence.EARTH){
-            for (int i = 0; i < 10; i++){
-                BlockData data = Material.COARSE_DIRT.createBlockData();
-                location.getWorld().spawnParticle(Particle.BLOCK_CRACK,new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)) , 1, data);
+    public void spawnParticles(@Nonnull Location location){
+        if (location.getWorld() != null) {
+            if (this == Essence.FIRE) {
+                location.getWorld().spawnParticle(Particle.LAVA, location, 10, .5, .5, .5);
+            } else if (this == Essence.EARTH) {
+                for (int i = 0; i < 10; i++) {
+                    BlockData data = Material.COARSE_DIRT.createBlockData();
+                    location.getWorld().spawnParticle(Particle.BLOCK_CRACK, new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)), 1, data);
+                }
+            } else if (this == Essence.WATER) {
+                location.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 10, .5, .5, .5);
+            } else if (this == Essence.WIND) {
+                for (int i = 0; i < 10; i++) {
+                    location.getWorld().spawnParticle(Particle.CLOUD, new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)), 0, Math.random() * .4 - .2, Math.random() * .4 - .2, Math.random() * .4 - .2);
+                }
+            } else if (this == Essence.ELECTRICITY) {
+                location.getWorld().spawnParticle(Particle.FLASH, location, 10, .5, .5, .5);
+            } else if (this == Essence.ICE) {
+                location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5, .5, .5);
+            } else if (this == Essence.POISON) {
+                location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5, .5, .5);
+            } else if (this == Essence.LIVING) {
+                location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5, .5, .5);
+            } else if (this == Essence.SPECTRAL) {
+                location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5, .5, .5);
+            } else if (this == Essence.BARRIER) {
+                BlockData data = Material.DEEPSLATE_BRICKS.createBlockData();
+                location.getWorld().spawnParticle(Particle.BLOCK_MARKER, location, 1, data);
             }
-        } else if (this == Essence.WATER){
-            location.getWorld().spawnParticle(Particle.WATER_SPLASH, location, 10, .5,.5,.5);
-        } else if (this == Essence.WIND){
-            for (int i = 0; i < 10; i++){
-                location.getWorld().spawnParticle(Particle.CLOUD,new Location(location.getWorld(), location.getX() + (Math.random() - 0.5), location.getY() + (Math.random() - 0.5), location.getZ() + (Math.random() - 0.5)) , 0, Math.random() * .4 - .2, Math.random() * .4 - .2, Math.random() * .4 - .2);
-            }
-        } else if (this == Essence.ELECTRICITY){
-            location.getWorld().spawnParticle(Particle.FLASH, location, 10, .5,.5,.5);
-        } else if (this == Essence.ICE){
-            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
-        } else if (this == Essence.POISON){
-            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
-        } else if (this == Essence.LIVING){
-            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
-        } else if (this == Essence.SPECTRAL){
-            location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 10, .5,.5,.5);
-        } else if (this == Essence.BARRIER){
-            BlockData data = Material.DEEPSLATE_BRICKS.createBlockData();
-            location.getWorld().spawnParticle(Particle.BLOCK_MARKER, location, 1, data);
         }
     }
 
@@ -513,6 +567,6 @@ public enum Essence {
         return EMPTY;
     }
     public ItemStack getItemStack(){
-        return Items.data(this.toString() + "Essence");
+        return Items.data(this + "Essence");
     }
 }
