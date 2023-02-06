@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -299,6 +300,25 @@ public class RevisedEvents implements Listener {
                 data.setMp(data.getMpMax());
             } else {
                 data.setMp(data.getMp() + 25);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLightningStrike(LightningStrikeEvent event){
+        if (event.getLightning().hasMetadata("magic")){
+            double damage = event.getLightning().getMetadata("magic").get(0).asDouble();
+            UUID uuid = UUID.fromString(event.getLightning().getMetadata("magic").get(1).asString());
+            if (event.getLightning().getLocation().getBlock().getType() != Material.LIGHTNING_ROD){
+                for (Entity entity : event.getWorld().getNearbyEntities(event.getLightning().getLocation(), 1,1,1)){
+                    if (entity instanceof LivingEntity){
+                        Player player = Bukkit.getPlayer(uuid);
+                        if (player != null){
+                            ((LivingEntity) entity).damage(damage, player);
+                        }
+                        ((LivingEntity) entity).damage(damage);
+                    }
+                }
             }
         }
     }

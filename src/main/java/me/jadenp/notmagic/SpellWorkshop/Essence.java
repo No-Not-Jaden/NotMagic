@@ -9,6 +9,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -226,7 +227,9 @@ public enum Essence {
                 }
                 break;
             } else if (essence == Essence.ELECTRICITY){
-
+                for (int i = 0; i < amount1; i++){
+                    locations.add(center);
+                }
             } else if (essence == Essence.ICE){
 
             } else if (essence == Essence.POISON) {
@@ -236,7 +239,27 @@ public enum Essence {
             } else if (essence == Essence.SPECTRAL){
 
             } else if (essence == Essence.BARRIER){
-
+                // brute forcing code? I don't know what that means
+                locations.add(center.clone().add(new Vector(1,1,1)));
+                locations.add(center.clone().add(new Vector(1,1,0)));
+                locations.add(center.clone().add(new Vector(0,1,1)));
+                locations.add(center.clone().add(new Vector(-1,1,1)));
+                locations.add(center.clone().add(new Vector(-1,1,0)));
+                locations.add(center.clone().add(new Vector(1,1,-1)));
+                locations.add(center.clone().add(new Vector(0,1,-1)));
+                locations.add(center.clone().add(new Vector(-1,1,-1)));
+                locations.add(center.clone().add(new Vector(1,0,1)));
+                locations.add(center.clone().add(new Vector(1,0,-1)));
+                locations.add(center.clone().add(new Vector(-1,0,1)));
+                locations.add(center.clone().add(new Vector(-1,0,-1)));
+                locations.add(center.clone().add(new Vector(1,-1,1)));
+                locations.add(center.clone().add(new Vector(1,-1,0)));
+                locations.add(center.clone().add(new Vector(0,-1,1)));
+                locations.add(center.clone().add(new Vector(-1,-1,1)));
+                locations.add(center.clone().add(new Vector(-1,-1,0)));
+                locations.add(center.clone().add(new Vector(1,-1,-1)));
+                locations.add(center.clone().add(new Vector(0,-1,-1)));
+                locations.add(center.clone().add(new Vector(-1,-1,-1)));
             }
             else {
                 break;
@@ -333,9 +356,11 @@ public enum Essence {
                         }
                     }
                     if (isImmuneToWater(entity)){
+                        ((LivingEntity) entity).damage(intensityPower * damageMultiplier / 2, player);
                         continue;
                     }
                     entity.setVelocity(entity.getVelocity().add(point.toVector().subtract(center.toVector()).normalize().multiply(5)));
+                    ((LivingEntity) entity).damage(intensityPower * damageMultiplier, player);
                 }
             }
         } else if (this == Essence.WIND){
@@ -352,14 +377,21 @@ public enum Essence {
                             }
                         }
                         if (((LivingEntity) entity).isGliding() || !entity.isOnGround()){
+                            ((LivingEntity) entity).damage(intensityPower * damageMultiplier / 2, player);
                             continue;
                         }
                         entity.setVelocity(entity.getVelocity().add(push));
+                        ((LivingEntity) entity).damage(intensityPower * damageMultiplier, player);
                     }
                 }
             }
         } else if (this == Essence.ELECTRICITY){
-
+            if (point.getWorld() != null && point.getChunk().isLoaded()) {
+                LightningStrike strike = point.getWorld().strikeLightning(point);
+                strike.setMetadata("magic", new FixedMetadataValue(NotMagic.getInstance(), intensityPower * damageMultiplier));
+                strike.setMetadata("magic", new FixedMetadataValue(NotMagic.getInstance(), player.getUniqueId().toString()));
+                // does damage in an event
+            }
         } else if (this == Essence.ICE){
 
         } else if (this == Essence.POISON) {
@@ -398,90 +430,134 @@ public enum Essence {
         return (entity instanceof Axolotl || entity instanceof Cod || entity instanceof Dolphin || entity instanceof Guardian || entity instanceof PufferFish || entity instanceof Salmon || entity instanceof Squid || entity instanceof TropicalFish || entity instanceof Turtle);
     }
 
-    public Location controlResults(Location crosshair, Location playerLoc){
-        if (this.toString().equalsIgnoreCase("Fire")){
-            for (int x = -10; x < 10; x++){
-                for (int y = -5; y < 5; y++){
-                    for (int z = -10; z < 10; z++){
-                        Block block = crosshair.getBlock().getRelative(x + ((int) Math.signum(x) * 20), y, z + ((int) Math.signum(z) * 20));
-                        if (block.getType() == Material.FIRE || block.getType() == Material.LAVA){
-                            return block.getLocation();
+    public void controlResults(Location crosshair, Location playerLoc, NotCallback callback){
+        Essence essence = this;
+        Bukkit.getScheduler().runTaskAsynchronously(NotMagic.getInstance(), new Runnable() {
+            Location returnLoc = playerLoc;
+            @Override
+            public void run() {
+                if (essence == Essence.FIRE){
+                    for (int x = -10; x < 10; x++){
+                        for (int y = -5; y < 5; y++){
+                            for (int z = -10; z < 10; z++){
+                                Block block = crosshair.getBlock().getRelative(x + ((int) Math.signum(x) * 20), y, z + ((int) Math.signum(z) * 20));
+                                if (block.getType() == Material.FIRE || block.getType() == Material.LAVA){
+                                    returnLoc = block.getLocation();
+                                    break;
+                                }
+                            }
+                            if (returnLoc.equals(playerLoc)){
+                                break;
+                            }
+                        }
+                        if (returnLoc.equals(playerLoc)){
+                            break;
                         }
                     }
-                }
-            }
-            // try to find an air block 20 < loc < 30
-            for (int i = 0; i < 15; i++){
-                Location location = crosshair.getBlock().getRelative(
-                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)),
-                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 5))),
-                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)))
-                        .getLocation();
+                    // try to find an air block 20 < loc < 30
+                    for (int i = 0; i < 15; i++){
+                        Location location = crosshair.getBlock().getRelative(
+                                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)),
+                                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 5))),
+                                        (int) ((((int) (Math.random() * 2)) - 1) * ((Math.random() * 10) + 20)))
+                                .getLocation();
 
-                if (!location.getBlock().getType().isSolid()){
-                    return location;
-                }
-            }
-        } else if (this.toString().equalsIgnoreCase("Earth")){
-            for (int i = 0; i < 15; i++){
-                Location location = playerLoc.getBlock().getRelative(
-                                (int) (Math.random() * 20 - 10),
-                                (int) (Math.random() * 20 - 10),
-                                (int) (Math.random() * 20 - 10))
-                        .getLocation();
-
-                if (!location.getBlock().getType().isSolid()){
-                    return location;
-                }
-            }
-        } else if (this.toString().equalsIgnoreCase("Water")){
-            for (int x = -10; x < 10; x++){
-                for (int y = -5; y < 5; y++){
-                    for (int z = -10; z < 10; z++){
-                        Block block = crosshair.getBlock().getRelative(x + ((int) Math.signum(x) * 20), y, z + ((int) Math.signum(z) * 20));
-                        if (block.getType() == Material.WATER){
-                            return block.getLocation();
+                        if (!location.getBlock().getType().isSolid()){
+                            returnLoc = location;
+                            break;
                         }
-                        if (block.getBlockData() instanceof Waterlogged){
-                            if (((Waterlogged) block.getBlockData()).isWaterlogged()){
-                                return block.getLocation();
+                    }
+                } else if (essence == Essence.EARTH){
+                    for (int i = 0; i < 15; i++){
+                        Location location = playerLoc.getBlock().getRelative(
+                                        (int) (Math.random() * 20 - 10),
+                                        (int) (Math.random() * 20 - 10),
+                                        (int) (Math.random() * 20 - 10))
+                                .getLocation();
+
+                        if (!location.getBlock().getType().isSolid()){
+                            returnLoc = location;
+                            break;
+                        }
+                    }
+                } else if (essence == Essence.WATER){
+                    for (int x = -10; x < 10; x++){
+                        for (int y = -5; y < 5; y++){
+                            for (int z = -10; z < 10; z++){
+                                Block block = crosshair.getBlock().getRelative(x + ((int) Math.signum(x) * 20), y, z + ((int) Math.signum(z) * 20));
+                                if (block.getType() == Material.WATER){
+                                    returnLoc = block.getLocation();
+                                    break;
+                                }
+                                if (block.getBlockData() instanceof Waterlogged){
+                                    if (((Waterlogged) block.getBlockData()).isWaterlogged()){
+                                        returnLoc = block.getLocation();
+                                        break;
+                                    }
+                                }
+                            }
+                            if (returnLoc.equals(playerLoc)){
+                                break;
+                            }
+                        }
+                        if (returnLoc.equals(playerLoc)){
+                            break;
+                        }
+                    }
+                    // try to find an air block 20 < loc < 30
+                    if (!returnLoc.equals(playerLoc)) {
+                        for (int i = 0; i < 15; i++) {
+                            Location location = crosshair.getBlock().getRelative(
+                                            (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 10) + 20)),
+                                            (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5))),
+                                            (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 10) + 20)))
+                                    .getLocation();
+
+                            if (!location.getBlock().getType().isSolid()) {
+                                returnLoc = location;
+                                break;
+                            }
+                            if (i == 14) {
+                                returnLoc = location;
+                                break;
                             }
                         }
                     }
-                }
-            }
-            // try to find an air block 20 < loc < 30
-            for (int i = 0; i < 15; i++){
-                Location location = crosshair.getBlock().getRelative(
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 10) + 20)),
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5))),
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 10) + 20)))
-                        .getLocation();
+                } else if (essence == Essence.WIND){
+                    for (int i = 0; i < 15; i++){
+                        Location location = crosshair.getBlock().getRelative(
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)))
+                                .getLocation();
 
-                if (!location.getBlock().getType().isSolid()){
-                    return location;
-                }
-                if (i == 14){
-                    return location;
-                }
-            }
-        } else if (this.toString().equalsIgnoreCase("Wind")){
-            for (int i = 0; i < 15; i++){
-                Location location = crosshair.getBlock().getRelative(
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
-                                (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)))
-                        .getLocation();
+                        if (location.getBlock().getType().isAir()){
+                            returnLoc = location;
+                            break;
+                        }
+                        if (i == 14){
+                            returnLoc = location;
+                            break;
+                        }
+                    }
+                } else if (essence == Essence.ELECTRICITY){
 
-                if (location.getBlock().getType().isAir()){
-                    return location;
+                } else if (essence == Essence.ICE){
+
+                } else if (essence == Essence.POISON){
+
+                } else if (essence == Essence.LIVING){
+
+                } else if (essence == Essence.SPECTRAL){
+
+                } else if (essence == Essence.BARRIER){
+
                 }
-                if (i == 14){
-                    return location;
-                }
+                Bukkit.getScheduler().runTask(notMagic, () -> callback.onCalcFinish(Collections.singletonList(returnLoc)));
             }
-        }
-        return playerLoc;
+        });
+
+        //return playerLoc;
     }
 
     public void spawnParticles(@Nonnull Location location){

@@ -294,62 +294,65 @@ public class SpellIndex {
                 // where the player's crosshair landed
                 Location target = p.getTargetBlock(null, ws.getPotential().getPotentialPower() * ws.getPotentialAmount()).getLocation();
                 // where the spell will spawn from
-                Location spawnLocation = ws.getControl().controlResults(target, p.getLocation());
-                // vector from spawn location to target
-                Vector spawnToTarget = target.toVector().subtract(spawnLocation.toVector());
-                // random ass vector
-                Vector randomVector = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
-                // rotating the target vector in a random direction to account for accuracy
-                // note: accuracy is coming in max degrees, which we have to use to get a random accuracy and then convert it to radians
-                spawnToTarget = rotateVectorCC(spawnToTarget, randomVector, Math.random() * ws.getAccuracy() / 0.0174533);
+                ws.getControl().controlResults(target, p.getLocation(), locations -> {
+                    Location spawnLocation = locations.get(0);
+                    // vector from spawn location to target
+                    Vector spawnToTarget = target.toVector().subtract(spawnLocation.toVector());
+                    // random ass vector
+                    Vector randomVector = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+                    // rotating the target vector in a random direction to account for accuracy
+                    // note: accuracy is coming in max degrees, which we have to use to get a random accuracy and then convert it to radians
+                    spawnToTarget = rotateVectorCC(spawnToTarget, randomVector, Math.random() * ws.getAccuracy() / 0.0174533);
 
-                // creating the direct path
-                List<Location> directPath = new ArrayList<>();
-                // length of path
-                final double length = spawnToTarget.length();
-                // point length will be 2 blocks - larger length = fewer points = less lag
-                Vector point = spawnToTarget.normalize().multiply(2);
-                final Vector spacing = point.clone();
-                // adding spacing and a point to direct path until we get to the target
-                while (point.length() < length){
-                    directPath.add(p.getLocation().add(point));
-                    point.add(spacing);
-                }
-                // spawn particles with potential
-                new BukkitRunnable(){
-
-                    int progress = 0; // how far the particle is in its path
-                    // making these chumps final
-                    final Location start = spawnLocation;
-                    final List<Location> path = directPath;
-                    final Location end = spawnLocation.add(point);
-                    final Player player = p;
-                    @Override
-                    public void run() {
-                        if (progress < path.size()) {
-                            // spawn particles in path
-                            ws.getPotential().potentialResults(path.get(progress), start, locations -> {
-                                if (locations != null){
-                                    // I don't remember why we need these locations, but if we do, we would have to get the callback
-                                    // effects for what happens in the path
-                                    return;
-                                }
-                            });
-
-                            progress++;
-                        } else {
-                            this.cancel();
-                            // do area effect & intensity
-                            ws.getAreaEffect().areaEffectResults(end, 1, locations -> {
-                                for (Location location : locations){
-                                    ws.getIntensity().intensityResults(location, 1, player, end);
-                                }
-                            });
-
-
-                        }
+                    // creating the direct path
+                    List<Location> directPath = new ArrayList<>();
+                    // length of path
+                    final double length = spawnToTarget.length();
+                    // point length will be 2 blocks - larger length = fewer points = less lag
+                    Vector point = spawnToTarget.normalize().multiply(2);
+                    final Vector spacing = point.clone();
+                    // adding spacing and a point to direct path until we get to the target
+                    while (point.length() < length){
+                        directPath.add(p.getLocation().add(point));
+                        point.add(spacing);
                     }
-                }.runTaskTimer(plugin, 0, 11 - ws.getPotential().getPotentialPower());
+                    // spawn particles with potential
+                    new BukkitRunnable(){
+
+                        int progress = 0; // how far the particle is in its path
+                        // making these chumps final
+                        final Location start = spawnLocation;
+                        final List<Location> path = directPath;
+                        final Location end = spawnLocation.add(point);
+                        final Player player = p;
+                        @Override
+                        public void run() {
+                            if (progress < path.size()) {
+                                // spawn particles in path
+                                ws.getPotential().potentialResults(path.get(progress), start, locations -> {
+                                    if (locations != null){
+                                        // I don't remember why we need these locations, but if we do, we would have to get the callback
+                                        // effects for what happens in the path
+                                        return;
+                                    }
+                                });
+
+                                progress++;
+                            } else {
+                                this.cancel();
+                                // do area effect & intensity
+                                ws.getAreaEffect().areaEffectResults(end, 1, locations -> {
+                                    for (Location location : locations){
+                                        ws.getIntensity().intensityResults(location, 1, player, end);
+                                    }
+                                });
+
+
+                            }
+                        }
+                    }.runTaskTimer(plugin, 0, 11 - ws.getPotential().getPotentialPower());
+
+                });
 
             } else {
                 // preset spell
