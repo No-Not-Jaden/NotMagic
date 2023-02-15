@@ -1,5 +1,6 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Objects;
 
+import me.jadenp.notmagic.RevisedClasses.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

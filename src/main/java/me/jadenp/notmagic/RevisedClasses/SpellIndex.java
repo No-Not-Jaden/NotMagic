@@ -1,6 +1,8 @@
 package me.jadenp.notmagic.RevisedClasses;
 
 import me.jadenp.notmagic.NotMagic;
+import me.jadenp.notmagic.RevisedClasses.Objects.PlayerData;
+import me.jadenp.notmagic.RevisedClasses.Objects.Spell;
 import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
 import me.jadenp.notmagic.XPChangeEvent;
 import org.bukkit.*;

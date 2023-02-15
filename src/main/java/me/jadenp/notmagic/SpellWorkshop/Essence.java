@@ -36,11 +36,12 @@ public enum Essence {
     SPECTRAL(2,4,3, Color.fromRGB(146, 90, 214)),
     BARRIER(0,4,1, Color.fromRGB(82, 2, 2));
 
-    private final int potentialPower; // speed
+    // more info about elements of essence in CraftingInterface.java
+    private final int potentialPower;
     private final int areaEffectPower;
     private final int intensityPower;
     private final NotMagic notMagic;
-    private final Color color;
+    private final Color color; // what color the essence relates to
     Essence(int potentialPower, int areaEffectPower, int intensityPower, Color color){
         this.potentialPower = potentialPower;
         this.areaEffectPower = areaEffectPower;
@@ -53,6 +54,7 @@ public enum Essence {
         return color;
     }
 
+    // this callback returns locations that are relative to a predefined path to the target
     public void potentialResults(Location point, Location start, final NotCallback callback) {
         Essence essence = this;
         Bukkit.getScheduler().runTaskAsynchronously(notMagic, new Runnable() {
@@ -60,11 +62,13 @@ public enum Essence {
             public void run() {
         List<Location> locations = new ArrayList<>();
         if (essence == Essence.FIRE) {
+            // Sin wave to target
             Location location = new Location(point.getWorld(), point.getX() + Math.sin(point.getX() - start.getX()), point.getY() + Math.sin(point.getY() - start.getY()), point.getZ() + Math.sin(point.getZ() - start.getZ()));
             locations.add(location);
             if (location.getWorld() != null && location.getChunk().isLoaded())
                 Bukkit.getScheduler().runTask(notMagic, () -> location.getWorld().spawnParticle(Particle.DRIP_LAVA, location,1));
         } else if (essence == Essence.EARTH){
+            // rumble - move in a random direction away from the path every once in a while
             if ((int) (Math.random() * 3) == 0){
                 Vector direction = point.toVector().subtract(start.toVector()).normalize();
                 Vector randomPoint = direction.clone().rotateAroundY(Math.PI / 2);
@@ -78,6 +82,7 @@ public enum Essence {
                     Bukkit.getScheduler().runTask(notMagic, () -> point.getWorld().spawnParticle(Particle.ASH, point, 3));
             }
         } else if (essence == Essence.WATER){
+            // random splash in front
             Vector direction = point.toVector().subtract(start.toVector()).normalize();
             Location front = point.clone().add(direction);
             front.add(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
@@ -541,7 +546,23 @@ public enum Essence {
                         }
                     }
                 } else if (essence == Essence.ELECTRICITY){
+                    // sky
+                    for (int i = 0; i < 15; i++){
+                        Location location = crosshair.getBlock().getRelative(
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
+                                        (int) ((Math.random() * 10) + 10),
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)))
+                                .getLocation();
 
+                        if (location.getBlock().getType().isAir()){
+                            returnLoc = location;
+                            break;
+                        }
+                        if (i == 14){
+                            returnLoc = location;
+                            break;
+                        }
+                    }
                 } else if (essence == Essence.ICE){
 
                 } else if (essence == Essence.POISON){

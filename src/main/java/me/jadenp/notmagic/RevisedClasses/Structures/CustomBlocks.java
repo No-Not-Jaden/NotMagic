@@ -1,4 +1,4 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Structures;
 
 import org.bukkit.Location;
 

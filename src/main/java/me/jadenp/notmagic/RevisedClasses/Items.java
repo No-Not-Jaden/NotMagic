@@ -1264,6 +1264,22 @@ public class Items {
             item.setItemMeta(Meta);
             item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
             return item;
+        } else if (s.equalsIgnoreCase("magicWrench")) {
+            ItemStack item = new ItemStack(Material.BONE);
+            ItemMeta Meta = item.getItemMeta();
+            assert Meta != null;
+            Meta.setDisplayName(ChatColor.of(new Color(158, 111, 79)) + "Magical Wrench");
+            Meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            ArrayList<String> Lore = new ArrayList<>();
+            Lore.add("");
+            Lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "See magical conduit");
+            Lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Connect magical conduit");
+            Lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Break magical conduit");
+            Lore.add("");
+            Meta.setLore(Lore);
+            item.setItemMeta(Meta);
+            item.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+            return item;
         } else if (s.equalsIgnoreCase("ManaPotion")) {
             ItemStack item = new ItemStack(Material.POTION);
             PotionMeta Meta = (PotionMeta) item.getItemMeta();

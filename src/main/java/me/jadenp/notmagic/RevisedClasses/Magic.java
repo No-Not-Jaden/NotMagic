@@ -1,6 +1,9 @@
 package me.jadenp.notmagic.RevisedClasses;
 
 import me.jadenp.notmagic.NotMagic;
+import me.jadenp.notmagic.RevisedClasses.Objects.PlayerData;
+import me.jadenp.notmagic.RevisedClasses.Objects.Spell;
+import me.jadenp.notmagic.RevisedClasses.Objects.SpellTrail;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;

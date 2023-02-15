@@ -1,4 +1,4 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Objects;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -8,7 +8,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.UUID;
 
 public class PlayerDataAdapter extends TypeAdapter<PlayerData> {

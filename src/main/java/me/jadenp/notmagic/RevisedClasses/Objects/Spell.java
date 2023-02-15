@@ -1,5 +1,7 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Objects;
 
+import me.jadenp.notmagic.RevisedClasses.RevisedEvents;
+import me.jadenp.notmagic.RevisedClasses.SpellIndex;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;

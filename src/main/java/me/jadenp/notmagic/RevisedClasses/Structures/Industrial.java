@@ -1,13 +1,16 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Structures;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import me.jadenp.notmagic.NotMagic;
-import me.jadenp.notmagic.SpellWorkshop.WorkshopSpell;
+import me.jadenp.notmagic.RevisedClasses.Items;
+import me.jadenp.notmagic.RevisedClasses.Structures.CustomBlocks;
+import me.jadenp.notmagic.RevisedClasses.Structures.CustomBlocksAdapter;
+import me.jadenp.notmagic.RevisedClasses.Structures.MultiBlockStructures;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
@@ -19,8 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Score;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -35,49 +36,17 @@ public class Industrial implements Listener {
     /**
      * Conduit magic core
      *
+     * How Magic is transported
+     * Magic can be transported with Invisible magical conduit
+     * With a special tool you can see conduits and place them
+     * You need the item to place them
+     * They can only go in straight lines
+     * Can craft connectors structures that allow you to make turns
+     *
      */
 
-    private List<MultiBlockStructures> multiBlockStructures = new ArrayList<>();
+    private Map<Location, MultiBlockStructures> multiBlockStructures = new HashMap<>();
 
-    private final static Map<Integer[], Material> magicStorage = new HashMap<Integer[], Material>(){{
-        put(new Integer[]{1,0,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,0,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,0,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,0,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,1,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,1,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,1,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,1,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,2,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,2,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,2,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,2,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,3,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,3,1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,3,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{-1,3,-1}, Material.WAXED_COPPER_BLOCK);
-        put(new Integer[]{1,4,1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{-1,4,1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{1,4,-1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{-1,4,-1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{0,4,-1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{0,4,1}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{-1,4,0}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{1,4,0}, Material.WAXED_CUT_COPPER_SLAB);
-        put(new Integer[]{1,1,0}, Material.TINTED_GLASS);
-        put(new Integer[]{-1,1,0}, Material.TINTED_GLASS);
-        put(new Integer[]{0,1,1}, Material.TINTED_GLASS);
-        put(new Integer[]{0,1,-1}, Material.TINTED_GLASS);
-        put(new Integer[]{1,2,0}, Material.TINTED_GLASS);
-        put(new Integer[]{-1,2,0}, Material.TINTED_GLASS);
-        put(new Integer[]{0,2,1}, Material.TINTED_GLASS);
-        put(new Integer[]{0,2,-1}, Material.TINTED_GLASS);
-        put(new Integer[]{1,3,0}, Material.TINTED_GLASS);
-        put(new Integer[]{-1,3,0}, Material.TINTED_GLASS);
-        put(new Integer[]{0,3,1}, Material.TINTED_GLASS);
-        put(new Integer[]{0,3,-1}, Material.TINTED_GLASS);
-        put(new Integer[]{0,1,0}, Material.GRAY_CARPET);
-    }};
 
     private Map<Location, CustomBlocks> customBlocks = new HashMap<>();
     private final File specialBlockFile = new File(NotMagic.getInstance().getDataFolder() + File.separator + "special-blocks.json");
@@ -147,22 +116,25 @@ public class Industrial implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event){
         ItemStack mainHand = event.getPlayer().getInventory().getItemInMainHand();
-        if (Items.isWand(mainHand)){
+        if (mainHand.isSimilar(Items.data("magicWrench"))){
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK){
                 if (event.getClickedBlock() != null)
                     if (event.getClickedBlock().getType() == Material.CONDUIT){
                         if (customBlocks.containsKey(event.getClickedBlock().getLocation())){
+                            if (multiBlockStructures.containsKey(event.getClickedBlock().getLocation())){
                             // check if it can be turned into a structure
-                            if (customBlocks.get(event.getClickedBlock().getLocation()).getType().equals("weakMagicCore")){
+                            if (customBlocks.get(event.getClickedBlock().getLocation()).getType().equals("weakMagicCore")) {
                                 // go through weak core buildings
-                                if (validBlockStructure(magicStorage, event.getClickedBlock().getLocation())){
-                                    // add to stuctures
-                                    multiBlockStructures.add(new MultiBlockStructures("Storage", getAllLocations(magicStorage, event.getClickedBlock().getLocation())));
+                                if (validBlockStructure(StructureLayout.magicStorage, event.getClickedBlock().getLocation())) {
+                                    // add to structures
+                                    multiBlockStructures.put(event.getClickedBlock().getLocation(), new MultiBlockStructures("Storage", getAllLocations(StructureLayout.magicStorage, event.getClickedBlock().getLocation())));
                                     event.getPlayer().sendMessage("Created Magic Storage");
+                                } else {
+                                    event.getPlayer().playSound(event.getPlayer(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                                 }
-                                else {
-                                    event.getPlayer().playSound(event.getPlayer(), Sound.ENTITY_VILLAGER_NO,1,1);
-                                }
+                            }
+                            } else {
+                                // try to place magic conduit
                             }
                         }
                     }
@@ -222,12 +194,11 @@ public class Industrial implements Listener {
                 event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_BEACON_DEACTIVATE,1,1);
             }
         }
-        ListIterator<MultiBlockStructures> multiBlockStructuresListIterator = multiBlockStructures.listIterator();
-        while (multiBlockStructuresListIterator.hasNext()){
-            MultiBlockStructures structures = multiBlockStructuresListIterator.next();
-            if (structures.getBlocks().contains(event.getBlock().getLocation())){
+        for(Iterator<Map.Entry<Location, MultiBlockStructures>> it = multiBlockStructures.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<Location, MultiBlockStructures> entry = it.next();
+            if(entry.getValue().getBlocks().contains(event.getBlock().getLocation())) {
                 event.getPlayer().sendMessage("Broken structure");
-                multiBlockStructuresListIterator.remove();
+                it.remove();
             }
         }
     }

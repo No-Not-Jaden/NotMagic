@@ -1,14 +1,13 @@
 package me.jadenp.notmagic.SpellWorkshop;
 
 import me.jadenp.notmagic.NotMagic;
-import me.jadenp.notmagic.RevisedClasses.Spell;
+import me.jadenp.notmagic.RevisedClasses.Objects.Spell;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;

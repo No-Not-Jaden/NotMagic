@@ -1,4 +1,4 @@
-package me.jadenp.notmagic.RevisedClasses;
+package me.jadenp.notmagic.RevisedClasses.Structures;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -6,7 +6,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.IOException;
 import java.util.UUID;

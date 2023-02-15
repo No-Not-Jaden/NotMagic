@@ -2,31 +2,20 @@ package me.jadenp.notmagic;
 
 import me.jadenp.notmagic.Alchemy.RevisedAlchemy;
 import me.jadenp.notmagic.RevisedClasses.*;
+import me.jadenp.notmagic.RevisedClasses.Structures.Industrial;
 import me.jadenp.notmagic.SpellWorkshop.CraftingInterface;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
 
 /**
  * <TODO>

@@ -2,6 +2,8 @@ package me.jadenp.notmagic;
 
 
 import me.jadenp.notmagic.RevisedClasses.*;
+import me.jadenp.notmagic.RevisedClasses.Objects.PlayerData;
+import me.jadenp.notmagic.RevisedClasses.Objects.Spell;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -13,19 +15,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.yaml.snakeyaml.util.EnumUtils;
 
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
