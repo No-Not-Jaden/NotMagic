@@ -130,6 +130,19 @@ public enum Essence {
 
             locations.add(point);
         } else if (essence == Essence.ICE){
+            // spread out snow flakes
+            for (int i = 0; i < 15; i++) {
+                Location location = point.clone().add(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2);
+                locations.add(location);
+            }
+            Bukkit.getScheduler().runTask(notMagic, () -> {
+                for (Location location :
+                        locations) {
+                    if (location.getWorld() != null && location.getChunk().isLoaded()) {
+                        location.getWorld().spawnParticle(Particle.SNOWFLAKE, location, 1);
+                    }
+                }
+            });
 
         } else if (essence == Essence.POISON) {
 
@@ -236,6 +249,12 @@ public enum Essence {
                     locations.add(center);
                 }
             } else if (essence == Essence.ICE){
+                // big area
+                for (int j = 0; j < amount1; j++) {
+                    for (int i = 0; i < 10; i++) {
+                        locations.add(center.clone().add(new Vector(Math.random() * 20 - 10, Math.random() * 10 - 5, Math.random() * 20 - 10)));
+                    }
+                }
 
             } else if (essence == Essence.POISON) {
 
@@ -398,7 +417,22 @@ public enum Essence {
                 // does damage in an event
             }
         } else if (this == Essence.ICE){
-
+            if (point.getWorld() != null && point.getChunk().isLoaded()) {
+                point.getWorld().spawnParticle(Particle.SNOWBALL,point,1);
+                for (Entity entity : point.getWorld().getNearbyEntities(point, 1, 1, 1)) {
+                    if (entity instanceof LivingEntity){
+                        if (entity instanceof Player){
+                            ItemStack[] armor = ((Player) entity).getInventory().getArmorContents();
+                            if (armor[0].getType().toString().toUpperCase(Locale.ROOT).contains("LEATHER")){
+                                ((LivingEntity) entity).damage(intensityPower * damageMultiplier / 3);
+                                return;
+                            }
+                        }
+                        entity.setFreezeTicks(entity.getFreezeTicks() + intensityPower);
+                        ((LivingEntity) entity).damage(intensityPower * damageMultiplier);
+                    }
+                }
+            }
         } else if (this == Essence.POISON) {
 
         } else if (this == Essence.LIVING){
@@ -564,7 +598,22 @@ public enum Essence {
                         }
                     }
                 } else if (essence == Essence.ICE){
+                    for (int i = 0; i < 15; i++){
+                        Location location = crosshair.getBlock().getRelative(
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)),
+                                        (int) (Math.signum(((Math.random() * 4)) - 2) * ((Math.random() * 5) + 10)))
+                                .getLocation();
 
+                        if (!location.getBlock().getType().isAir()){
+                            returnLoc = location;
+                            break;
+                        }
+                        if (i == 14){
+                            returnLoc = location;
+                            break;
+                        }
+                    }
                 } else if (essence == Essence.POISON){
 
                 } else if (essence == Essence.LIVING){
